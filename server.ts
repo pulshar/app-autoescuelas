@@ -22,7 +22,10 @@ import {
   sendClassReminderEmail,
   isResendConfigured,
   getSenderEmail,
+  isSandboxDomain,
+  getAuthorizedTestEmail,
 } from './server/email.ts';
+import { adminAuth } from './src/lib/firebase-admin.ts';
 
 function formatToDisplayDate(dateStr?: string | null): string {
   if (!dateStr) return '';
@@ -138,39 +141,127 @@ async function startServer() {
   // Google OAuth / Firebase sign in
   app.post('/api/auth/google', async (req, res) => {
     try {
-      const { email, name, googleId, avatarUrl } = req.body;
-      if (!email || !name) {
-        res.status(400).json({ error: 'Datos de cuenta de Google incompletos.' });
+      const { idToken } = req.body;
+
+      if (!idToken || typeof idToken !== 'string') {
+        res.status(400).json({
+          error: 'Token de Firebase no proporcionado.',
+        });
+        return;
+      }
+
+      // Firebase verifica que el token pertenece realmente a un usuario autenticado.
+      const decodedToken = await adminAuth.verifyIdToken(idToken);
+
+      const email = decodedToken.email;
+
+      if (!email) {
+        res.status(400).json({
+          error: 'La cuenta de Google no tiene un correo electrónico válido.',
+        });
         return;
       }
 
       const normalizedEmail = email.trim().toLowerCase();
+
+      const name =
+        decodedToken.name ||
+        normalizedEmail.split('@')[0] ||
+        'Usuario Google';
+
+      const googleId = decodedToken.uid;
+      const avatarUrl = decodedToken.picture || null;
       const now = new Date().toISOString();
 
-      let row = (await db.prepare('SELECT * FROM users WHERE email = ?').get(normalizedEmail)) as any;
+      let row = (
+        await db
+          .prepare('SELECT * FROM users WHERE email = ?')
+          .get(normalizedEmail)
+      ) as any;
 
       if (row) {
-        // Account exists - merge Google ID and avatar if needed
-        await db.prepare(`
-          UPDATE users SET google_id = COALESCE(google_id, ?), avatar_url = COALESCE(avatar_url, ?), updated_at = ?
+        // La cuenta ya existe: asociamos la cuenta de Firebase.
+        await db
+          .prepare(`
+          UPDATE users
+          SET google_id = COALESCE(google_id, ?),
+              avatar_url = COALESCE(avatar_url, ?),
+              updated_at = ?
           WHERE id = ?
-        `).run(googleId || 'g_' + normalizedEmail, avatarUrl || null, now, row.id);
-        row = (await db.prepare('SELECT * FROM users WHERE id = ?').get(row.id)) as any;
+        `)
+          .run(
+            googleId,
+            avatarUrl,
+            now,
+            row.id
+          );
+
+        row = (
+          await db
+            .prepare('SELECT * FROM users WHERE id = ?')
+            .get(row.id)
+        ) as any;
       } else {
-        // Create new student account via Google
-        const newUserId = googleId ? googleId : 'usr_g_' + crypto.randomUUID().slice(0, 8);
-        await db.prepare(`
-          INSERT INTO users (id, email, name, avatar_url, role, google_id, created_at, updated_at)
+        // Crear nuevo alumno.
+        const newUserId = `usr_g_${crypto.randomUUID().slice(0, 8)}`;
+
+        await db
+          .prepare(`
+          INSERT INTO users (
+            id,
+            email,
+            name,
+            avatar_url,
+            role,
+            google_id,
+            created_at,
+            updated_at
+          )
           VALUES (?, ?, ?, ?, 'student', ?, ?, ?)
-        `).run(newUserId, normalizedEmail, name.trim(), avatarUrl || null, googleId || 'g_' + normalizedEmail, now, now);
+        `)
+          .run(
+            newUserId,
+            normalizedEmail,
+            name.trim(),
+            avatarUrl,
+            googleId,
+            now,
+            now
+          );
 
-        row = (await db.prepare('SELECT * FROM users WHERE id = ?').get(newUserId)) as any;
+        row = (
+          await db
+            .prepare('SELECT * FROM users WHERE id = ?')
+            .get(newUserId)
+        ) as any;
 
-        // Audit log
-        await db.prepare(`
-          INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
-          VALUES (?, ?, ?, ?, 'Registro con Google', 'user', ?, 'Nuevo usuario registrado vía Google', ?)
-        `).run(crypto.randomUUID(), row.id, row.name, row.email, row.id, now);
+        // Audit log.
+        await db
+          .prepare(`
+          INSERT INTO audit_logs (
+            id,
+            user_id,
+            user_name,
+            user_email,
+            action,
+            entity_type,
+            entity_id,
+            details,
+            created_at
+          )
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `)
+          .run(
+            crypto.randomUUID(),
+            row.id,
+            row.name,
+            row.email,
+            'Registro con Google',
+            'user',
+            row.id,
+            'Nuevo usuario registrado vía Google',
+            now
+          );
       }
 
       const user = {
@@ -183,11 +274,24 @@ async function startServer() {
         created_at: row.created_at,
       };
 
-      const token = createToken({ id: user.id, email: user.email, name: user.name, role: user.role });
-      res.json({ user, token });
+      // Token propio de AutoescuelaPro.
+      const token = createToken({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      });
+
+      res.json({
+        user,
+        token,
+      });
     } catch (err: any) {
       console.error('Google auth error:', err);
-      res.status(500).json({ error: 'Error al iniciar sesión con Google.' });
+
+      res.status(401).json({
+        error: 'No se pudo verificar la autenticación con Google.',
+      });
     }
   });
 
@@ -1373,6 +1477,8 @@ async function startServer() {
       res.json({
         configured: isResendConfigured(),
         sender: getSenderEmail(),
+        isSandbox: isSandboxDomain(),
+        authorizedTestEmail: getAuthorizedTestEmail(),
       });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
@@ -1390,7 +1496,7 @@ async function startServer() {
         if (adminInDb?.email) {
           recipient = adminInDb.email;
         } else {
-          recipient = 'alvaroq.dev@gmail.com';
+          recipient = getAuthorizedTestEmail();
         }
       }
 
@@ -1431,12 +1537,18 @@ async function startServer() {
         return;
       }
 
+      const message = emailRes.redirected
+        ? `Correo de prueba enviado con éxito a ${emailRes.actualRecipient} (Modo Sandbox de Resend: redirigido automáticamente desde ${emailRes.originalRecipient}).`
+        : `¡Correo de prueba enviado con éxito a ${emailRes.actualRecipient || recipient} a través de Resend!`;
+
       res.json({
         success: true,
         configured: true,
         id: emailRes.id,
-        recipient,
-        message: `¡Correo de prueba enviado con éxito a ${recipient} a través de Resend!`,
+        recipient: emailRes.actualRecipient || recipient,
+        original_recipient: emailRes.originalRecipient,
+        redirected: Boolean(emailRes.redirected),
+        message,
       });
     } catch (err: any) {
       res.status(500).json({ error: err.message });

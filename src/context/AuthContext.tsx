@@ -11,7 +11,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string, phone?: string) => Promise<void>;
-  loginWithGoogle: (email?: string, name?: string, googleId?: string, avatarUrl?: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   logout: () => void;
   updateProfile: (data: { name: string; phone?: string; avatar_url?: string }) => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -62,30 +62,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(data.user);
   };
 
-  const loginWithGoogle = async (customEmail?: string, customName?: string, customGoogleId?: string, customAvatarUrl?: string) => {
-    if (customEmail && customName) {
-      const data = await api.googleLogin({ email: customEmail, name: customName, googleId: customGoogleId, avatarUrl: customAvatarUrl });
-      setStoredToken(data.token);
-      setTokenState(data.token);
-      setUser(data.user);
-      return;
-    }
-
+  const loginWithGoogle = async () => {
     try {
       const result = await signInWithPopup(auth, googleAuthProvider);
       const fbUser = result.user;
-      const data = await api.googleLogin({
-        email: fbUser.email || '',
-        name: fbUser.displayName || fbUser.email?.split('@')[0] || 'Usuario Google',
-        googleId: fbUser.uid,
-        avatarUrl: fbUser.photoURL || undefined,
-      });
+
+      const idToken = await fbUser.getIdToken();
+
+      const data = await api.googleLogin(idToken);
+
       setStoredToken(data.token);
       setTokenState(data.token);
       setUser(data.user);
     } catch (err: any) {
       console.error('Firebase Google popup sign in error:', err);
-      throw new Error(err.message || 'Error al iniciar sesión con Google.');
+      throw new Error(
+        err.message || 'Error al iniciar sesión con Google.'
+      );
     }
   };
 

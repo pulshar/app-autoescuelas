@@ -81,27 +81,13 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
     }
   };
 
-  // Quick Demo Logins
-  const handleQuickLogin = async (demoEmail: string, demoPass: string) => {
-    setError(null);
-    setLoading(true);
-    try {
-      await login(demoEmail, demoPass);
-      onClose();
-    } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesión.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // Google OAuth flow
   const handleGoogleSignIn = async () => {
     setError(null);
     setLoading(true);
+
     try {
-      // In production Google Identity Services is used. Here we integrate with the real backend merge endpoint!
-      await loginWithGoogle('alvaroq@gmail.com', 'Álvaro Quintero', 'g_1029384756', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80');
+      await loginWithGoogle();
       onClose();
     } catch (err: any) {
       setError(err.message || 'Error al iniciar sesión con Google.');
@@ -129,10 +115,10 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
         {/* Modal Header */}
         <div className="px-6 pt-6 pb-4 bg-gradient-to-b from-slate-50 to-white border-b border-slate-100 text-center">
           <h3 className="text-xl font-bold text-slate-900">
-            {mode === 'login' && 'Iniciar Sesión'}
-            {mode === 'register' && 'Crear Cuenta de Alumno'}
-            {mode === 'forgot' && 'Recuperar Contraseña'}
-            {mode === 'reset' && 'Nueva Contraseña'}
+            {mode === 'login' && 'Iniciar sesión'}
+            {mode === 'register' && 'Crear cuenta de alumno'}
+            {mode === 'forgot' && 'Recuperar contraseña'}
+            {mode === 'reset' && 'Nueva contraseña'}
           </h3>
           <p className="text-xs text-slate-500 mt-1">
             {mode === 'login' && 'Accede a tu agenda y reservas de clases de conducir'}
@@ -319,36 +305,6 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
               </button>
             </>
           )}
-
-          {/* Quick Demo Access (Crucial for evaluation!) */}
-          <div className="mt-5 p-3 rounded-2xl bg-slate-50 border border-slate-200">
-            <p className="text-[11px] font-semibold text-slate-600 mb-2 text-center">
-              Acceso Rápido de Prueba (Cuentas predeterminadas):
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => handleQuickLogin('alumno@example.com', 'alumno123')}
-                className="p-2 rounded-xl bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 text-left transition-colors text-xs flex flex-col"
-              >
-                <span className="font-bold text-indigo-700 flex items-center gap-1">
-                  <UserCheck className="w-3.5 h-3.5" /> Alumno
-                </span>
-                <span className="text-[10px] text-slate-500 mt-0.5 truncate">alumno@example.com</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickLogin('alvaroq.dev@gmail.com', 'admin05')}
-                className="p-2 rounded-xl bg-white hover:bg-amber-50 border border-slate-200 hover:border-amber-300 text-left transition-colors text-xs flex flex-col"
-              >
-                <span className="font-bold text-amber-700 flex items-center gap-1">
-                  <ShieldCheck className="w-3.5 h-3.5" /> Administrador
-                </span>
-                <span className="text-[10px] text-slate-500 mt-0.5 truncate">alvaroq.dev@gmail.com</span>
-              </button>
-            </div>
-          </div>
 
           {/* Toggle Login/Register footer */}
           <div className="mt-4 pt-3 border-t border-slate-100 text-center text-xs text-slate-600">

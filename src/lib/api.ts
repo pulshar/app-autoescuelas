@@ -66,10 +66,10 @@ export const api = {
       body: JSON.stringify(body),
     }),
 
-  googleLogin: (body: { email: string; name: string; googleId?: string; avatarUrl?: string }) =>
+  googleLogin: (idToken: string) =>
     request<{ user: User; token: string }>('/api/auth/google', {
       method: 'POST',
-      body: JSON.stringify(body),
+      body: JSON.stringify({ idToken }),
     }),
 
   getMe: () => request<{ user: User }>('/api/auth/me'),

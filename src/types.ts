@@ -159,5 +159,7 @@ export interface DashboardStats {
 export interface ResendStatus {
   configured: boolean;
   sender: string;
+  isSandbox?: boolean;
+  authorizedTestEmail?: string;
 }
 

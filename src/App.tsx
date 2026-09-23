@@ -98,7 +98,7 @@ function AppContent() {
             </div>
 
             {/* Quick Demo Switcher (Instant Evaluation for Test Users) */}
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs">
+            {/* <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs">
               <div className="text-center max-w-lg mx-auto mb-6">
                 <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">
                   Acceso Inmediato
@@ -154,7 +154,7 @@ function AppContent() {
                   </span>
                 </button>
               </div>
-            </div>
+            </div> */}
 
             {/* Feature Highlights Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

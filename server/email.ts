@@ -1,6 +1,7 @@
 import { Resend } from 'resend';
 
 let resendClient: Resend | null = null;
+const DEFAULT_AUTHORIZED_TEST_EMAIL = 'alvaroq.dev@gmail.com';
 
 /**
  * Lazy initialization of the Resend SDK client.
@@ -26,15 +27,28 @@ export function getSenderEmail(): string {
   return process.env.RESEND_FROM_EMAIL?.trim() || 'AutoescuelaPro <onboarding@resend.dev>';
 }
 
+export function isSandboxDomain(): boolean {
+  const sender = getSenderEmail();
+  return sender.includes('resend.dev');
+}
+
+export function getAuthorizedTestEmail(): string {
+  return process.env.RESEND_TEST_EMAIL?.trim() || DEFAULT_AUTHORIZED_TEST_EMAIL;
+}
+
 export interface EmailResult {
   success: boolean;
   id?: string;
   error?: string;
   configured: boolean;
+  redirected?: boolean;
+  originalRecipient?: string;
+  actualRecipient?: string;
+  note?: string;
 }
 
 /**
- * Sends a transactional HTML email via Resend
+ * Sends a transactional HTML email via Resend with graceful sandbox handling
  */
 export async function sendEmail({
   to,
@@ -58,33 +72,106 @@ export async function sendEmail({
   }
 
   const from = getSenderEmail();
+  const authorizedTestEmail = getAuthorizedTestEmail();
+
+  // If using onboarding@resend.dev and the recipient is not the authorized developer address,
+  // we know upfront that Resend will reject with validation_error unless it goes to the account owner.
+  let targetTo = to.trim();
+  let wasRedirected = false;
+
+  if (isSandboxDomain() && targetTo.toLowerCase() !== authorizedTestEmail.toLowerCase()) {
+    console.log(`[Resend Sandbox] Enrutando envío de "${targetTo}" hacia "${authorizedTestEmail}" para el entorno de desarrollo.`);
+    targetTo = authorizedTestEmail;
+    wasRedirected = true;
+  }
+
+  const sandboxDisclaimerHtml = wasRedirected
+    ? `
+    <div style="background-color: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 14px 18px; margin: 0 0 20px 0; font-size: 13px; line-height: 1.5; color: #92400e;">
+      <strong>⚠️ Modo Pruebas de Resend (Sandbox):</strong> Este correo estaba destinado a <code>${to}</code>, pero se ha entregado en tu dirección autorizada (<code>${authorizedTestEmail}</code>) porque el remitente utiliza el dominio provisional <code>onboarding@resend.dev</code>.<br>
+      <span style="font-size: 11px; color: #b45309; display: block; margin-top: 4px;">
+        Para enviar directamente a las direcciones de todos los alumnos sin restricciones, verifica un dominio propio en <a href="https://resend.com/domains" target="_blank" style="color: #b45309; font-weight: bold; text-decoration: underline;">resend.com/domains</a> y define <code>RESEND_FROM_EMAIL</code>.
+      </span>
+    </div>
+    `
+    : '';
+
+  const finalHtml = wasRedirected ? sandboxDisclaimerHtml + html : html;
+  const finalText = wasRedirected
+    ? `[MODO PRUEBAS RESEND: Destinatario original: ${to}]\n\n` + (text || subject)
+    : (text || subject);
 
   try {
     const { data, error } = await client.emails.send({
       from,
-      to,
-      subject,
-      html,
-      text: text || subject,
+      to: targetTo,
+      subject: wasRedirected ? `[Sandbox Resend] ${subject}` : subject,
+      html: finalHtml,
+      text: finalText,
     });
 
     if (error) {
-      console.error('[Resend Error]', error);
+      // Check if Resend returned a validation error regarding only sending to own address
+      if (
+        (error as any).name === 'validation_error' ||
+        (error as any).statusCode === 403 ||
+        error.message?.includes('only send testing emails to your own email address')
+      ) {
+        // Extract allowed email from error message if available
+        const match = error.message.match(/your own email address \(([^)]+)\)/i);
+        const fallbackEmail = match ? match[1] : authorizedTestEmail;
+
+        if (targetTo.toLowerCase() !== fallbackEmail.toLowerCase()) {
+          console.warn(`[Resend Fallback] Reintentando envío hacia ${fallbackEmail}...`);
+          const retryRes = await client.emails.send({
+            from,
+            to: fallbackEmail,
+            subject: `[Sandbox Resend] ${subject}`,
+            html: `
+              <div style="background-color: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 14px 18px; margin: 0 0 20px 0; font-size: 13px; line-height: 1.5; color: #92400e;">
+                <strong>⚠️ Modo Pruebas de Resend (Sandbox):</strong> Correo redirigido desde <code>${to}</code> a <code>${fallbackEmail}</code>.
+              </div>
+            ` + html,
+            text: `[Sandbox Resend: Destinado a ${to}]\n\n` + (text || subject),
+          });
+
+          if (!retryRes.error && retryRes.data) {
+            console.log(`[Resend Success (Redirected)] Correo entregado a ${fallbackEmail} (ID: ${retryRes.data.id})`);
+            return {
+              success: true,
+              id: retryRes.data.id,
+              configured: true,
+              redirected: true,
+              originalRecipient: to,
+              actualRecipient: fallbackEmail,
+              note: `Correo entregado en ${fallbackEmail} (Modo Sandbox de Resend).`,
+            };
+          }
+        }
+      }
+
+      console.warn('[Resend API Error]', error.message || error);
       return {
         success: false,
-        error: error.message || 'Error desconocido al enviar mediante Resend',
+        error: error.message || 'Error al enviar correo mediante Resend',
         configured: true,
       };
     }
 
-    console.log(`[Resend Success] Correo enviado a ${to} (ID: ${data?.id})`);
+    console.log(`[Resend Success] Correo enviado a ${targetTo} (ID: ${data?.id})` + (wasRedirected ? ` [Redirigido desde ${to}]` : ''));
     return {
       success: true,
       id: data?.id,
       configured: true,
+      redirected: wasRedirected,
+      originalRecipient: to,
+      actualRecipient: targetTo,
+      note: wasRedirected
+        ? `Correo entregado con éxito a ${targetTo} (Modo Sandbox Resend). Para enviar a cualquier alumno, verifica un dominio en resend.com.`
+        : undefined,
     };
   } catch (err: any) {
-    console.error('[Resend Exception]', err);
+    console.warn('[Resend Exception]', err.message || err);
     return {
       success: false,
       error: err.message || 'Error en la conexión con la API de Resend',

@@ -64,5 +64,6 @@ export const db = {
 };
 
 export async function initDatabase() {
-  console.log('[Cloud SQL] Conectado exitosamente a PostgreSQL (Cloud SQL).');
+  await pool.query('SELECT 1');
+  console.log('[PostgreSQL] Conexión establecida correctamente.');
 }

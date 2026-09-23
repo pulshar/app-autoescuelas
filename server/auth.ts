@@ -2,7 +2,11 @@ import crypto from 'node:crypto';
 import type { Request, Response, NextFunction } from 'express';
 import { adminAuth } from '../src/lib/firebase-admin.ts';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'autoescuela-super-secret-key-2026-xyz';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET debe estar definido en las variables de entorno.');
+}
 
 export interface AuthPayload {
   id: string;

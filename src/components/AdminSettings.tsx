@@ -124,6 +124,9 @@ export default function AdminSettings() {
     try {
       const status = await api.getResendStatus();
       setResendStatus(status);
+      if (status.isSandbox && status.authorizedTestEmail) {
+        setTestRecipient(status.authorizedTestEmail);
+      }
     } catch (err) {
       console.error('Error fetching Resend status:', err);
     }
@@ -231,10 +234,12 @@ export default function AdminSettings() {
   };
 
   useEffect(() => {
-    if (user?.email && !user.email.includes('example.com')) {
+    if (resendStatus?.isSandbox && resendStatus.authorizedTestEmail) {
+      setTestRecipient(resendStatus.authorizedTestEmail);
+    } else if (user?.email && !user.email.includes('example.com')) {
       setTestRecipient(user.email);
     }
-  }, [user?.email]);
+  }, [user?.email, resendStatus?.isSandbox, resendStatus?.authorizedTestEmail]);
 
   const handleSendTestEmail = async () => {
     const targetEmail = testRecipient.trim() || 'alvaroq.dev@gmail.com';
@@ -373,19 +378,17 @@ export default function AdminSettings() {
           <button
             type="button"
             onClick={() => setActiveSubTab('reminders')}
-            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-              activeSubTab === 'reminders'
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${activeSubTab === 'reminders'
                 ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
                 : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
-            }`}
+              }`}
           >
             <Bell className="w-4 h-4" />
             <span>Recordatorios y Correo (Resend)</span>
             {reminderEnabled ? (
               <span
-                className={`w-2 h-2 rounded-full ${
-                  activeSubTab === 'reminders' ? 'bg-emerald-300' : 'bg-emerald-500'
-                } animate-pulse`}
+                className={`w-2 h-2 rounded-full ${activeSubTab === 'reminders' ? 'bg-emerald-300' : 'bg-emerald-500'
+                  } animate-pulse`}
               />
             ) : (
               <span className="w-2 h-2 rounded-full bg-slate-400" />
@@ -395,11 +398,10 @@ export default function AdminSettings() {
           <button
             type="button"
             onClick={() => setActiveSubTab('general')}
-            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-              activeSubTab === 'general'
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${activeSubTab === 'general'
                 ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
                 : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
-            }`}
+              }`}
           >
             <Clock className="w-4 h-4" />
             <span>Horarios y Políticas Generales</span>
@@ -410,13 +412,12 @@ export default function AdminSettings() {
       {/* Global Feedback Banner */}
       {feedback && (
         <div
-          className={`p-4 rounded-2xl text-xs sm:text-sm flex items-start justify-between gap-3 border ${
-            feedback.type === 'success'
+          className={`p-4 rounded-2xl text-xs sm:text-sm flex items-start justify-between gap-3 border ${feedback.type === 'success'
               ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
               : feedback.type === 'error'
-              ? 'bg-rose-50 border-rose-200 text-rose-800'
-              : 'bg-sky-50 border-sky-200 text-sky-800'
-          }`}
+                ? 'bg-rose-50 border-rose-200 text-rose-800'
+                : 'bg-sky-50 border-sky-200 text-sky-800'
+            }`}
         >
           <div className="flex items-center gap-2.5">
             {feedback.type === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />}
@@ -448,11 +449,10 @@ export default function AdminSettings() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-start gap-3">
                 <div
-                  className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${
-                    resendStatus?.configured
+                  className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${resendStatus?.configured
                       ? 'bg-emerald-100 text-emerald-700'
                       : 'bg-amber-100 text-amber-700'
-                  }`}
+                    }`}
                 >
                   <Mail className="w-5 h-5" />
                 </div>
@@ -462,9 +462,16 @@ export default function AdminSettings() {
                       Servicio de Correo Transaccional (Resend)
                     </h3>
                     {resendStatus?.configured ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        <Check className="w-3 h-3" /> Configurado y listo
-                      </span>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          <Check className="w-3 h-3" /> Configurado
+                        </span>
+                        {resendStatus.isSandbox && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                            <Info className="w-3 h-3 text-amber-600" /> Sandbox activo
+                          </span>
+                        )}
+                      </div>
                     ) : (
                       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
                         <AlertTriangle className="w-3 h-3" /> Pendiente de API Key
@@ -472,7 +479,7 @@ export default function AdminSettings() {
                     )}
                   </div>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Permite enviar correos electrónicos reales a los alumnos con los detalles de sus clases.
+                    Envío automático y bajo demanda de correos electrónicos con diseño profesional y datos de cada clase.
                   </p>
                 </div>
               </div>
@@ -486,17 +493,26 @@ export default function AdminSettings() {
                     onChange={(e) => setTestRecipient(e.target.value)}
                     placeholder="tucorreo@gmail.com"
                     title="Dirección donde se enviará el correo de prueba"
-                    className="w-full sm:w-56 px-3 py-2 rounded-xl border border-slate-300 text-xs font-medium text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-2xs"
+                    className="w-full sm:w-60 px-3 py-2 rounded-xl border border-slate-300 text-xs font-medium text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-2xs"
                   />
+                  {resendStatus?.isSandbox && resendStatus.authorizedTestEmail && testRecipient !== resendStatus.authorizedTestEmail && (
+                    <button
+                      type="button"
+                      onClick={() => setTestRecipient(resendStatus.authorizedTestEmail!)}
+                      className="text-[10px] text-indigo-600 hover:text-indigo-800 underline font-semibold block mt-1"
+                    >
+                      Usar dirección autorizada ({resendStatus.authorizedTestEmail})
+                    </button>
+                  )}
                 </div>
                 <button
                   type="button"
                   onClick={handleSendTestEmail}
                   disabled={testingEmail || !testRecipient.trim()}
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white text-xs font-bold shadow-xs transition-all shrink-0"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white text-xs font-bold shadow-xs transition-all shrink-0 self-start"
                 >
                   <Send className={`w-3.5 h-3.5 ${testingEmail ? 'animate-pulse' : ''}`} />
-                  <span>{testingEmail ? 'Enviando correo...' : 'Enviar prueba'}</span>
+                  <span>{testingEmail ? 'Enviando...' : 'Enviar prueba'}</span>
                 </button>
               </div>
             </div>
@@ -504,11 +520,10 @@ export default function AdminSettings() {
             {/* Email Test Feedback Banner */}
             {emailFeedback && (
               <div
-                className={`p-3.5 rounded-2xl text-xs flex items-center justify-between border ${
-                  emailFeedback.success
+                className={`p-3.5 rounded-2xl text-xs flex items-center justify-between border ${emailFeedback.success
                     ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
                     : 'bg-rose-50 border-rose-200 text-rose-800'
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-2">
                   {emailFeedback.success ? (
@@ -529,18 +544,24 @@ export default function AdminSettings() {
             )}
 
             {/* Resend details or instructions */}
-            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/70 text-xs space-y-2">
+            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/70 text-xs space-y-2.5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-slate-600">
                 <div>
-                  <span className="font-semibold text-slate-700">Remitente configurado:</span>{' '}
+                  <span className="font-semibold text-slate-700">Remitente actual:</span>{' '}
                   <code className="bg-white px-2 py-0.5 rounded-md border border-slate-200 font-mono text-[11px] text-slate-800">
                     {resendStatus?.sender || 'AutoescuelaPro <onboarding@resend.dev>'}
                   </code>
                 </div>
-                <div className="text-slate-400 text-[11px]">
-                  Proveedor: <strong>Resend API (SDK oficial)</strong>
+                <div className="text-slate-500 text-[11px]">
+                  Proveedor: <strong>Resend API (SDK oficial v4)</strong>
                 </div>
               </div>
+
+              {resendStatus?.isSandbox && (
+                <div className="pt-2 border-t border-slate-200/60 text-slate-600 text-[11px] leading-relaxed">
+                  ℹ️ <strong>Modo Sandbox (Pruebas) de Resend:</strong> Al usar <code>onboarding@resend.dev</code>, la política de Resend entrega los correos a tu dirección registrada (<strong>{resendStatus.authorizedTestEmail || 'alvaroq.dev@gmail.com'}</strong>). El sistema maneja esto de forma automática para que puedas probar el diseño sin fallos. Para enviar directamente a cualquier dirección externa de alumnos, verifica tu dominio en <a href="https://resend.com/domains" target="_blank" rel="noopener noreferrer" className="text-indigo-600 font-bold underline inline-flex items-center gap-0.5">resend.com/domains <ExternalLink className="w-2.5 h-2.5" /></a> y configura la variable <code className="bg-white px-1 py-0.5 rounded border font-mono">RESEND_FROM_EMAIL</code>.
+                </div>
+              )}
 
               {!resendStatus?.configured && (
                 <div className="pt-2 border-t border-slate-200/60 text-slate-600 text-[11px] leading-relaxed">
@@ -555,11 +576,10 @@ export default function AdminSettings() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
               <div className="flex items-start gap-3">
                 <div
-                  className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${
-                    reminderEnabled
+                  className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${reminderEnabled
                       ? 'bg-amber-100 text-amber-700'
                       : 'bg-slate-100 text-slate-400'
-                  }`}
+                    }`}
                 >
                   <Bell className="w-5 h-5" />
                 </div>
@@ -597,18 +617,16 @@ export default function AdminSettings() {
                 <button
                   type="button"
                   onClick={() => setReminderChannel('both')}
-                  className={`p-3.5 rounded-2xl border text-left flex items-start gap-3 transition-all ${
-                    reminderChannel === 'both'
+                  className={`p-3.5 rounded-2xl border text-left flex items-start gap-3 transition-all ${reminderChannel === 'both'
                       ? 'border-indigo-600 bg-indigo-50/60 ring-2 ring-indigo-600/20'
                       : 'border-slate-200 hover:border-slate-300 bg-white'
-                  }`}
+                    }`}
                 >
                   <div
-                    className={`p-2 rounded-xl shrink-0 ${
-                      reminderChannel === 'both'
+                    className={`p-2 rounded-xl shrink-0 ${reminderChannel === 'both'
                         ? 'bg-indigo-600 text-white'
                         : 'bg-slate-100 text-slate-600'
-                    }`}
+                      }`}
                   >
                     <Layers className="w-4 h-4" />
                   </div>
@@ -628,18 +646,16 @@ export default function AdminSettings() {
                 <button
                   type="button"
                   onClick={() => setReminderChannel('app')}
-                  className={`p-3.5 rounded-2xl border text-left flex items-start gap-3 transition-all ${
-                    reminderChannel === 'app'
+                  className={`p-3.5 rounded-2xl border text-left flex items-start gap-3 transition-all ${reminderChannel === 'app'
                       ? 'border-indigo-600 bg-indigo-50/60 ring-2 ring-indigo-600/20'
                       : 'border-slate-200 hover:border-slate-300 bg-white'
-                  }`}
+                    }`}
                 >
                   <div
-                    className={`p-2 rounded-xl shrink-0 ${
-                      reminderChannel === 'app'
+                    className={`p-2 rounded-xl shrink-0 ${reminderChannel === 'app'
                         ? 'bg-indigo-600 text-white'
                         : 'bg-slate-100 text-slate-600'
-                    }`}
+                      }`}
                   >
                     <Smartphone className="w-4 h-4" />
                   </div>
@@ -654,18 +670,16 @@ export default function AdminSettings() {
                 <button
                   type="button"
                   onClick={() => setReminderChannel('email')}
-                  className={`p-3.5 rounded-2xl border text-left flex items-start gap-3 transition-all ${
-                    reminderChannel === 'email'
+                  className={`p-3.5 rounded-2xl border text-left flex items-start gap-3 transition-all ${reminderChannel === 'email'
                       ? 'border-indigo-600 bg-indigo-50/60 ring-2 ring-indigo-600/20'
                       : 'border-slate-200 hover:border-slate-300 bg-white'
-                  }`}
+                    }`}
                 >
                   <div
-                    className={`p-2 rounded-xl shrink-0 ${
-                      reminderChannel === 'email'
+                    className={`p-2 rounded-xl shrink-0 ${reminderChannel === 'email'
                         ? 'bg-indigo-600 text-white'
                         : 'bg-slate-100 text-slate-600'
-                    }`}
+                      }`}
                   >
                     <Mail className="w-4 h-4" />
                   </div>
@@ -709,11 +723,10 @@ export default function AdminSettings() {
                       key={preset.hours}
                       type="button"
                       onClick={() => setReminderHoursBefore(preset.hours)}
-                      className={`p-3 rounded-2xl border text-center transition-all relative ${
-                        isSelected
+                      className={`p-3 rounded-2xl border text-center transition-all relative ${isSelected
                           ? 'border-indigo-600 bg-indigo-50/80 ring-2 ring-indigo-600/20 text-indigo-900'
                           : 'border-slate-200 hover:border-slate-300 bg-slate-50/50 text-slate-700'
-                      }`}
+                        }`}
                     >
                       {preset.recommended && (
                         <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-indigo-600 text-white shadow-xs">
@@ -905,22 +918,20 @@ export default function AdminSettings() {
                 <button
                   type="button"
                   onClick={() => setPreviewTab('email')}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
-                    previewTab === 'email'
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${previewTab === 'email'
                       ? 'bg-white text-slate-900 shadow-xs'
                       : 'text-slate-300 hover:text-white'
-                  }`}
+                    }`}
                 >
                   <Mail className="w-3.5 h-3.5" /> Correo Electrónico (Resend)
                 </button>
                 <button
                   type="button"
                   onClick={() => setPreviewTab('app')}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
-                    previewTab === 'app'
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${previewTab === 'app'
                       ? 'bg-white text-slate-900 shadow-xs'
                       : 'text-slate-300 hover:text-white'
-                  }`}
+                    }`}
                 >
                   <Smartphone className="w-3.5 h-3.5" /> Campana en la App
                 </button>
