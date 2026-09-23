@@ -2,12 +2,12 @@ import { initializeApp, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 
 const firebaseConfig = {
-    apiKey: "REDACTED_FIREBASE_API_KEY",
-    authDomain: "app-autoescuelas.firebaseapp.com",
-    projectId: "app-autoescuelas",
-    storageBucket: "app-autoescuelas.firebasestorage.app",
-    messagingSenderId: "1052256648851",
-    appId: "1:1052256648851:web:be554d44e88ae94da5d766"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 if (!getApps().length) {
