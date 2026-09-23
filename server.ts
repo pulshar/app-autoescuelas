@@ -24,9 +24,6 @@ import {
   getSenderEmail,
 } from './server/email.ts';
 
-// Initialize SQLite database and tables
-initDatabase();
-
 function formatToDisplayDate(dateStr?: string | null): string {
   if (!dateStr) return '';
   const match = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
@@ -34,6 +31,8 @@ function formatToDisplayDate(dateStr?: string | null): string {
 }
 
 async function startServer() {
+  await initDatabase();
+
   const app = express();
   const PORT = 3000;
 
@@ -45,7 +44,7 @@ async function startServer() {
   // ==========================================
 
   // Register
-  app.post('/api/auth/register', (req, res) => {
+  app.post('/api/auth/register', async (req, res) => {
     try {
       const { email, password, name, phone } = req.body;
       if (!email || !password || !name) {
@@ -58,7 +57,7 @@ async function startServer() {
       }
 
       // Check existing email
-      const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email.trim().toLowerCase());
+      const existing = await db.prepare('SELECT id FROM users WHERE email = ?').get(email.trim().toLowerCase());
       if (existing) {
         res.status(409).json({ error: 'Ya existe una cuenta con este correo electrónico.' });
         return;
@@ -68,7 +67,7 @@ async function startServer() {
       const userId = 'usr_' + crypto.randomUUID().slice(0, 8);
       const now = new Date().toISOString();
 
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO users (id, email, password_hash, salt, name, phone, role, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, 'student', ?, ?)
       `).run(userId, email.trim().toLowerCase(), hash, salt, name.trim(), phone?.trim() || null, now, now);
@@ -85,7 +84,7 @@ async function startServer() {
       const token = createToken({ id: user.id, email: user.email, name: user.name, role: user.role });
 
       // Audit log
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
         VALUES (?, ?, ?, ?, 'Registro de usuario', 'user', ?, 'Nuevo alumno registrado en la plataforma', ?)
       `).run(crypto.randomUUID(), user.id, user.name, user.email, user.id, now);
@@ -98,7 +97,7 @@ async function startServer() {
   });
 
   // Login
-  app.post('/api/auth/login', (req, res) => {
+  app.post('/api/auth/login', async (req, res) => {
     try {
       const { email, password } = req.body;
       if (!email || !password) {
@@ -106,7 +105,7 @@ async function startServer() {
         return;
       }
 
-      const row = db.prepare('SELECT * FROM users WHERE email = ?').get(email.trim().toLowerCase()) as any;
+      const row = (await db.prepare('SELECT * FROM users WHERE email = ?').get(email.trim().toLowerCase())) as any;
       if (!row || !row.password_hash || !row.salt) {
         res.status(401).json({ error: 'Credenciales incorrectas o usuario no registrado.' });
         return;
@@ -136,8 +135,8 @@ async function startServer() {
     }
   });
 
-  // Google OAuth / One-tap sign in (Merges by email to prevent duplicate accounts!)
-  app.post('/api/auth/google', (req, res) => {
+  // Google OAuth / Firebase sign in
+  app.post('/api/auth/google', async (req, res) => {
     try {
       const { email, name, googleId, avatarUrl } = req.body;
       if (!email || !name) {
@@ -148,27 +147,27 @@ async function startServer() {
       const normalizedEmail = email.trim().toLowerCase();
       const now = new Date().toISOString();
 
-      let row = db.prepare('SELECT * FROM users WHERE email = ?').get(normalizedEmail) as any;
+      let row = (await db.prepare('SELECT * FROM users WHERE email = ?').get(normalizedEmail)) as any;
 
       if (row) {
-        // Account exists! Merge Google ID and update avatar if not present
-        db.prepare(`
+        // Account exists - merge Google ID and avatar if needed
+        await db.prepare(`
           UPDATE users SET google_id = COALESCE(google_id, ?), avatar_url = COALESCE(avatar_url, ?), updated_at = ?
           WHERE id = ?
         `).run(googleId || 'g_' + normalizedEmail, avatarUrl || null, now, row.id);
-        row = db.prepare('SELECT * FROM users WHERE id = ?').get(row.id) as any;
+        row = (await db.prepare('SELECT * FROM users WHERE id = ?').get(row.id)) as any;
       } else {
         // Create new student account via Google
-        const newUserId = 'usr_g_' + crypto.randomUUID().slice(0, 8);
-        db.prepare(`
+        const newUserId = googleId ? googleId : 'usr_g_' + crypto.randomUUID().slice(0, 8);
+        await db.prepare(`
           INSERT INTO users (id, email, name, avatar_url, role, google_id, created_at, updated_at)
           VALUES (?, ?, ?, ?, 'student', ?, ?, ?)
         `).run(newUserId, normalizedEmail, name.trim(), avatarUrl || null, googleId || 'g_' + normalizedEmail, now, now);
 
-        row = db.prepare('SELECT * FROM users WHERE id = ?').get(newUserId) as any;
+        row = (await db.prepare('SELECT * FROM users WHERE id = ?').get(newUserId)) as any;
 
         // Audit log
-        db.prepare(`
+        await db.prepare(`
           INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
           VALUES (?, ?, ?, ?, 'Registro con Google', 'user', ?, 'Nuevo usuario registrado vía Google', ?)
         `).run(crypto.randomUUID(), row.id, row.name, row.email, row.id, now);
@@ -193,9 +192,9 @@ async function startServer() {
   });
 
   // Current User Info
-  app.get('/api/auth/me', requireAuth, (req: AuthenticatedRequest, res) => {
+  app.get('/api/auth/me', requireAuth, async (req: AuthenticatedRequest, res) => {
     try {
-      const row = db.prepare('SELECT id, email, name, phone, avatar_url, role, created_at FROM users WHERE id = ?').get(req.user!.id) as any;
+      const row = (await db.prepare('SELECT id, email, name, phone, avatar_url, role, created_at FROM users WHERE id = ?').get(req.user!.id)) as any;
       if (!row) {
         res.status(404).json({ error: 'Usuario no encontrado.' });
         return;
@@ -207,7 +206,7 @@ async function startServer() {
   });
 
   // Update Profile
-  app.put('/api/auth/profile', requireAuth, (req: AuthenticatedRequest, res) => {
+  app.put('/api/auth/profile', requireAuth, async (req: AuthenticatedRequest, res) => {
     try {
       const { name, phone, avatar_url } = req.body;
       if (!name) {
@@ -215,12 +214,12 @@ async function startServer() {
         return;
       }
       const now = new Date().toISOString();
-      db.prepare(`
+      await db.prepare(`
         UPDATE users SET name = ?, phone = ?, avatar_url = ?, updated_at = ?
         WHERE id = ?
       `).run(name.trim(), phone?.trim() || null, avatar_url || null, now, req.user!.id);
 
-      const row = db.prepare('SELECT id, email, name, phone, avatar_url, role, created_at FROM users WHERE id = ?').get(req.user!.id) as any;
+      const row = (await db.prepare('SELECT id, email, name, phone, avatar_url, role, created_at FROM users WHERE id = ?').get(req.user!.id)) as any;
       res.json({ user: row });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
@@ -228,31 +227,30 @@ async function startServer() {
   });
 
   // Forgot Password Request
-  app.post('/api/auth/forgot-password', (req, res) => {
+  app.post('/api/auth/forgot-password', async (req, res) => {
     try {
       const { email } = req.body;
       if (!email) {
         res.status(400).json({ error: 'Introduce tu email.' });
         return;
       }
-      const user = db.prepare('SELECT id, email, name FROM users WHERE email = ?').get(email.trim().toLowerCase()) as any;
+      const user = (await db.prepare('SELECT id, email, name FROM users WHERE email = ?').get(email.trim().toLowerCase())) as any;
       if (!user) {
-        // Return success message anyway for security so as not to leak registered emails
         res.json({ message: 'Si el correo está registrado, se han enviado las instrucciones de recuperación.' });
         return;
       }
 
       const token = 'rst_' + crypto.randomBytes(20).toString('hex');
-      const expiresAt = new Date(Date.now() + 3600 * 1000).toISOString(); // 1 hour
+      const expiresAt = new Date(Date.now() + 3600 * 1000).toISOString();
 
-      db.prepare(`
+      await db.prepare(`
         INSERT OR REPLACE INTO password_resets (token, email, expires_at, used)
         VALUES (?, ?, ?, 0)
       `).run(token, user.email, expiresAt);
 
       res.json({
         message: 'Código de recuperación generado.',
-        resetToken: token, // Returned for easy in-app testing
+        resetToken: token,
       });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
@@ -260,7 +258,7 @@ async function startServer() {
   });
 
   // Reset Password Execution
-  app.post('/api/auth/reset-password', (req, res) => {
+  app.post('/api/auth/reset-password', async (req, res) => {
     try {
       const { token, newPassword } = req.body;
       if (!token || !newPassword) {
@@ -272,7 +270,7 @@ async function startServer() {
         return;
       }
 
-      const reset = db.prepare('SELECT * FROM password_resets WHERE token = ? AND used = 0').get(token) as any;
+      const reset = (await db.prepare('SELECT * FROM password_resets WHERE token = ? AND used = 0').get(token)) as any;
       if (!reset) {
         res.status(400).json({ error: 'Token de recuperación inválido o ya utilizado.' });
         return;
@@ -286,12 +284,12 @@ async function startServer() {
       const { hash, salt } = hashPassword(newPassword);
       const now = new Date().toISOString();
 
-      db.prepare(`
+      await db.prepare(`
         UPDATE users SET password_hash = ?, salt = ?, updated_at = ?
         WHERE email = ?
       `).run(hash, salt, now, reset.email);
 
-      db.prepare('UPDATE password_resets SET used = 1 WHERE token = ?').run(token);
+      await db.prepare('UPDATE password_resets SET used = 1 WHERE token = ?').run(token);
 
       res.json({ message: 'Contraseña actualizada correctamente. Ya puedes iniciar sesión.' });
     } catch (err: any) {
@@ -303,7 +301,7 @@ async function startServer() {
   // TEACHERS MANAGEMENT
   // ==========================================
 
-  app.get('/api/teachers', (req: AuthenticatedRequest, res) => {
+  app.get('/api/teachers', async (req: AuthenticatedRequest, res) => {
     try {
       const isAdmin = req.user?.role === 'admin';
       let query = 'SELECT * FROM teachers';
@@ -311,10 +309,10 @@ async function startServer() {
         query += ' WHERE is_active = 1';
       }
       query += ' ORDER BY is_active DESC, name ASC';
-      const rows = db.prepare(query).all() as any[];
+      const rows = (await db.prepare(query).all()) as any[];
       const teachers = rows.map(t => ({
         ...t,
-        is_active: Boolean(t.is_active),
+        is_active: Boolean(Number(t.is_active)),
       }));
       res.json({ teachers });
     } catch (err: any) {
@@ -322,7 +320,7 @@ async function startServer() {
     }
   });
 
-  app.post('/api/teachers', requireAdmin, (req: AuthenticatedRequest, res) => {
+  app.post('/api/teachers', requireAdmin, async (req: AuthenticatedRequest, res) => {
     try {
       const { name, last_name, email, phone, photo_url, notes, is_active } = req.body;
       if (!name || !last_name) {
@@ -334,13 +332,13 @@ async function startServer() {
       const now = new Date().toISOString();
       const activeInt = is_active === false ? 0 : 1;
 
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO teachers (id, name, last_name, email, phone, photo_url, is_active, notes, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).run(id, name.trim(), last_name.trim(), email?.trim() || null, phone?.trim() || null, photo_url?.trim() || null, activeInt, notes?.trim() || null, now, now);
 
       // Audit
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
         VALUES (?, ?, ?, ?, 'Creación de profesor', 'teacher', ?, ?, ?)
       `).run(
@@ -353,28 +351,28 @@ async function startServer() {
         now
       );
 
-      const teacher = db.prepare('SELECT * FROM teachers WHERE id = ?').get(id) as any;
-      res.status(201).json({ teacher: { ...teacher, is_active: Boolean(teacher.is_active) } });
+      const teacher = (await db.prepare('SELECT * FROM teachers WHERE id = ?').get(id)) as any;
+      res.status(201).json({ teacher: { ...teacher, is_active: Boolean(Number(teacher.is_active)) } });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
   });
 
-  app.put('/api/teachers/:id', requireAdmin, (req: AuthenticatedRequest, res) => {
+  app.put('/api/teachers/:id', requireAdmin, async (req: AuthenticatedRequest, res) => {
     try {
       const { id } = req.params;
       const { name, last_name, email, phone, photo_url, notes, is_active } = req.body;
 
-      const existing = db.prepare('SELECT * FROM teachers WHERE id = ?').get(id) as any;
+      const existing = (await db.prepare('SELECT * FROM teachers WHERE id = ?').get(id)) as any;
       if (!existing) {
         res.status(404).json({ error: 'Profesor no encontrado.' });
         return;
       }
 
       const now = new Date().toISOString();
-      const activeInt = is_active !== undefined ? (is_active ? 1 : 0) : existing.is_active;
+      const activeInt = is_active !== undefined ? (is_active ? 1 : 0) : Number(existing.is_active);
 
-      db.prepare(`
+      await db.prepare(`
         UPDATE teachers SET
           name = COALESCE(?, name),
           last_name = COALESCE(?, last_name),
@@ -398,7 +396,7 @@ async function startServer() {
       );
 
       // Audit
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
         VALUES (?, ?, ?, ?, 'Modificación de profesor', 'teacher', ?, ?, ?)
       `).run(
@@ -411,31 +409,31 @@ async function startServer() {
         now
       );
 
-      const teacher = db.prepare('SELECT * FROM teachers WHERE id = ?').get(id) as any;
-      res.json({ teacher: { ...teacher, is_active: Boolean(teacher.is_active) } });
+      const teacher = (await db.prepare('SELECT * FROM teachers WHERE id = ?').get(id)) as any;
+      res.json({ teacher: { ...teacher, is_active: Boolean(Number(teacher.is_active)) } });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
   });
 
   // Delete/Deactivate Teacher
-  // Rule 6 & 29: Do not physically delete teachers with historical bookings; deactivate them instead!
-  app.delete('/api/teachers/:id', requireAdmin, (req: AuthenticatedRequest, res) => {
+  app.delete('/api/teachers/:id', requireAdmin, async (req: AuthenticatedRequest, res) => {
     try {
       const { id } = req.params;
-      const teacher = db.prepare('SELECT * FROM teachers WHERE id = ?').get(id) as any;
+      const teacher = (await db.prepare('SELECT * FROM teachers WHERE id = ?').get(id)) as any;
       if (!teacher) {
         res.status(404).json({ error: 'Profesor no encontrado.' });
         return;
       }
 
-      const bookingCount = db.prepare('SELECT COUNT(*) as count FROM bookings WHERE teacher_id = ?').get(id) as any;
+      const bookingCount = (await db.prepare('SELECT COUNT(*) as count FROM bookings WHERE teacher_id = ?').get(id)) as any;
       const now = new Date().toISOString();
+      const count = Number(bookingCount?.count || 0);
 
-      if (bookingCount && bookingCount.count > 0) {
+      if (count > 0) {
         // Deactivate to preserve historical bookings
-        db.prepare('UPDATE teachers SET is_active = 0, updated_at = ? WHERE id = ?').run(now, id);
-        db.prepare(`
+        await db.prepare('UPDATE teachers SET is_active = 0, updated_at = ? WHERE id = ?').run(now, id);
+        await db.prepare(`
           INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
           VALUES (?, ?, ?, ?, 'Desactivación de profesor (Histórico)', 'teacher', ?, ?, ?)
         `).run(
@@ -444,14 +442,13 @@ async function startServer() {
           req.user!.name,
           req.user!.email,
           id,
-          `Profesor ${teacher.name} ${teacher.last_name} desactivado (conservando ${bookingCount.count} reservas históricas).`,
+          `Profesor ${teacher.name} ${teacher.last_name} desactivado (conservando ${count} reservas históricas).`,
           now
         );
         res.json({ message: 'El profesor tiene reservas registradas. Ha sido marcado como inactivo para proteger el historial.' });
       } else {
-        // Safe to hard delete if no bookings
-        db.prepare('DELETE FROM teachers WHERE id = ?').run(id);
-        db.prepare(`
+        await db.prepare('DELETE FROM teachers WHERE id = ?').run(id);
+        await db.prepare(`
           INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
           VALUES (?, ?, ?, ?, 'Eliminación física de profesor', 'teacher', ?, ?, ?)
         `).run(
@@ -474,7 +471,7 @@ async function startServer() {
   // SCHEDULES & WEEKLY HOURS
   // ==========================================
 
-  app.get('/api/schedules', (req, res) => {
+  app.get('/api/schedules', async (req, res) => {
     try {
       const { teacher_id } = req.query;
       let query = `
@@ -489,22 +486,23 @@ async function startServer() {
       }
       query += ' ORDER BY s.start_date DESC';
 
-      const schedules = db.prepare(query).all(...args) as any[];
+      const schedules = (await db.prepare(query).all(...args)) as any[];
 
-      // Attach weekly hours
-      const result = schedules.map(s => {
-        const weekly_hours = db.prepare(`
-          SELECT * FROM schedule_weekly_hours
-          WHERE schedule_id = ?
-          ORDER BY day_of_week ASC, start_time ASC
-        `).all(s.id) as any[];
-        return {
-          ...s,
-          teacher_name: `${s.teacher_name} ${s.teacher_last_name}`,
-          is_active: Boolean(s.is_active),
-          weekly_hours,
-        };
-      });
+      const result = await Promise.all(
+        schedules.map(async s => {
+          const weekly_hours = (await db.prepare(`
+            SELECT * FROM schedule_weekly_hours
+            WHERE schedule_id = ?
+            ORDER BY day_of_week ASC, start_time ASC
+          `).all(s.id)) as any[];
+          return {
+            ...s,
+            teacher_name: `${s.teacher_name} ${s.teacher_last_name}`,
+            is_active: Boolean(Number(s.is_active)),
+            weekly_hours,
+          };
+        })
+      );
 
       res.json({ schedules: result });
     } catch (err: any) {
@@ -512,7 +510,7 @@ async function startServer() {
     }
   });
 
-  app.post('/api/schedules', requireAdmin, (req: AuthenticatedRequest, res) => {
+  app.post('/api/schedules', requireAdmin, async (req: AuthenticatedRequest, res) => {
     try {
       const { teacher_id, name, start_date, end_date, is_active, timezone, weekly_hours } = req.body;
       if (!teacher_id || !name || !start_date) {
@@ -524,24 +522,23 @@ async function startServer() {
       const now = new Date().toISOString();
       const activeInt = is_active === false ? 0 : 1;
 
-      db.exec('BEGIN IMMEDIATE;');
+      await db.exec('BEGIN;');
       try {
-        db.prepare(`
+        await db.prepare(`
           INSERT INTO schedules (id, teacher_id, name, start_date, end_date, is_active, timezone, created_at, updated_at)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `).run(id, teacher_id, name.trim(), start_date, end_date || null, activeInt, timezone || 'Europe/Madrid', now, now);
 
         if (Array.isArray(weekly_hours)) {
-          const insertHour = db.prepare(`
-            INSERT INTO schedule_weekly_hours (id, schedule_id, day_of_week, start_time, end_time)
-            VALUES (?, ?, ?, ?, ?)
-          `);
           for (const wh of weekly_hours) {
-            insertHour.run(crypto.randomUUID(), id, Number(wh.day_of_week), wh.start_time, wh.end_time);
+            await db.prepare(`
+              INSERT INTO schedule_weekly_hours (id, schedule_id, day_of_week, start_time, end_time)
+              VALUES (?, ?, ?, ?, ?)
+            `).run(crypto.randomUUID(), id, Number(wh.day_of_week), wh.start_time, wh.end_time);
           }
         }
 
-        db.prepare(`
+        await db.prepare(`
           INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
           VALUES (?, ?, ?, ?, 'Creación de agenda', 'schedule', ?, ?, ?)
         `).run(
@@ -554,10 +551,10 @@ async function startServer() {
           now
         );
 
-        db.exec('COMMIT;');
+        await db.exec('COMMIT;');
         res.status(201).json({ id, message: 'Agenda creada con éxito.' });
       } catch (e) {
-        db.exec('ROLLBACK;');
+        await db.exec('ROLLBACK;');
         throw e;
       }
     } catch (err: any) {
@@ -565,23 +562,23 @@ async function startServer() {
     }
   });
 
-  app.put('/api/schedules/:id', requireAdmin, (req: AuthenticatedRequest, res) => {
+  app.put('/api/schedules/:id', requireAdmin, async (req: AuthenticatedRequest, res) => {
     try {
       const { id } = req.params;
       const { name, start_date, end_date, is_active, timezone, weekly_hours } = req.body;
       const now = new Date().toISOString();
 
-      db.exec('BEGIN IMMEDIATE;');
+      await db.exec('BEGIN;');
       try {
-        const existing = db.prepare('SELECT * FROM schedules WHERE id = ?').get(id) as any;
+        const existing = (await db.prepare('SELECT * FROM schedules WHERE id = ?').get(id)) as any;
         if (!existing) {
           res.status(404).json({ error: 'Agenda no encontrada.' });
           return;
         }
 
-        const activeInt = is_active !== undefined ? (is_active ? 1 : 0) : existing.is_active;
+        const activeInt = is_active !== undefined ? (is_active ? 1 : 0) : Number(existing.is_active);
 
-        db.prepare(`
+        await db.prepare(`
           UPDATE schedules SET
             name = COALESCE(?, name),
             start_date = COALESCE(?, start_date),
@@ -601,17 +598,16 @@ async function startServer() {
         );
 
         if (Array.isArray(weekly_hours)) {
-          db.prepare('DELETE FROM schedule_weekly_hours WHERE schedule_id = ?').run(id);
-          const insertHour = db.prepare(`
-            INSERT INTO schedule_weekly_hours (id, schedule_id, day_of_week, start_time, end_time)
-            VALUES (?, ?, ?, ?, ?)
-          `);
+          await db.prepare('DELETE FROM schedule_weekly_hours WHERE schedule_id = ?').run(id);
           for (const wh of weekly_hours) {
-            insertHour.run(crypto.randomUUID(), id, Number(wh.day_of_week), wh.start_time, wh.end_time);
+            await db.prepare(`
+              INSERT INTO schedule_weekly_hours (id, schedule_id, day_of_week, start_time, end_time)
+              VALUES (?, ?, ?, ?, ?)
+            `).run(crypto.randomUUID(), id, Number(wh.day_of_week), wh.start_time, wh.end_time);
           }
         }
 
-        db.prepare(`
+        await db.prepare(`
           INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
           VALUES (?, ?, ?, ?, 'Modificación de agenda', 'schedule', ?, ?, ?)
         `).run(
@@ -624,10 +620,10 @@ async function startServer() {
           now
         );
 
-        db.exec('COMMIT;');
+        await db.exec('COMMIT;');
         res.json({ message: 'Agenda actualizada con éxito.' });
       } catch (e) {
-        db.exec('ROLLBACK;');
+        await db.exec('ROLLBACK;');
         throw e;
       }
     } catch (err: any) {
@@ -635,11 +631,11 @@ async function startServer() {
     }
   });
 
-  app.delete('/api/schedules/:id', requireAdmin, (req: AuthenticatedRequest, res) => {
+  app.delete('/api/schedules/:id', requireAdmin, async (req: AuthenticatedRequest, res) => {
     try {
       const { id } = req.params;
-      db.prepare('DELETE FROM schedules WHERE id = ?').run(id);
-      db.prepare(`
+      await db.prepare('DELETE FROM schedules WHERE id = ?').run(id);
+      await db.prepare(`
         INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
         VALUES (?, ?, ?, ?, 'Eliminación de agenda', 'schedule', ?, 'Agenda eliminada.', ?)
       `).run(crypto.randomUUID(), req.user!.id, req.user!.name, req.user!.email, id, new Date().toISOString());
@@ -653,7 +649,7 @@ async function startServer() {
   // BLOCKS & EXCEPTIONS
   // ==========================================
 
-  app.get('/api/blocks', (req, res) => {
+  app.get('/api/blocks', async (req, res) => {
     try {
       const { date, teacher_id } = req.query;
       let query = `
@@ -676,11 +672,11 @@ async function startServer() {
       }
       query += ' ORDER BY b.date DESC, b.created_at DESC';
 
-      const rows = db.prepare(query).all(...args) as any[];
+      const rows = (await db.prepare(query).all(...args)) as any[];
       const blocks = rows.map(b => ({
         ...b,
         teacher_name: b.teacher_name ? `${b.teacher_name} ${b.teacher_last_name}` : 'Todos los profesores',
-        is_full_day: Boolean(b.is_full_day),
+        is_full_day: Boolean(Number(b.is_full_day)),
       }));
       res.json({ blocks });
     } catch (err: any) {
@@ -688,7 +684,7 @@ async function startServer() {
     }
   });
 
-  app.post('/api/blocks', requireAdmin, (req: AuthenticatedRequest, res) => {
+  app.post('/api/blocks', requireAdmin, async (req: AuthenticatedRequest, res) => {
     try {
       const { teacher_id, date, is_full_day, start_time, end_time, reason } = req.body;
       if (!date || !reason) {
@@ -704,7 +700,7 @@ async function startServer() {
       const id = 'blk_' + crypto.randomUUID().slice(0, 8);
       const now = new Date().toISOString();
 
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO schedule_blocks (id, teacher_id, date, is_full_day, start_time, end_time, reason, created_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `).run(
@@ -719,7 +715,7 @@ async function startServer() {
       );
 
       // Audit
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
         VALUES (?, ?, ?, ?, 'Creación de bloqueo/excepción', 'block', ?, ?, ?)
       `).run(
@@ -738,11 +734,11 @@ async function startServer() {
     }
   });
 
-  app.delete('/api/blocks/:id', requireAdmin, (req: AuthenticatedRequest, res) => {
+  app.delete('/api/blocks/:id', requireAdmin, async (req: AuthenticatedRequest, res) => {
     try {
       const { id } = req.params;
-      db.prepare('DELETE FROM schedule_blocks WHERE id = ?').run(id);
-      db.prepare(`
+      await db.prepare('DELETE FROM schedule_blocks WHERE id = ?').run(id);
+      await db.prepare(`
         INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
         VALUES (?, ?, ?, ?, 'Eliminación de bloqueo', 'block', ?, 'Bloqueo eliminado.', ?)
       `).run(crypto.randomUUID(), req.user!.id, req.user!.name, req.user!.email, id, new Date().toISOString());
@@ -756,7 +752,7 @@ async function startServer() {
   // SLOTS & CALENDAR AVAILABILITY
   // ==========================================
 
-  app.get('/api/slots', (req: AuthenticatedRequest, res) => {
+  app.get('/api/slots', async (req: AuthenticatedRequest, res) => {
     try {
       const { date, teacher_id } = req.query;
       if (!date || typeof date !== 'string') {
@@ -765,7 +761,7 @@ async function startServer() {
       }
 
       const studentId = req.user?.role === 'student' ? req.user.id : undefined;
-      const slots = generateSlotsForDate({
+      const slots = await generateSlotsForDate({
         teacherId: typeof teacher_id === 'string' && teacher_id ? teacher_id : undefined,
         date,
         studentId,
@@ -777,8 +773,7 @@ async function startServer() {
     }
   });
 
-  // Calendar summary for a month (fast badge counts for calendar days)
-  app.get('/api/calendar-availability', (req: AuthenticatedRequest, res) => {
+  app.get('/api/calendar-availability', async (req: AuthenticatedRequest, res) => {
     try {
       const { year, month, teacher_id } = req.query;
       if (!year || !month) {
@@ -786,7 +781,7 @@ async function startServer() {
         return;
       }
       const y = Number(year);
-      const m = Number(month); // 1-12
+      const m = Number(month);
       const daysInMonth = new Date(y, m, 0).getDate();
       const availability: Record<string, { total: number; available: number }> = {};
       const teacherId = typeof teacher_id === 'string' && teacher_id ? teacher_id : undefined;
@@ -794,7 +789,7 @@ async function startServer() {
 
       for (let day = 1; day <= daysInMonth; day++) {
         const dateStr = `${y}-${m.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-        const slots = generateSlotsForDate({ teacherId, date: dateStr, studentId });
+        const slots = await generateSlotsForDate({ teacherId, date: dateStr, studentId });
         const available = slots.filter(s => s.is_available).length;
         availability[dateStr] = {
           total: slots.length,
@@ -812,7 +807,7 @@ async function startServer() {
   // BOOKINGS & RESERVATIONS
   // ==========================================
 
-  app.get('/api/bookings', requireAuth, (req: AuthenticatedRequest, res) => {
+  app.get('/api/bookings', requireAuth, async (req: AuthenticatedRequest, res) => {
     try {
       const isAdmin = req.user!.role === 'admin';
       const { student_id, teacher_id, status, date, start_date, end_date } = req.query;
@@ -830,11 +825,9 @@ async function startServer() {
       const args: any[] = [];
 
       if (!isAdmin) {
-        // Students can ONLY see their own bookings! (Security rule 22)
         conditions.push('b.student_id = ?');
         args.push(req.user!.id);
       } else {
-        // Admin filters
         if (student_id) {
           conditions.push('b.student_id = ?');
           args.push(student_id);
@@ -868,7 +861,7 @@ async function startServer() {
 
       query += ' ORDER BY b.date DESC, b.start_time DESC';
 
-      const rows = db.prepare(query).all(...args) as any[];
+      const rows = (await db.prepare(query).all(...args)) as any[];
       const bookings = rows.map(b => ({
         ...b,
         teacher_name: `${b.teacher_name} ${b.teacher_last_name}`,
@@ -880,13 +873,11 @@ async function startServer() {
     }
   });
 
-  // Create Booking (Student or Admin manual booking)
-  app.post('/api/bookings', requireAuth, (req: AuthenticatedRequest, res) => {
+  app.post('/api/bookings', requireAuth, async (req: AuthenticatedRequest, res) => {
     try {
       const { teacher_id, date, start_time, notes, student_id } = req.body;
       const isAdmin = req.user!.role === 'admin';
 
-      // Determine studentId
       let targetStudentId = req.user!.id;
       if (isAdmin && student_id) {
         targetStudentId = student_id;
@@ -897,7 +888,7 @@ async function startServer() {
         return;
       }
 
-      const booking = createBookingAtomic({
+      const booking = await createBookingAtomic({
         studentId: targetStudentId,
         teacherId: teacher_id,
         date,
@@ -914,28 +905,26 @@ async function startServer() {
       res.status(201).json({ booking, message: '¡Clase reservada con éxito!' });
     } catch (err: any) {
       console.error('Booking creation error:', err);
-      // Clean error messaging (e.g. 409 conflict vs 400 bad request)
       const message = err.message || 'Error al procesar la reserva.';
       const status = message.includes('ya ha sido reservado') || message.includes('Ya tienes otra clase') ? 409 : 400;
       res.status(status).json({ error: message });
     }
   });
 
-  // Cancel Booking
-  app.post('/api/bookings/:id/cancel', requireAuth, (req: AuthenticatedRequest, res) => {
+  app.post('/api/bookings/:id/cancel', requireAuth, async (req: AuthenticatedRequest, res) => {
     try {
       const { id } = req.params;
       const { reason } = req.body;
       const isAdmin = req.user!.role === 'admin';
 
-      const booking = db.prepare(`
+      const booking = (await db.prepare(`
         SELECT b.*, u.name as student_name, u.email as student_email,
                t.name as teacher_name, t.last_name as teacher_last_name
         FROM bookings b
         JOIN users u ON b.student_id = u.id
         JOIN teachers t ON b.teacher_id = t.id
         WHERE b.id = ?
-      `).get(id) as any;
+      `).get(id)) as any;
 
       if (!booking) {
         res.status(404).json({ error: 'Reserva no encontrada.' });
@@ -952,8 +941,7 @@ async function startServer() {
         return;
       }
 
-      // Check lead time if cancelled by student (Requirement 13)
-      const settings = getAppSettings();
+      const settings = await getAppSettings();
       if (!isAdmin) {
         const [year, month, day] = booking.date.split('-').map(Number);
         const [hour, min] = booking.start_time.split(':').map(Number);
@@ -972,13 +960,13 @@ async function startServer() {
       const newStatus = isAdmin ? 'Cancelada por administrador' : 'Cancelada por alumno';
       const now = new Date().toISOString();
 
-      db.prepare(`
+      await db.prepare(`
         UPDATE bookings SET status = ?, notes = COALESCE(?, notes), updated_at = ?
         WHERE id = ?
       `).run(newStatus, reason ? `Cancelación: ${reason}` : null, now, id);
 
       // Audit
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
         VALUES (?, ?, ?, ?, 'Cancelación de reserva', 'booking', ?, ?, ?)
       `).run(
@@ -992,7 +980,7 @@ async function startServer() {
       );
 
       // Notification to Student
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO notifications (id, user_id, type, title, message, read, created_at)
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `).run(
@@ -1011,8 +999,7 @@ async function startServer() {
     }
   });
 
-  // Update Booking Status (Admin only)
-  app.put('/api/bookings/:id/status', requireAdmin, (req: AuthenticatedRequest, res) => {
+  app.put('/api/bookings/:id/status', requireAdmin, async (req: AuthenticatedRequest, res) => {
     try {
       const { id } = req.params;
       const { status, notes } = req.body;
@@ -1024,15 +1011,14 @@ async function startServer() {
       }
 
       const now = new Date().toISOString();
-      db.prepare(`
+      await db.prepare(`
         UPDATE bookings SET status = ?, notes = COALESCE(?, notes), updated_at = ?
         WHERE id = ?
       `).run(status, notes || null, now, id);
 
-      const booking = db.prepare('SELECT student_id, date, start_time FROM bookings WHERE id = ?').get(id) as any;
+      const booking = (await db.prepare('SELECT student_id, date, start_time FROM bookings WHERE id = ?').get(id)) as any;
 
-      // Audit
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
         VALUES (?, ?, ?, ?, 'Cambio de estado de reserva', 'booking', ?, ?, ?)
       `).run(
@@ -1046,7 +1032,7 @@ async function startServer() {
       );
 
       if (booking) {
-        db.prepare(`
+        await db.prepare(`
           INSERT INTO notifications (id, user_id, type, title, message, read, created_at)
           VALUES (?, ?, 'booking_status', 'Actualización de clase', ?, 0, ?)
         `).run(
@@ -1067,16 +1053,16 @@ async function startServer() {
   // CONFIGURATION & SETTINGS
   // ==========================================
 
-  app.get('/api/settings', (req, res) => {
+  app.get('/api/settings', async (req, res) => {
     try {
-      const settings = getAppSettings();
+      const settings = await getAppSettings();
       res.json({ settings });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
   });
 
-  app.put('/api/settings', requireAdmin, (req: AuthenticatedRequest, res) => {
+  app.put('/api/settings', requireAdmin, async (req: AuthenticatedRequest, res) => {
     try {
       const {
         class_duration_minutes,
@@ -1098,7 +1084,7 @@ async function startServer() {
       }
 
       const now = new Date().toISOString();
-      db.prepare(`
+      await db.prepare(`
         UPDATE settings SET
           class_duration_minutes = ?,
           rest_time_minutes = ?,
@@ -1129,7 +1115,7 @@ async function startServer() {
       );
 
       // Audit
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
         VALUES (?, ?, ?, ?, 'Modificación de configuración', 'settings', 'default', ?, ?)
       `).run(
@@ -1141,7 +1127,7 @@ async function startServer() {
         now
       );
 
-      res.json({ settings: getAppSettings(), message: 'Configuración de recordatorios y sistema guardada correctamente.' });
+      res.json({ settings: await getAppSettings(), message: 'Configuración de recordatorios y sistema guardada correctamente.' });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
@@ -1151,9 +1137,9 @@ async function startServer() {
   // STUDENTS LIST & ADMIN STATS
   // ==========================================
 
-  app.get('/api/students', requireAdmin, (req, res) => {
+  app.get('/api/students', requireAdmin, async (req, res) => {
     try {
-      const students = db.prepare(`
+      const rows = (await db.prepare(`
         SELECT u.id, u.name, u.email, u.phone, u.avatar_url, u.created_at,
                COUNT(b.id) as total_bookings,
                SUM(CASE WHEN b.status = 'Completada' THEN 1 ELSE 0 END) as completed_classes,
@@ -1163,7 +1149,14 @@ async function startServer() {
         WHERE u.role = 'student'
         GROUP BY u.id
         ORDER BY u.name ASC
-      `).all() as any[];
+      `).all()) as any[];
+
+      const students = rows.map(s => ({
+        ...s,
+        total_bookings: Number(s.total_bookings || 0),
+        completed_classes: Number(s.completed_classes || 0),
+        active_classes: Number(s.active_classes || 0),
+      }));
 
       res.json({ students });
     } catch (err: any) {
@@ -1171,38 +1164,38 @@ async function startServer() {
     }
   });
 
-  app.get('/api/stats', requireAdmin, (req, res) => {
+  app.get('/api/stats', requireAdmin, async (req, res) => {
     try {
       const todayStr = new Date().toISOString().split('T')[0];
 
-      const todayClasses = db.prepare(`
+      const todayClasses = (await db.prepare(`
         SELECT COUNT(*) as count FROM bookings
         WHERE date = ? AND status IN ('Reservada', 'Confirmada')
-      `).get(todayStr) as any;
+      `).get(todayStr)) as any;
 
-      const upcomingClasses = db.prepare(`
+      const upcomingClasses = (await db.prepare(`
         SELECT COUNT(*) as count FROM bookings
         WHERE date >= ? AND status IN ('Reservada', 'Confirmada')
-      `).get(todayStr) as any;
+      `).get(todayStr)) as any;
 
-      const totalBookings = db.prepare('SELECT COUNT(*) as count FROM bookings').get() as any;
-      const activeTeachers = db.prepare('SELECT COUNT(*) as count FROM teachers WHERE is_active = 1').get() as any;
-      const registeredStudents = db.prepare("SELECT COUNT(*) as count FROM users WHERE role = 'student'").get() as any;
-      const cancelledClasses = db.prepare("SELECT COUNT(*) as count FROM bookings WHERE status LIKE 'Cancelada%'").get() as any;
+      const totalBookings = (await db.prepare('SELECT COUNT(*) as count FROM bookings').get()) as any;
+      const activeTeachers = (await db.prepare('SELECT COUNT(*) as count FROM teachers WHERE is_active = 1').get()) as any;
+      const registeredStudents = (await db.prepare("SELECT COUNT(*) as count FROM users WHERE role = 'student'").get()) as any;
+      const cancelledClasses = (await db.prepare("SELECT COUNT(*) as count FROM bookings WHERE status LIKE 'Cancelada%'").get()) as any;
 
       // Available slots today
-      const slotsToday = generateSlotsForDate({ date: todayStr });
+      const slotsToday = await generateSlotsForDate({ date: todayStr });
       const availableSlotsToday = slotsToday.filter(s => s.is_available).length;
 
       res.json({
         stats: {
-          today_classes: todayClasses?.count || 0,
-          upcoming_classes: upcomingClasses?.count || 0,
-          total_bookings: totalBookings?.count || 0,
-          active_teachers: activeTeachers?.count || 0,
-          registered_students: registeredStudents?.count || 0,
+          today_classes: Number(todayClasses?.count || 0),
+          upcoming_classes: Number(upcomingClasses?.count || 0),
+          total_bookings: Number(totalBookings?.count || 0),
+          active_teachers: Number(activeTeachers?.count || 0),
+          registered_students: Number(registeredStudents?.count || 0),
           available_slots_today: availableSlotsToday,
-          cancelled_classes: cancelledClasses?.count || 0,
+          cancelled_classes: Number(cancelledClasses?.count || 0),
         },
       });
     } catch (err: any) {
@@ -1214,9 +1207,9 @@ async function startServer() {
   // AUDIT LOGS
   // ==========================================
 
-  app.get('/api/audit-logs', requireAdmin, (req, res) => {
+  app.get('/api/audit-logs', requireAdmin, async (req, res) => {
     try {
-      const logs = db.prepare(`
+      const logs = await db.prepare(`
         SELECT * FROM audit_logs
         ORDER BY created_at DESC
         LIMIT 100
@@ -1231,34 +1224,34 @@ async function startServer() {
   // NOTIFICATIONS
   // ==========================================
 
-  app.get('/api/notifications', requireAuth, (req: AuthenticatedRequest, res) => {
+  app.get('/api/notifications', requireAuth, async (req: AuthenticatedRequest, res) => {
     try {
-      const notifications = db.prepare(`
+      const notifications = (await db.prepare(`
         SELECT * FROM notifications
         WHERE user_id = ?
         ORDER BY created_at DESC
         LIMIT 20
-      `).all(req.user!.id) as any[];
+      `).all(req.user!.id)) as any[];
 
-      res.json({ notifications: notifications.map(n => ({ ...n, read: Boolean(n.read) })) });
+      res.json({ notifications: notifications.map(n => ({ ...n, read: Boolean(Number(n.read)) })) });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
   });
 
-  app.put('/api/notifications/:id/read', requireAuth, (req: AuthenticatedRequest, res) => {
+  app.put('/api/notifications/:id/read', requireAuth, async (req: AuthenticatedRequest, res) => {
     try {
       const { id } = req.params;
-      db.prepare('UPDATE notifications SET read = 1 WHERE id = ? AND user_id = ?').run(id, req.user!.id);
+      await db.prepare('UPDATE notifications SET read = 1 WHERE id = ? AND user_id = ?').run(id, req.user!.id);
       res.json({ message: 'Notificación leída.' });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
   });
 
-  // Function to process automatic class reminders according to admin-configured advance notice & template
+  // Function to process automatic class reminders
   async function processAutomaticReminders(): Promise<{ sent: number; emails_dispatched: number; checked: number; message: string }> {
-    const settings = getAppSettings();
+    const settings = await getAppSettings();
     if (!settings.reminder_enabled) {
       return { sent: 0, emails_dispatched: 0, checked: 0, message: 'Los recordatorios automáticos están desactivados en la configuración.' };
     }
@@ -1270,7 +1263,7 @@ async function startServer() {
     const nowStr = now.toISOString().split('T')[0];
     const windowEndStr = windowEnd.toISOString().split('T')[0];
 
-    const bookings = db.prepare(`
+    const bookings = (await db.prepare(`
       SELECT b.*, u.name as student_name, u.email as student_email,
              t.name as teacher_name, t.last_name as teacher_last_name
       FROM bookings b
@@ -1278,7 +1271,7 @@ async function startServer() {
       JOIN teachers t ON b.teacher_id = t.id
       WHERE b.status IN ('Reservada', 'Confirmada')
         AND b.date >= ? AND b.date <= ?
-    `).all(nowStr, windowEndStr) as any[];
+    `).all(nowStr, windowEndStr)) as any[];
 
     let sentCount = 0;
     let emailDispatchedCount = 0;
@@ -1290,8 +1283,7 @@ async function startServer() {
       if (isNaN(bookingDateTime.getTime())) continue;
 
       if (bookingDateTime > now && bookingDateTime <= windowEnd) {
-        // Check if already sent
-        const alreadySent = db.prepare(`
+        const alreadySent = await db.prepare(`
           SELECT id FROM notifications
           WHERE (booking_id = ? AND type = 'reminder')
              OR (user_id = ? AND type = 'reminder' AND message LIKE ?)
@@ -1327,7 +1319,7 @@ async function startServer() {
         const nowIso = new Date().toISOString();
 
         // 1. In-app notification
-        db.prepare(`
+        await db.prepare(`
           INSERT INTO notifications (id, user_id, booking_id, type, title, message, read, created_at)
           VALUES (?, ?, ?, 'reminder', ?, ?, 0, ?)
         `).run(crypto.randomUUID(), b.student_id, b.id, title, message, nowIso);
@@ -1390,13 +1382,11 @@ async function startServer() {
   // Dedicated test endpoint for sending a real email via Resend
   app.post('/api/notifications/test-email', requireAdmin, async (req: AuthenticatedRequest, res) => {
     try {
-      // Query the latest user details from DB to avoid using stale token email
-      const dbUser = db.prepare('SELECT email, name FROM users WHERE id = ?').get(req.user!.id) as any;
+      const dbUser = (await db.prepare('SELECT email, name FROM users WHERE id = ?').get(req.user!.id)) as any;
       let recipient = req.body?.to?.trim() || dbUser?.email || req.user!.email;
 
-      // If the email is still a dummy @example.com, try to fallback to the updated admin email
       if (!recipient || recipient.includes('example.com')) {
-        const adminInDb = db.prepare("SELECT email FROM users WHERE role = 'admin' AND email NOT LIKE '%example.com%' LIMIT 1").get() as any;
+        const adminInDb = (await db.prepare("SELECT email FROM users WHERE role = 'admin' AND email NOT LIKE '%example.com%' LIMIT 1").get()) as any;
         if (adminInDb?.email) {
           recipient = adminInDb.email;
         } else {
@@ -1404,7 +1394,7 @@ async function startServer() {
         }
       }
 
-      const settings = getAppSettings();
+      const settings = await getAppSettings();
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
       const formattedDate = `${String(tomorrow.getDate()).padStart(2, '0')}/${String(tomorrow.getMonth() + 1).padStart(2, '0')}/${tomorrow.getFullYear()}`;
@@ -1456,7 +1446,7 @@ async function startServer() {
   // Send a test reminder notification to the logged-in administrator (in-app + email)
   app.post('/api/notifications/test-reminder', requireAdmin, async (req: AuthenticatedRequest, res) => {
     try {
-      const settings = getAppSettings();
+      const settings = await getAppSettings();
       const {
         title_template,
         message_template,
@@ -1474,7 +1464,6 @@ async function startServer() {
         messageTpl += ` Punto de encuentro: ${locText}.`;
       }
 
-      // Sample data for preview
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
       const day = String(tomorrow.getDate()).padStart(2, '0');
@@ -1498,12 +1487,12 @@ async function startServer() {
       const now = new Date().toISOString();
 
       // 1. In-app notification
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO notifications (id, user_id, booking_id, type, title, message, read, created_at)
         VALUES (?, ?, NULL, 'reminder', ?, ?, 0, ?)
       `).run(crypto.randomUUID(), req.user!.id, `[PRUEBA] ${title}`, message, now);
 
-      // 2. Real email if requested or if channel is email/both and user has email
+      // 2. Real email if requested
       let emailResult: any = null;
       const shouldEmail = Boolean(send_real_email) || settings.reminder_channel === 'both' || settings.reminder_channel === 'email';
       if (shouldEmail && req.user?.email) {
@@ -1541,21 +1530,21 @@ async function startServer() {
   });
 
   // Get log of sent reminder notifications
-  app.get('/api/notifications/reminders-log', requireAdmin, (req, res) => {
+  app.get('/api/notifications/reminders-log', requireAdmin, async (req, res) => {
     try {
-      const logs = db.prepare(`
+      const logs = (await db.prepare(`
         SELECT n.*, u.name as student_name, u.email as student_email
         FROM notifications n
         LEFT JOIN users u ON n.user_id = u.id
         WHERE n.type = 'reminder'
         ORDER BY n.created_at DESC
         LIMIT 30
-      `).all() as any[];
+      `).all()) as any[];
 
       res.json({
         reminders: logs.map(l => ({
           ...l,
-          read: Boolean(l.read),
+          read: Boolean(Number(l.read)),
         })),
       });
     } catch (err: any) {
@@ -1564,9 +1553,9 @@ async function startServer() {
   });
 
   // Setup periodic interval for automatic reminders every 5 minutes
-  setInterval(() => {
+  setInterval(async () => {
     try {
-      processAutomaticReminders();
+      await processAutomaticReminders();
     } catch (e) {
       console.error('Periodic automatic reminder scan error:', e);
     }

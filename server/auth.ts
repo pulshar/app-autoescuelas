@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import type { Request, Response, NextFunction } from 'express';
-import { db, hashPassword, verifyPassword } from './db.ts';
+import { adminAuth } from '../src/lib/firebase-admin.ts';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'autoescuela-super-secret-key-2026-xyz';
 
@@ -57,14 +57,28 @@ export function verifyToken(token: string): AuthPayload | null {
   }
 }
 
-// Middleware to extract user from Authorization header
-export function authenticateToken(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+// Middleware to extract user from Authorization header (supports both HMAC tokens & Firebase ID tokens)
+export async function authenticateToken(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const authHeader = req.headers['authorization'];
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.substring(7);
-    const user = verifyToken(token);
-    if (user) {
-      req.user = user;
+    const localUser = verifyToken(token);
+    if (localUser) {
+      req.user = localUser;
+      return next();
+    }
+
+    // Try Firebase ID token
+    try {
+      const decoded = await adminAuth.verifyIdToken(token);
+      req.user = {
+        id: decoded.uid,
+        email: decoded.email || '',
+        name: decoded.name || 'Usuario',
+        role: decoded.email?.includes('admin') || (decoded as any).role === 'admin' ? 'admin' : 'student',
+      };
+    } catch {
+      // Ignored if invalid token
     }
   }
   next();

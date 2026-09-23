@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { User, UserRole } from '../types.ts';
 import { api, getStoredToken, setStoredToken } from '../lib/api.ts';
+import { auth, googleAuthProvider } from '../lib/firebase.ts';
+import { signInWithPopup, signOut } from 'firebase/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -9,7 +11,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string, phone?: string) => Promise<void>;
-  loginWithGoogle: (email: string, name: string, googleId?: string, avatarUrl?: string) => Promise<void>;
+  loginWithGoogle: (email?: string, name?: string, googleId?: string, avatarUrl?: string) => Promise<void>;
   logout: () => void;
   updateProfile: (data: { name: string; phone?: string; avatar_url?: string }) => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -60,14 +62,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(data.user);
   };
 
-  const loginWithGoogle = async (email: string, name: string, googleId?: string, avatarUrl?: string) => {
-    const data = await api.googleLogin({ email, name, googleId, avatarUrl });
-    setStoredToken(data.token);
-    setTokenState(data.token);
-    setUser(data.user);
+  const loginWithGoogle = async (customEmail?: string, customName?: string, customGoogleId?: string, customAvatarUrl?: string) => {
+    if (customEmail && customName) {
+      const data = await api.googleLogin({ email: customEmail, name: customName, googleId: customGoogleId, avatarUrl: customAvatarUrl });
+      setStoredToken(data.token);
+      setTokenState(data.token);
+      setUser(data.user);
+      return;
+    }
+
+    try {
+      const result = await signInWithPopup(auth, googleAuthProvider);
+      const fbUser = result.user;
+      const data = await api.googleLogin({
+        email: fbUser.email || '',
+        name: fbUser.displayName || fbUser.email?.split('@')[0] || 'Usuario Google',
+        googleId: fbUser.uid,
+        avatarUrl: fbUser.photoURL || undefined,
+      });
+      setStoredToken(data.token);
+      setTokenState(data.token);
+      setUser(data.user);
+    } catch (err: any) {
+      console.error('Firebase Google popup sign in error:', err);
+      throw new Error(err.message || 'Error al iniciar sesión con Google.');
+    }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await signOut(auth);
+    } catch { }
     setStoredToken(null);
     setTokenState(null);
     setUser(null);
@@ -98,7 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useAuth(): AuthContextType {
+export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');

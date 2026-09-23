@@ -16,15 +16,14 @@ export function minutesToTime(totalMinutes: number): string {
 
 export function getDayOfWeekFromDate(dateStr: string): number {
   // dateStr is 'YYYY-MM-DD'
-  // Note: Date constructor with YYYY-MM-DD in UTC or local:
   const [year, month, day] = dateStr.split('-').map(Number);
   const date = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
   return date.getUTCDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
 }
 
 // Fetch current application settings
-export function getAppSettings(): AppSettings {
-  const row = db.prepare('SELECT * FROM settings LIMIT 1').get() as any;
+export async function getAppSettings(): Promise<AppSettings> {
+  const row = (await db.prepare('SELECT * FROM settings LIMIT 1').get()) as any;
   if (!row) {
     return {
       id: 'default',
@@ -43,11 +42,11 @@ export function getAppSettings(): AppSettings {
   }
   return {
     id: row.id,
-    class_duration_minutes: row.class_duration_minutes,
-    rest_time_minutes: row.rest_time_minutes,
-    min_cancellation_hours: row.min_cancellation_hours,
+    class_duration_minutes: Number(row.class_duration_minutes),
+    rest_time_minutes: Number(row.rest_time_minutes),
+    min_cancellation_hours: Number(row.min_cancellation_hours),
     reminder_enabled: Boolean(row.reminder_enabled),
-    reminder_hours_before: row.reminder_hours_before ?? 24,
+    reminder_hours_before: Number(row.reminder_hours_before ?? 24),
     reminder_title_template: row.reminder_title_template || 'Recordatorio: Clase práctica - {fecha} a las {hora}',
     reminder_message_template: row.reminder_message_template || 'Hola {alumno}, te recordamos tu clase práctica con {profesor} programada para el {fecha} a las {hora} ({duracion} min). ¡No olvides llevar tu documentación!',
     reminder_channel: (row.reminder_channel as any) || 'both',
@@ -63,9 +62,9 @@ interface GenerateSlotsParams {
   studentId?: string; // If provided, checks if student has conflict
 }
 
-export function generateSlotsForDate(params: GenerateSlotsParams): TimeSlot[] {
+export async function generateSlotsForDate(params: GenerateSlotsParams): Promise<TimeSlot[]> {
   const { teacherId, date, studentId } = params;
-  const settings = getAppSettings();
+  const settings = await getAppSettings();
   const duration = settings.class_duration_minutes;
   const rest = settings.rest_time_minutes;
   const dayOfWeek = getDayOfWeekFromDate(date);
@@ -78,49 +77,48 @@ export function generateSlotsForDate(params: GenerateSlotsParams): TimeSlot[] {
     teacherArgs.push(teacherId);
   }
   teacherQuery += ' ORDER BY name ASC';
-  const activeTeachers = db.prepare(teacherQuery).all(...teacherArgs) as { id: string; name: string; last_name: string }[];
+  const activeTeachers = (await db.prepare(teacherQuery).all(...teacherArgs)) as { id: string; name: string; last_name: string }[];
 
   if (activeTeachers.length === 0) {
     return [];
   }
 
   // 2. Fetch blocks for this date
-  const blocks = db.prepare(`
+  const blocks = (await db.prepare(`
     SELECT teacher_id, is_full_day, start_time, end_time, reason
     FROM schedule_blocks
     WHERE date = ?
-  `).all(date) as { teacher_id: string | null; is_full_day: number; start_time: string | null; end_time: string | null; reason: string }[];
+  `).all(date)) as { teacher_id: string | null; is_full_day: number; start_time: string | null; end_time: string | null; reason: string }[];
 
   // 3. Fetch bookings for this date with status in ('Reservada', 'Confirmada')
-  const bookings = db.prepare(`
+  const bookings = (await db.prepare(`
     SELECT teacher_id, student_id, start_time, end_time
     FROM bookings
     WHERE date = ? AND status IN ('Reservada', 'Confirmada')
-  `).all(date) as { teacher_id: string; student_id: string; start_time: string; end_time: string }[];
+  `).all(date)) as { teacher_id: string; student_id: string; start_time: string; end_time: string }[];
 
   const allSlots: TimeSlot[] = [];
 
   for (const teacher of activeTeachers) {
     // Check if teacher has an active schedule covering this date
-    const schedules = db.prepare(`
+    const schedules = (await db.prepare(`
       SELECT id FROM schedules
       WHERE teacher_id = ?
         AND is_active = 1
         AND start_date <= ?
         AND (end_date IS NULL OR end_date = '' OR end_date >= ?)
-    `).all(teacher.id, date, date) as { id: string }[];
+    `).all(teacher.id, date, date)) as { id: string }[];
 
     if (schedules.length === 0) {
       continue;
     }
 
     // Full day block for this teacher or all teachers?
-    const hasFullDayBlock = blocks.some(b => 
-      (b.teacher_id === null || b.teacher_id === teacher.id) && b.is_full_day === 1
+    const hasFullDayBlock = blocks.some(b =>
+      (b.teacher_id === null || b.teacher_id === teacher.id) && Number(b.is_full_day) === 1
     );
 
     if (hasFullDayBlock) {
-      // Entire day is blocked for this teacher
       continue;
     }
 
@@ -129,12 +127,12 @@ export function generateSlotsForDate(params: GenerateSlotsParams): TimeSlot[] {
 
     // Get weekly hours for this day of week across active schedules
     for (const sch of schedules) {
-      const weeklyHours = db.prepare(`
+      const weeklyHours = (await db.prepare(`
         SELECT start_time, end_time
         FROM schedule_weekly_hours
         WHERE schedule_id = ? AND day_of_week = ?
         ORDER BY start_time ASC
-      `).all(sch.id, dayOfWeek) as { start_time: string; end_time: string }[];
+      `).all(sch.id, dayOfWeek)) as { start_time: string; end_time: string }[];
 
       for (const interval of weeklyHours) {
         const intervalStart = timeToMinutes(interval.start_time);
@@ -152,7 +150,7 @@ export function generateSlotsForDate(params: GenerateSlotsParams): TimeSlot[] {
           let blockReason = '';
 
           for (const b of teacherBlocks) {
-            if (b.is_full_day === 1) {
+            if (Number(b.is_full_day) === 1) {
               isBlocked = true;
               blockReason = b.reason || 'Día no laborable';
               break;
@@ -240,43 +238,43 @@ export interface CreateBookingParams {
   creatorUser?: { id: string; name: string; email: string; role: string };
 }
 
-export function createBookingAtomic(params: CreateBookingParams) {
+export async function createBookingAtomic(params: CreateBookingParams) {
   const { studentId, teacherId, date, startTime, notes, creatorUser } = params;
-  const settings = getAppSettings();
+  const settings = await getAppSettings();
   const duration = settings.class_duration_minutes;
   const slotStartMinutes = timeToMinutes(startTime);
   const slotEndMinutes = slotStartMinutes + duration;
   const endTime = minutesToTime(slotEndMinutes);
   const now = new Date().toISOString();
 
-  // SQLite transaction with immediate lock to prevent race conditions
-  db.exec('BEGIN IMMEDIATE;');
+  // PostgreSQL transaction to guarantee ACID isolation and prevent double booking
+  await db.exec('BEGIN;');
 
   try {
     // 1. Verify student exists
-    const student = db.prepare('SELECT id, name, email, phone FROM users WHERE id = ?').get(studentId) as any;
+    const student = (await db.prepare('SELECT id, name, email, phone FROM users WHERE id = ?').get(studentId)) as any;
     if (!student) {
       throw new Error('El alumno especificado no existe.');
     }
 
     // 2. Verify teacher exists and is active
-    const teacher = db.prepare('SELECT id, name, last_name, is_active FROM teachers WHERE id = ?').get(teacherId) as any;
+    const teacher = (await db.prepare('SELECT id, name, last_name, is_active FROM teachers WHERE id = ?').get(teacherId)) as any;
     if (!teacher) {
       throw new Error('El profesor especificado no existe.');
     }
-    if (!teacher.is_active) {
+    if (!Number(teacher.is_active)) {
       throw new Error('El profesor no se encuentra activo para recibir nuevas reservas.');
     }
 
     // 3. Verify schedule covers date
-    const schedule = db.prepare(`
+    const schedule = (await db.prepare(`
       SELECT id FROM schedules
       WHERE teacher_id = ?
         AND is_active = 1
         AND start_date <= ?
         AND (end_date IS NULL OR end_date = '' OR end_date >= ?)
       LIMIT 1
-    `).get(teacherId, date, date) as { id: string } | undefined;
+    `).get(teacherId, date, date)) as { id: string } | undefined;
 
     if (!schedule) {
       throw new Error('El profesor no tiene una agenda activa para la fecha seleccionada.');
@@ -284,11 +282,11 @@ export function createBookingAtomic(params: CreateBookingParams) {
 
     // 4. Verify weekly hours interval exists covering this slot
     const dayOfWeek = getDayOfWeekFromDate(date);
-    const weeklyHours = db.prepare(`
+    const weeklyHours = (await db.prepare(`
       SELECT start_time, end_time
       FROM schedule_weekly_hours
       WHERE schedule_id = ? AND day_of_week = ?
-    `).all(schedule.id, dayOfWeek) as { start_time: string; end_time: string }[];
+    `).all(schedule.id, dayOfWeek)) as { start_time: string; end_time: string }[];
 
     const fitsInterval = weeklyHours.some(wh => {
       const whStart = timeToMinutes(wh.start_time);
@@ -301,14 +299,14 @@ export function createBookingAtomic(params: CreateBookingParams) {
     }
 
     // 5. Verify no blocks for date/time
-    const blocks = db.prepare(`
+    const blocks = (await db.prepare(`
       SELECT is_full_day, start_time, end_time, reason
       FROM schedule_blocks
       WHERE date = ? AND (teacher_id IS NULL OR teacher_id = ?)
-    `).all(date, teacherId) as any[];
+    `).all(date, teacherId)) as any[];
 
     for (const b of blocks) {
-      if (b.is_full_day === 1) {
+      if (Number(b.is_full_day) === 1) {
         throw new Error(`La fecha está bloqueada: ${b.reason || 'Día no disponible'}`);
       }
       if (b.start_time && b.end_time) {
@@ -321,7 +319,7 @@ export function createBookingAtomic(params: CreateBookingParams) {
     }
 
     // 6. CRITICAL: Atomic check for overlapping bookings on Teacher
-    const teacherConflict = db.prepare(`
+    const teacherConflict = await db.prepare(`
       SELECT id FROM bookings
       WHERE teacher_id = ?
         AND date = ?
@@ -335,7 +333,7 @@ export function createBookingAtomic(params: CreateBookingParams) {
     }
 
     // 7. CRITICAL: Atomic check for overlapping bookings on Student
-    const studentConflict = db.prepare(`
+    const studentConflict = await db.prepare(`
       SELECT id, start_time, end_time FROM bookings
       WHERE student_id = ?
         AND date = ?
@@ -350,7 +348,7 @@ export function createBookingAtomic(params: CreateBookingParams) {
 
     // 8. Insert booking
     const bookingId = 'bk_' + crypto.randomUUID().slice(0, 8);
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO bookings (
         id, student_id, teacher_id, schedule_id, date, start_time, end_time, duration_minutes, status, notes, created_at, updated_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -374,7 +372,7 @@ export function createBookingAtomic(params: CreateBookingParams) {
     const dateMatch = date.match(/^(\d{4})-(\d{2})-(\d{2})/);
     const displayDate = dateMatch ? `${dateMatch[3]}/${dateMatch[2]}/${dateMatch[1]}` : date;
 
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
@@ -390,7 +388,7 @@ export function createBookingAtomic(params: CreateBookingParams) {
     );
 
     // 10. Notification for Student
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO notifications (id, user_id, type, title, message, read, created_at)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `).run(
@@ -403,7 +401,7 @@ export function createBookingAtomic(params: CreateBookingParams) {
       now
     );
 
-    db.exec('COMMIT;');
+    await db.exec('COMMIT;');
 
     return {
       id: bookingId,
@@ -419,7 +417,9 @@ export function createBookingAtomic(params: CreateBookingParams) {
       notes,
     };
   } catch (err) {
-    db.exec('ROLLBACK;');
+    try {
+      await db.exec('ROLLBACK;');
+    } catch { }
     throw err;
   }
 }
