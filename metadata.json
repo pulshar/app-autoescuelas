@@ -1,0 +1,6 @@
+{
+  "name": "Autoescuela - Gestión y Reserva de Clases",
+  "description": "Sistema completo de gestión y reserva online de clases prácticas de conducir para alumnos y administradores con control de profesores, agendas, slots y auditoría.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
