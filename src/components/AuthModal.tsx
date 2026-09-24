@@ -16,14 +16,20 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialMode?: 'login' | 'register';
+  initialEmail: string;
 }
 
-export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: AuthModalProps) {
+export default function AuthModal({
+  isOpen,
+  onClose,
+  initialMode = 'login',
+  initialEmail = '',
+}: AuthModalProps) {
   const { login, register, loginWithGoogle } = useAuth();
   const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'reset'>(initialMode);
 
   // Login/Register Form State
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(initialEmail);
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -35,6 +41,13 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (initialMode) setMode(initialMode);
+      if (initialEmail) setEmail(initialEmail);
+    }
+  }, [isOpen, initialMode, initialEmail]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -84,6 +97,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
   // Google OAuth flow
   const handleGoogleSignIn = async () => {
     setError(null);
+    setSuccessMessage(null);
     setLoading(true);
 
     try {
@@ -145,7 +159,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-3.5">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {mode === 'register' && (
               <>
                 <div>
@@ -196,6 +210,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                       type="button"
                       onClick={() => {
                         setMode('forgot');
+                        setSuccessMessage(null);
                         setError(null);
                       }}
                       className="text-[11px] text-indigo-600 hover:text-indigo-800 font-medium"
@@ -315,6 +330,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                   type="button"
                   onClick={() => {
                     setMode('register');
+                    setSuccessMessage(null);
                     setError(null);
                   }}
                   className="text-indigo-600 hover:text-indigo-800 font-semibold"
@@ -329,6 +345,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                   type="button"
                   onClick={() => {
                     setMode('login');
+                    setSuccessMessage(null);
                     setError(null);
                   }}
                   className="text-indigo-600 hover:text-indigo-800 font-semibold"

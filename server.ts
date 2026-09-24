@@ -20,6 +20,7 @@ import {
 import {
   sendEmail,
   sendClassReminderEmail,
+  sendStudentWelcomeEmail,
   isResendConfigured,
   getSenderEmail,
   isSandboxDomain,
@@ -1244,7 +1245,7 @@ async function startServer() {
   app.get('/api/students', requireAdmin, async (req, res) => {
     try {
       const rows = (await db.prepare(`
-        SELECT u.id, u.name, u.email, u.phone, u.avatar_url, u.created_at,
+        SELECT u.id, u.name, u.email, u.phone, u.avatar_url, u.is_active, u.created_at,
                COUNT(b.id) as total_bookings,
                SUM(CASE WHEN b.status = 'Completada' THEN 1 ELSE 0 END) as completed_classes,
                SUM(CASE WHEN b.status IN ('Reservada', 'Confirmada') THEN 1 ELSE 0 END) as active_classes
@@ -1257,6 +1258,7 @@ async function startServer() {
 
       const students = rows.map(s => ({
         ...s,
+        is_active: s.is_active === null || s.is_active === undefined ? true : Boolean(Number(s.is_active)),
         total_bookings: Number(s.total_bookings || 0),
         completed_classes: Number(s.completed_classes || 0),
         active_classes: Number(s.active_classes || 0),
@@ -1265,6 +1267,337 @@ async function startServer() {
       res.json({ students });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
+    }
+  });
+
+
+  // Create a new student by Admin Central
+  app.post('/api/students', requireAdmin, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { name, email, phone, password } = req.body;
+
+      if (!name || !name.trim()) {
+        res.status(400).json({ error: 'El nombre y apellidos del alumno son obligatorios.' });
+        return;
+      }
+
+      if (!email || !email.trim()) {
+        res.status(400).json({ error: 'El correo electrónico es obligatorio.' });
+        return;
+      }
+
+      const normalizedEmail = email.trim().toLowerCase();
+
+      // Check if user already exists
+      const existingUser = (await db.prepare('SELECT id, email, role FROM users WHERE email = ?').get(normalizedEmail)) as any;
+      if (existingUser) {
+        res.status(400).json({
+          error: `Ya existe un usuario registrado en el sistema con el correo "${normalizedEmail}".`,
+        });
+        return;
+      }
+
+      // Password: Use provided or generate a friendly, secure temporary password
+      const initialPassword = password && password.trim().length >= 6
+        ? password.trim()
+        : `Auto${Math.floor(100000 + Math.random() * 900000)}!`;
+
+      const { hash, salt } = hashPassword(initialPassword);
+      const studentId = `usr_${crypto.randomUUID()}`;
+      const now = new Date().toISOString();
+
+      await db.prepare(`
+        INSERT INTO users (id, email, password_hash, salt, name, phone, role, is_active, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, 'student', 1, ?, ?)
+      `).run(
+        studentId,
+        normalizedEmail,
+        hash,
+        salt,
+        name.trim(),
+        phone?.trim() || null,
+        now,
+        now
+      );
+
+      // Audit log
+      await db.prepare(`
+        INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
+        VALUES (?, ?, ?, ?, 'Alta de alumno por Administrador', 'user', ?, ?, ?)
+      `).run(
+        crypto.randomUUID(),
+        req.user!.id,
+        req.user!.name,
+        req.user!.email,
+        studentId,
+        `Alta de alumno: ${name.trim()} (${normalizedEmail})`,
+        now
+      );
+
+      // Determine application URL for email link
+      const appUrl = (
+        req.get('origin') ||
+        req.get('referer') ||
+        process.env.APP_URL ||
+        ''
+      ).replace(/\/$/, '');
+
+      // Send Welcome / Onboarding Email to student
+      let emailResult = null;
+      try {
+        emailResult = await sendStudentWelcomeEmail({
+          to: normalizedEmail,
+          studentName: name.trim(),
+          temporaryPassword: initialPassword,
+          appUrl,
+        });
+      } catch (emailErr: any) {
+        console.warn('[Welcome Email Warning]', emailErr.message || emailErr);
+        emailResult = {
+          success: false,
+          error: emailErr.message || 'Error al enviar correo de bienvenida',
+          configured: false,
+        };
+      }
+
+      const student = {
+        id: studentId,
+        name: name.trim(),
+        email: normalizedEmail,
+        phone: phone?.trim() || null,
+        avatar_url: null,
+        role: 'student',
+        is_active: true,
+        total_bookings: 0,
+        completed_classes: 0,
+        active_classes: 0,
+        created_at: now,
+      };
+
+      res.status(201).json({
+        message: 'Alumno dado de alta correctamente.',
+        student,
+        initialPassword,
+        emailResult,
+      });
+    } catch (err: any) {
+      console.error('Error creating student:', err);
+      res.status(500).json({ error: 'Error al registrar alumno: ' + (err.message || 'desconocido') });
+    }
+  });
+
+  // Update student by Admin Central
+  app.put('/api/students/:id', requireAdmin, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { id } = req.params;
+      const { name, email, phone, password, is_active } = req.body;
+
+      const existing = (await db.prepare('SELECT * FROM users WHERE id = ? AND role = "student"').get(id)) as any;
+      if (!existing) {
+        res.status(404).json({ error: 'Alumno no encontrado.' });
+        return;
+      }
+
+      if (!name || !name.trim()) {
+        res.status(400).json({ error: 'El nombre y apellidos son obligatorios.' });
+        return;
+      }
+
+      if (!email || !email.trim()) {
+        res.status(400).json({ error: 'El correo electrónico es obligatorio.' });
+        return;
+      }
+
+      const normalizedEmail = email.trim().toLowerCase();
+
+      // Check if email taken by someone else
+      const conflict = (await db.prepare('SELECT id FROM users WHERE email = ? AND id != ?').get(normalizedEmail, id)) as any;
+      if (conflict) {
+        res.status(400).json({ error: `Ya existe otro usuario con el correo "${normalizedEmail}".` });
+        return;
+      }
+
+      const now = new Date().toISOString();
+      const activeInt = is_active === undefined || is_active === null ? Number(existing.is_active ?? 1) : (is_active ? 1 : 0);
+
+      // If deactivated, cancel pending future bookings
+      if (activeInt === 0 && Number(existing.is_active ?? 1) === 1) {
+        await db.prepare(`
+          UPDATE bookings
+          SET status = 'Cancelada', notes = 'Cancelada automáticamente por baja del alumno', updated_at = ?
+          WHERE student_id = ? AND status IN ('Reservada', 'Confirmada')
+        `).run(now, id);
+      }
+
+      // Update password if provided
+      if (password && password.trim().length >= 6) {
+        const { hash, salt } = hashPassword(password.trim());
+        await db.prepare(`
+          UPDATE users
+          SET name = ?, email = ?, phone = ?, password_hash = ?, salt = ?, is_active = ?, updated_at = ?
+          WHERE id = ?
+        `).run(name.trim(), normalizedEmail, phone?.trim() || null, hash, salt, activeInt, now, id);
+      } else {
+        await db.prepare(`
+          UPDATE users
+          SET name = ?, email = ?, phone = ?, is_active = ?, updated_at = ?
+          WHERE id = ?
+        `).run(name.trim(), normalizedEmail, phone?.trim() || null, activeInt, now, id);
+      }
+
+      // Audit log
+      await db.prepare(`
+        INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
+        VALUES (?, ?, ?, ?, 'Modificación de alumno', 'user', ?, ?, ?)
+      `).run(
+        crypto.randomUUID(),
+        req.user!.id,
+        req.user!.name,
+        req.user!.email,
+        id,
+        `Alumno ${name.trim()} (${normalizedEmail}) modificado (Estado: ${activeInt ? 'Activo' : 'Inactivo / Baja'}).`,
+        now
+      );
+
+      const updated = (await db.prepare(`
+        SELECT u.id, u.name, u.email, u.phone, u.avatar_url, u.is_active, u.created_at,
+               COUNT(b.id) as total_bookings,
+               SUM(CASE WHEN b.status = 'Completada' THEN 1 ELSE 0 END) as completed_classes,
+               SUM(CASE WHEN b.status IN ('Reservada', 'Confirmada') THEN 1 ELSE 0 END) as active_classes
+        FROM users u
+        LEFT JOIN bookings b ON u.id = b.student_id
+        WHERE u.id = ?
+        GROUP BY u.id
+      `).get(id)) as any;
+
+      res.json({
+        message: 'Alumno actualizado correctamente.',
+        student: {
+          ...updated,
+          is_active: Boolean(Number(updated.is_active)),
+          total_bookings: Number(updated.total_bookings || 0),
+          completed_classes: Number(updated.completed_classes || 0),
+          active_classes: Number(updated.active_classes || 0),
+        },
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Error al actualizar alumno.' });
+    }
+  });
+
+  // Delete or Deactivate student by Admin Central (Intelligent Deletion)
+  app.delete('/api/students/:id', requireAdmin, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { id } = req.params;
+      const student = (await db.prepare('SELECT id, name, email, is_active FROM users WHERE id = ? AND role = "student"').get(id)) as any;
+
+      if (!student) {
+        res.status(404).json({ error: 'Alumno no encontrado.' });
+        return;
+      }
+
+      const bookingCount = (await db.prepare('SELECT COUNT(*) as count FROM bookings WHERE student_id = ?').get(id)) as any;
+      const count = Number(bookingCount?.count || 0);
+      const now = new Date().toISOString();
+
+      if (count > 0) {
+        // Soft delete / baja lógica: cancel active bookings and deactivate
+        await db.prepare(`
+          UPDATE bookings
+          SET status = 'Cancelada', notes = 'Cancelada automáticamente por baja del alumno', updated_at = ?
+          WHERE student_id = ? AND status IN ('Reservada', 'Confirmada')
+        `).run(now, id);
+
+        await db.prepare('UPDATE users SET is_active = 0, updated_at = ? WHERE id = ?').run(now, id);
+
+        await db.prepare(`
+          INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
+          VALUES (?, ?, ?, ?, 'Baja de alumno (Histórico protegido)', 'user', ?, ?, ?)
+        `).run(
+          crypto.randomUUID(),
+          req.user!.id,
+          req.user!.name,
+          req.user!.email,
+          id,
+          `El alumno ${student.name} (${student.email}) tiene ${count} clases registradas. Ha sido dado de baja protegiendo el histórico.`,
+          now
+        );
+
+        res.json({
+          action: 'deactivated',
+          message: `El alumno tiene ${count} clases en su historial. Para proteger las estadísticas y registros de la autoescuela, ha sido dado de baja y sus reservas activas pendientes han sido canceladas.`,
+        });
+      } else {
+        // Physical permanent deletion
+        await db.prepare('DELETE FROM users WHERE id = ?').run(id);
+
+        await db.prepare(`
+          INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
+          VALUES (?, ?, ?, ?, 'Eliminación física de alumno', 'user', ?, ?, ?)
+        `).run(
+          crypto.randomUUID(),
+          req.user!.id,
+          req.user!.name,
+          req.user!.email,
+          id,
+          `Alumno ${student.name} (${student.email}) eliminado permanentemente (sin historial de clases).`,
+          now
+        );
+
+        res.json({
+          action: 'deleted',
+          message: 'Alumno eliminado permanentemente del sistema.',
+        });
+      }
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Error al eliminar alumno.' });
+    }
+  });
+
+  // Resend welcome email to an existing student
+  app.post('/api/students/:id/resend-welcome', requireAdmin, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { id } = req.params;
+      const student = (await db.prepare('SELECT id, name, email, role FROM users WHERE id = ?').get(id)) as any;
+
+      if (!student) {
+        res.status(404).json({ error: 'Alumno no encontrado.' });
+        return;
+      }
+
+      const appUrl = (
+        req.get('origin') ||
+        req.get('referer') ||
+        process.env.APP_URL ||
+        ''
+      ).replace(/\/$/, '');
+
+      const emailResult = await sendStudentWelcomeEmail({
+        to: student.email,
+        studentName: student.name,
+        appUrl,
+      });
+
+      // Audit log
+      await db.prepare(`
+        INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
+        VALUES (?, ?, ?, ?, 'Reenvío de email de bienvenida', 'user', ?, ?, ?)
+      `).run(
+        crypto.randomUUID(),
+        req.user!.id,
+        req.user!.name,
+        req.user!.email,
+        student.id,
+        `Reenvío de correo de acceso a ${student.name} (${student.email})`,
+        new Date().toISOString()
+      );
+
+      res.json({
+        message: `Correo de acceso reenviado correctamente a ${student.email}.`,
+        emailResult,
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Error al reenviar correo.' });
     }
   });
 

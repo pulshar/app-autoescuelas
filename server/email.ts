@@ -250,17 +250,14 @@ export async function sendClassReminderEmail({
               </p>
               
               <p style="margin: 0 0 24px 0; font-size: 14px; line-height: 1.6; color: #475569;">
-                ${customMessage
-      ? customMessage
-      : `Te recordamos que tienes una clase práctica de conducción programada en tu autoescuela. A continuación encontrarás todos los detalles:`
-    }
+                Te recordamos que tienes una clase práctica de conducción programada en tu autoescuela. A continuación encontrarás todos los detalles:
               </p>
 
               <!-- Class Details Box -->
               <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f1f5f9; border-radius: 14px; padding: 20px; margin-bottom: 24px;">
                 <tr>
                   <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600; width: 38%;">
-                    📅 Fecha:
+                    Fecha:
                   </td>
                   <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 700;">
                     ${displayDate}
@@ -268,7 +265,7 @@ export async function sendClassReminderEmail({
                 </tr>
                 <tr>
                   <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">
-                    ⏰ Hora de inicio:
+                     Hora de inicio:
                   </td>
                   <td style="padding: 6px 0; font-size: 14px; color: #da1249; font-weight: 800;">
                     ${time} (${durationMinutes} min)
@@ -276,7 +273,7 @@ export async function sendClassReminderEmail({
                 </tr>
                 <tr>
                   <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">
-                    🚗 Profesor:
+                    Profesor:
                   </td>
                   <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 700;">
                     ${teacherName}
@@ -286,7 +283,7 @@ export async function sendClassReminderEmail({
       ? `
                 <tr>
                   <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">
-                    📍 Punto de salida:
+                    Punto de salida:
                   </td>
                   <td style="padding: 6px 0; font-size: 13px; color: #0f172a; font-weight: 600;">
                     ${location}
@@ -343,5 +340,154 @@ export async function sendClassReminderEmail({
     subject,
     html,
     text: `${subject}\n\nHola ${studentName},\n${customMessage || ''}\n\nFecha: ${displayDate}\nHora: ${time} (${durationMinutes} min)\nProfesor: ${teacherName}\nPunto de salida: ${location || 'Sede central'}\n`,
+  });
+}
+
+
+/**
+ * Generates and sends a welcome and onboarding email to a newly registered student
+ */
+export async function sendStudentWelcomeEmail({
+  to,
+  studentName,
+  temporaryPassword,
+  appUrl,
+}: {
+  to: string;
+  studentName: string;
+  temporaryPassword?: string;
+  appUrl?: string;
+}): Promise<EmailResult> {
+  const baseUrl = (appUrl || process.env.APP_URL || '').replace(/\/$/, '');
+  const loginUrl = baseUrl ? `${baseUrl}?login=true&email=${encodeURIComponent(to)}` : '#';
+  const subject = `¡Bienvenido/a a AutoescuelaPro! Tu cuenta de alumno ha sido activada`;
+
+  const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 16px;">
+    <tr>
+      <td align="center">
+        <!-- Main Card -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
+          
+          <!-- Header Banner -->
+          <tr>
+            <td style="background-color: #4f46e5; padding: 32px 32px; text-align: left;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
+                      AutoescuelaPro • Portal del Alumno
+                    </span>
+                    <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 800; line-height: 1.3;">
+                      ¡Bienvenido/a a la Autoescuela!
+                    </h1>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Body Content -->
+          <tr>
+            <td style="padding: 32px;">
+              <p style="margin: 0 0 16px 0; font-size: 16px; line-height: 1.6; color: #1e293b;">
+                Hola <strong>${studentName}</strong>,
+              </p>
+              
+              <p style="margin: 0 0 20px 0; font-size: 14px; line-height: 1.6; color: #475569;">
+                Has sido dado de alta en la plataforma oficial de AutoescuelaPro. Ya puedes reservar tus clases prácticas de conducir con tus profesores, ver el calendario disponible y gestionar tus horarios desde tu móvil o cualquier dispositivo.
+              </p>
+
+              <!-- Credentials Box -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; margin-bottom: 24px;">
+                <tr>
+                  <td style="padding-bottom: 12px; font-size: 12px; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em;" colspan="2">
+                    🔑 Tus datos de acceso inicial:
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600; width: 35%;">
+                    Email / Usuario:
+                  </td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 700; font-family: monospace;">
+                    ${to}
+                  </td>
+                </tr>
+                ${temporaryPassword
+      ? `
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">
+                    Contraseña provisional:
+                  </td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #4f46e5; font-weight: 800; font-family: monospace;">
+                    ${temporaryPassword}
+                  </td>
+                </tr>
+                `
+      : ''
+    }
+              </table>
+
+              <!-- CTA Button -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin: 28px 0 24px 0;">
+                <tr>
+                  <td align="center">
+                    <a href="${loginUrl}" target="_blank" style="display: inline-block; background-color: #4f46e5; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; padding: 14px 34px; border-radius: 14px; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);">
+                      Acceder a la Plataforma
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Security Advice Box -->
+              <div style="background-color: #fffbeb; border: 1px solid #fef3c7; border-left: 4px solid #f59e0b; border-radius: 10px; padding: 14px 16px; margin-bottom: 24px;">
+                <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #92400e;">
+                  <strong>Importante:</strong> Te recomendamos cambiar tu contraseña temporal la primera vez que accedas al sistema. Podrás hacerlo en unos segundos entrando en la sección <strong>"Mi perfil"</strong> del menú superior.
+                </p>
+              </div>
+
+              <!-- Google Login Tip -->
+              <div style="background-color: #f1f5f9; border-radius: 10px; padding: 12px 16px; margin-bottom: 24px; font-size: 12px; color: #475569; line-height: 1.5;">
+                💡 <em>Consejo: Si tu correo electrónico (<strong style="color: #1e293b;">${to}</strong>) está asociado a una cuenta de Google, también puedes iniciar sesión cómodamente pulsando en el botón <strong>"Continuar con Google"</strong> sin necesidad de recordar contraseñas.</em>
+              </div>
+
+              <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #64748b;">
+                Si tienes cualquier duda con tus prácticas, puedes ponerte en contacto con secretaría o consultar directamente en la sede de la autoescuela.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f8fafc; padding: 20px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8; line-height: 1.5;">
+              Este es un correo automático generado por AutoescuelaPro para la activación de tu cuenta de alumno.<br>
+              Por favor, no respondas directamente a este mensaje.
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `;
+
+  const text = `${subject}\n\nHola ${studentName},\n\nEl Administrador Central te ha dado de alta en la plataforma de AutoescuelaPro.\n\nDatos de acceso:\n- Email: ${to}\n${temporaryPassword ? `- Contraseña provisional: ${temporaryPassword}\n` : ''
+    }\nEnlace de acceso: ${loginUrl}\n\nIMPORTANTE: Te recomendamos cambiar tu contraseña una vez accedas por primera vez desde la sección "Mi perfil".\n\nSi usas cuenta de Google con este mismo email, también puedes acceder pulsando en "Continuar con Google".\n\n¡Bienvenido/a y feliz aprendizaje!\n`;
+
+  return sendEmail({
+    to,
+    subject,
+    html,
+    text,
   });
 }

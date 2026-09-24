@@ -188,11 +188,10 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
       <div className="flex border-b border-slate-200 gap-6">
         <button
           onClick={() => setActiveTab('upcoming')}
-          className={`pb-3 text-sm font-bold transition-all relative ${
-            activeTab === 'upcoming'
+          className={`pb-3 text-sm font-bold transition-all relative ${activeTab === 'upcoming'
               ? 'text-indigo-600'
               : 'text-slate-500 hover:text-slate-800'
-          }`}
+            }`}
         >
           Próximas Clases ({upcomingClasses.length})
           {activeTab === 'upcoming' && (
@@ -202,11 +201,10 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
 
         <button
           onClick={() => setActiveTab('history')}
-          className={`pb-3 text-sm font-bold transition-all relative ${
-            activeTab === 'history'
+          className={`pb-3 text-sm font-bold transition-all relative ${activeTab === 'history'
               ? 'text-indigo-600'
               : 'text-slate-500 hover:text-slate-800'
-          }`}
+            }`}
         >
           Historial Pasado ({historyClasses.length})
           {activeTab === 'history' && (
@@ -323,7 +321,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
             <h4 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <Ban className="w-5 h-5 text-rose-500" /> Cancelar Reserva de Clase
+              <Ban className="w-5 h-5 text-rose-500" /> Cancelar reserva de clase
             </h4>
             <p className="text-xs text-slate-500 mt-2 leading-relaxed">
               ¿Confirmas la cancelación de la clase del{' '}
@@ -362,7 +360,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
                 onClick={handleExecuteCancel}
                 className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-xs transition-colors"
               >
-                {cancelLoading ? 'Cancelando...' : 'Confirmar Cancelación'}
+                {cancelLoading ? 'Cancelando...' : 'Confirmar cancelación'}
               </button>
             </div>
           </div>

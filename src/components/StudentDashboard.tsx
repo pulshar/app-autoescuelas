@@ -242,7 +242,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
             <h4 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <Ban className="w-5 h-5 text-rose-500" /> Cancelar Reserva
+              <Ban className="w-5 h-5 text-rose-500" /> Cancelar reserva
             </h4>
             <p className="text-xs text-slate-500 mt-2 leading-relaxed">
               ¿Estás seguro de que deseas cancelar esta clase? El slot volverá a quedar disponible para otros alumnos.

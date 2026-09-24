@@ -12,6 +12,7 @@ import {
   Mail,
   X,
   Power,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface AdminTeachersProps {
@@ -38,6 +39,10 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
 
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  // Delete / Baja Modal state
+  const [deletingTeacher, setDeletingTeacher] = useState<Teacher | null>(null);
+  const [deleteSubmitting, setDeleteSubmitting] = useState(false);
 
   const fetchTeachers = async () => {
     try {
@@ -139,14 +144,29 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
     }
   };
 
-  const handleDeleteTeacher = async (id: string) => {
-    if (!confirm('¿Deseas dar de baja o eliminar a este profesor? Si tiene clases históricas, quedará desactivado.')) return;
+  const handleOpenDelete = (t: Teacher) => {
+    setDeletingTeacher(t);
+  };
+
+  const handleCloseDelete = () => {
+    setDeletingTeacher(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingTeacher) return;
     try {
-      const res = await api.deleteTeacher(id);
+      setDeleteSubmitting(true);
+      const res = await api.deleteTeacher(deletingTeacher.id);
       setFeedback({ type: 'success', message: res.message });
+      setTimeout(() => setFeedback(null), 5000);
+      handleCloseDelete();
       fetchTeachers();
     } catch (err: any) {
       setFeedback({ type: 'error', message: err.message || 'Error al eliminar el profesor.' });
+      setTimeout(() => setFeedback(null), 6000);
+      handleCloseDelete();
+    } finally {
+      setDeleteSubmitting(false);
     }
   };
 
@@ -171,11 +191,10 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
 
       {feedback && (
         <div
-          className={`p-4 rounded-2xl text-xs sm:text-sm flex items-center gap-2 ${
-            feedback.type === 'success'
-              ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
-              : 'bg-rose-50 border border-rose-200 text-rose-800'
-          }`}
+          className={`p-4 rounded-2xl text-xs sm:text-sm flex items-center gap-2 ${feedback.type === 'success'
+            ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
+            : 'bg-rose-50 border border-rose-200 text-rose-800'
+            }`}
         >
           {feedback.type === 'success' ? (
             <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
@@ -210,9 +229,8 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
           {teachers.map(t => (
             <div
               key={t.id}
-              className={`bg-white rounded-3xl p-5 border shadow-xs transition-all flex flex-col justify-between ${
-                t.is_active ? 'border-slate-200 hover:border-slate-300' : 'border-slate-200 bg-slate-50/70 opacity-75'
-              }`}
+              className={`bg-white rounded-3xl p-5 border shadow-xs transition-all flex flex-col justify-between ${t.is_active ? 'border-slate-200 hover:border-slate-300' : 'border-slate-200 bg-slate-50/70 opacity-75'
+                }`}
             >
               <div>
                 <div className="flex items-start justify-between gap-3">
@@ -234,11 +252,10 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
                         {t.name} {t.last_name}
                       </h4>
                       <span
-                        className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-bold mt-1 ${
-                          t.is_active
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : 'bg-slate-200 text-slate-600'
-                        }`}
+                        className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-bold mt-1 ${t.is_active
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : 'bg-slate-200 text-slate-600'
+                          }`}
                       >
                         {t.is_active ? 'En activo' : 'Inactivo'}
                       </span>
@@ -248,11 +265,10 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
                   <button
                     onClick={() => handleToggleActive(t)}
                     title={t.is_active ? 'Desactivar profesor' : 'Activar profesor'}
-                    className={`p-2 rounded-xl border transition-colors ${
-                      t.is_active
-                        ? 'text-emerald-600 hover:bg-emerald-50 border-emerald-200'
-                        : 'text-slate-400 hover:bg-slate-200 border-slate-300'
-                    }`}
+                    className={`p-2 rounded-xl border transition-colors ${t.is_active
+                      ? 'text-emerald-600 hover:bg-emerald-50 border-emerald-200'
+                      : 'text-slate-400 hover:bg-slate-200 border-slate-300'
+                      }`}
                   >
                     <Power className="w-4 h-4" />
                   </button>
@@ -289,7 +305,8 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => handleDeleteTeacher(t.id)}
+                    onClick={() => handleOpenDelete(t)}
+                    title="Eliminar o dar de baja profesor"
                     className="p-1.5 rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -319,7 +336,7 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-3.5">
+            <form onSubmit={handleSubmit} className="p-6 space-y-5">
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">Nombre *</label>
@@ -419,6 +436,78 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete / Baja Confirmation Modal */}
+      {deletingTeacher && (
+        <div
+          onClick={e => {
+            if (e.target === e.currentTarget) handleCloseDelete();
+          }}
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
+        >
+          <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
+            <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
+                <span>Eliminar o dar de baja profesor</span>
+              </h3>
+              <button onClick={handleCloseDelete} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 space-y-1">
+                <p>
+                  <strong>Profesor:</strong> {deletingTeacher.name} {deletingTeacher.last_name || ''}
+                </p>
+                <p>
+                  <strong>Email:</strong> {deletingTeacher.email}
+                </p>
+                {deletingTeacher.phone && (
+                  <p>
+                    <strong>Teléfono:</strong> {deletingTeacher.phone}
+                  </p>
+                )}
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-2">
+                <p className="font-bold text-amber-950 flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
+                  Protección de registros y estadísticas
+                </p>
+                <p className="leading-relaxed text-amber-800">
+                  Si este profesor tiene clases prácticas asignadas o registradas en el historial:
+                </p>
+                <ul className="list-disc pl-4 space-y-1 text-amber-800">
+                  <li>Se marcará automáticamente como <strong>Inactivo / Baja</strong>.</li>
+                  <li>Se conservará íntegramente todo el historial de clases y partes de asistencia para las métricas de la autoescuela.</li>
+                  <li>Si nunca ha tenido clases registradas, se eliminará permanentemente del sistema.</li>
+                </ul>
+              </div>
+
+              {/* Actions */}
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={handleCloseDelete}
+                  disabled={deleteSubmitting}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmDelete}
+                  disabled={deleteSubmitting}
+                  className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300 shadow-xs transition-colors"
+                >
+                  {deleteSubmitting ? 'Procesando...' : 'Confirmar baja / eliminación'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -13,6 +13,7 @@ import {
   X,
   Plus,
   Power,
+  ShieldCheck,
 } from 'lucide-react';
 
 const DAYS_OF_WEEK = [
@@ -49,6 +50,10 @@ export default function AdminSchedules() {
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
+  // Delete modal state
+  const [deletingSchedule, setDeletingSchedule] = useState<Schedule | null>(null);
+  const [deleteSubmitting, setDeleteSubmitting] = useState(false);
+
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -70,15 +75,16 @@ export default function AdminSchedules() {
   }, []);
 
   useEffect(() => {
-    if (!modalOpen) return;
+    if (!modalOpen && !deletingSchedule) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setModalOpen(false);
+        setDeletingSchedule(null);
       }
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [modalOpen]);
+  }, [modalOpen, deletingSchedule]);
 
   const handleOpenCreate = () => {
     setEditingSchedule(null);
@@ -174,14 +180,29 @@ export default function AdminSchedules() {
     }
   };
 
-  const handleDeleteSchedule = async (id: string) => {
-    if (!confirm('¿Deseas eliminar esta agenda?')) return;
+  const handleOpenDelete = (s: Schedule) => {
+    setDeletingSchedule(s);
+  };
+
+  const handleCloseDelete = () => {
+    setDeletingSchedule(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingSchedule) return;
     try {
-      await api.deleteSchedule(id);
-      setFeedback({ type: 'success', message: 'Agenda eliminada.' });
+      setDeleteSubmitting(true);
+      await api.deleteSchedule(deletingSchedule.id);
+      setFeedback({ type: 'success', message: `Agenda "${deletingSchedule.name}" eliminada correctamente.` });
+      setTimeout(() => setFeedback(null), 5000);
+      handleCloseDelete();
       fetchData();
     } catch (err: any) {
       setFeedback({ type: 'error', message: err.message || 'Error al eliminar agenda.' });
+      setTimeout(() => setFeedback(null), 6000);
+      handleCloseDelete();
+    } finally {
+      setDeleteSubmitting(false);
     }
   };
 
@@ -200,24 +221,28 @@ export default function AdminSchedules() {
           onClick={handleOpenCreate}
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-xs transition-colors shrink-0"
         >
-          <PlusCircle className="w-4 h-4" /> Crear Nueva Agenda
+          <PlusCircle className="w-4 h-4" /> Crear nueva agenda
         </button>
       </div>
 
       {feedback && (
         <div
-          className={`p-4 rounded-2xl text-xs sm:text-sm flex items-center gap-2 ${
-            feedback.type === 'success'
-              ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
-              : 'bg-rose-50 border border-rose-200 text-rose-800'
-          }`}
+          className={`p-3.5 rounded-2xl text-xs sm:text-sm flex items-center justify-between gap-2 transition-all ${feedback.type === 'success'
+            ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
+            : 'bg-rose-50 border border-rose-200 text-rose-800'
+            }`}
         >
-          {feedback.type === 'success' ? (
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-          ) : (
-            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
-          )}
-          <span>{feedback.message}</span>
+          <div className="flex items-center gap-2">
+            {feedback.type === 'success' ? (
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            ) : (
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            )}
+            <span>{feedback.message}</span>
+          </div>
+          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-slate-600 p-1">
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
 
@@ -252,11 +277,10 @@ export default function AdminSchedules() {
                   <div className="flex items-center gap-2">
                     <h3 className="font-extrabold text-base text-slate-900">{s.name}</h3>
                     <span
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                        s.is_active
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                          : 'bg-slate-100 text-slate-600'
-                      }`}
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${s.is_active
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        : 'bg-slate-100 text-slate-600'
+                        }`}
                     >
                       {s.is_active ? 'Activa' : 'Pausada'}
                     </span>
@@ -276,7 +300,7 @@ export default function AdminSchedules() {
                     <Edit2 className="w-3.5 h-3.5" /> Editar
                   </button>
                   <button
-                    onClick={() => handleDeleteSchedule(s.id)}
+                    onClick={() => handleOpenDelete(s)}
                     className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors"
                   >
                     <Trash2 className="w-3.5 h-3.5" /> Eliminar
@@ -293,11 +317,10 @@ export default function AdminSchedules() {
                   return (
                     <div
                       key={day.id}
-                      className={`p-2.5 rounded-2xl border text-center ${
-                        isConfigured
-                          ? 'bg-indigo-50/40 border-indigo-200'
-                          : 'bg-slate-50/50 border-slate-100 text-slate-400'
-                      }`}
+                      className={`p-2.5 rounded-2xl border text-center ${isConfigured
+                        ? 'bg-indigo-50/40 border-indigo-200'
+                        : 'bg-slate-50/50 border-slate-100 text-slate-400'
+                        }`}
                     >
                       <span className="text-xs font-bold block mb-1 text-slate-800">
                         {day.name.slice(0, 3)}
@@ -511,6 +534,79 @@ export default function AdminSchedules() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deletingSchedule && (
+        <div
+          onClick={e => {
+            if (e.target === e.currentTarget) handleCloseDelete();
+          }}
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
+        >
+          <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
+            <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
+                <span>Eliminar agenda</span>
+              </h3>
+              <button onClick={handleCloseDelete} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 space-y-1.5">
+                <p>
+                  <strong>Agenda:</strong> {deletingSchedule.name}
+                </p>
+                <p>
+                  <strong>Profesor asignado:</strong> {deletingSchedule.teacher_name}
+                </p>
+                <p>
+                  <strong>Vigencia:</strong> {formatDisplayDate(deletingSchedule.start_date)}{' '}
+                  {deletingSchedule.end_date ? `hasta ${formatDisplayDate(deletingSchedule.end_date)}` : '(Indefinida)'}
+                </p>
+                <p>
+                  <strong>Turnos semanales:</strong> {deletingSchedule.weekly_hours?.length || 0} intervalos configurados
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-2">
+                <p className="font-bold text-amber-950 flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
+                  Impacto en las clases y disponibilidad
+                </p>
+                <p className="leading-relaxed text-amber-800">
+                  Al eliminar esta agenda semanal de disponibilidad:
+                </p>
+                <ul className="list-disc pl-4 space-y-1 text-amber-800">
+                  <li>Dejarán de generarse nuevos turnos de reserva para este profesor según esta plantilla.</li>
+                  <li>Las clases que ya hubieran sido reservadas o confirmadas previamente <strong>se conservarán intactas</strong>.</li>
+                </ul>
+              </div>
+
+              {/* Actions */}
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={handleCloseDelete}
+                  disabled={deleteSubmitting}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmDelete}
+                  disabled={deleteSubmitting}
+                  className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300 shadow-xs transition-colors"
+                >
+                  {deleteSubmitting ? 'Eliminando...' : 'Eliminar Agenda'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

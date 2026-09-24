@@ -12,6 +12,8 @@ import {
   AlertCircle,
   X,
   User,
+  AlertTriangle,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface AdminBlocksProps {
@@ -35,6 +37,10 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
 
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  // Delete modal state
+  const [deletingBlock, setDeletingBlock] = useState<ScheduleBlock | null>(null);
+  const [deleteSubmitting, setDeleteSubmitting] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -64,15 +70,16 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
   }, [initialOpenCreate]);
 
   useEffect(() => {
-    if (!modalOpen) return;
+    if (!modalOpen && !deletingBlock) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setModalOpen(false);
+        setDeletingBlock(null);
       }
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [modalOpen]);
+  }, [modalOpen, deletingBlock]);
 
   const handleOpenCreate = () => {
     setTeacherId('');
@@ -114,14 +121,29 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('¿Deseas desbloquear este horario?')) return;
+  const handleOpenDelete = (b: ScheduleBlock) => {
+    setDeletingBlock(b);
+  };
+
+  const handleCloseDelete = () => {
+    setDeletingBlock(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingBlock) return;
     try {
-      await api.deleteBlock(id);
-      setFeedback({ type: 'success', message: 'Bloqueo eliminado.' });
+      setDeleteSubmitting(true);
+      await api.deleteBlock(deletingBlock.id);
+      setFeedback({ type: 'success', message: 'Bloqueo eliminado correctamente.' });
+      setTimeout(() => setFeedback(null), 5000);
+      handleCloseDelete();
       fetchData();
     } catch (err: any) {
       setFeedback({ type: 'error', message: err.message || 'Error al eliminar el bloqueo.' });
+      setTimeout(() => setFeedback(null), 6000);
+      handleCloseDelete();
+    } finally {
+      setDeleteSubmitting(false);
     }
   };
 
@@ -146,18 +168,22 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
 
       {feedback && (
         <div
-          className={`p-4 rounded-2xl text-xs sm:text-sm flex items-center gap-2 ${
-            feedback.type === 'success'
-              ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
-              : 'bg-rose-50 border border-rose-200 text-rose-800'
-          }`}
+          className={`p-3.5 rounded-2xl text-xs sm:text-sm flex items-center justify-between gap-2 transition-all ${feedback.type === 'success'
+            ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
+            : 'bg-rose-50 border border-rose-200 text-rose-800'
+            }`}
         >
-          {feedback.type === 'success' ? (
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-          ) : (
-            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
-          )}
-          <span>{feedback.message}</span>
+          <div className="flex items-center gap-2">
+            {feedback.type === 'success' ? (
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            ) : (
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            )}
+            <span>{feedback.message}</span>
+          </div>
+          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-slate-600 p-1">
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
 
@@ -193,7 +219,8 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                     {b.is_full_day ? 'Día Completo' : `${b.start_time} - ${b.end_time}`}
                   </span>
                   <button
-                    onClick={() => handleDelete(b.id)}
+                    onClick={() => handleOpenDelete(b)}
+                    title="Desbloquear / Eliminar bloqueo"
                     className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -337,6 +364,78 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete / Desbloquear Confirmation Modal */}
+      {deletingBlock && (
+        <div
+          onClick={e => {
+            if (e.target === e.currentTarget) handleCloseDelete();
+          }}
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
+        >
+          <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
+            <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
+                <span>Desbloquear horario y eliminar bloqueo</span>
+              </h3>
+              <button onClick={handleCloseDelete} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 space-y-1.5">
+                <p>
+                  <strong>Motivo:</strong> {deletingBlock.reason}
+                </p>
+                <p>
+                  <strong>Fecha:</strong> {formatDisplayDate(deletingBlock.date)}
+                </p>
+                <p>
+                  <strong>Tramo horario:</strong>{' '}
+                  {deletingBlock.is_full_day
+                    ? 'Día completo'
+                    : `${deletingBlock.start_time} - ${deletingBlock.end_time}`}
+                </p>
+                <p>
+                  <strong>Profesor afectado:</strong>{' '}
+                  {deletingBlock.teacher_name || 'Todos los profesores (Cierre global)'}
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-2">
+                <p className="font-bold text-amber-950 flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
+                  Efecto de la reactivación del horario
+                </p>
+                <p className="leading-relaxed text-amber-800">
+                  Al eliminar este bloqueo, el tramo horario volverá a quedar habilitado para que los alumnos puedan reservar clases según las agendas semanales activas.
+                </p>
+              </div>
+
+              {/* Actions */}
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={handleCloseDelete}
+                  disabled={deleteSubmitting}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmDelete}
+                  disabled={deleteSubmitting}
+                  className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300 shadow-xs transition-colors"
+                >
+                  {deleteSubmitting ? 'Desbloqueando...' : 'Desbloquear horario'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

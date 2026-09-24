@@ -200,6 +200,35 @@ export const api = {
   // Stats & Admin
   getStats: () => request<{ stats: DashboardStats }>('/api/stats'),
   getStudents: () => request<{ students: (User & { total_bookings: number; completed_classes: number; active_classes: number })[] }>('/api/students'),
+  createStudent: (body: { name: string; email: string; phone?: string; password?: string }) =>
+    request<{
+      message: string;
+      student: User & { total_bookings: number; completed_classes: number; active_classes: number };
+      initialPassword: string;
+      emailResult?: any;
+    }>('/api/students', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+  updateStudent: (id: string, body: { name: string; email: string; phone?: string; password?: string; is_active?: boolean }) =>
+    request<{
+      message: string;
+      student: User & { total_bookings: number; completed_classes: number; active_classes: number };
+    }>(`/api/students/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    }),
+  deleteStudent: (id: string) =>
+    request<{
+      action: 'deleted' | 'deactivated';
+      message: string;
+    }>(`/api/students/${id}`, {
+      method: 'DELETE',
+    }),
+  resendWelcomeEmail: (studentId: string) =>
+    request<{ message: string; emailResult: any }>(`/api/students/${studentId}/resend-welcome`, {
+      method: 'POST',
+    }),
   getAuditLogs: () => request<{ logs: AuditLog[] }>('/api/audit-logs'),
 
   // Notifications

@@ -7,6 +7,7 @@ export interface User {
   phone?: string;
   avatar_url?: string;
   role: UserRole;
+  is_active?: boolean;
   created_at: string;
   updated_at?: string;
 }

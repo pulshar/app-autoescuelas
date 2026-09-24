@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext.tsx';
 import Navbar from './components/Navbar.tsx';
 import BottomNav from './components/BottomNav.tsx';
@@ -35,11 +35,32 @@ function AppContent() {
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'register'>('login');
+  const [initialAuthEmail, setInitialAuthEmail] = useState('');
 
   // Admin Modals
   const [manualBookingOpen, setManualBookingOpen] = useState(false);
   const [initialOpenCreateTeacher, setInitialOpenCreateTeacher] = useState(false);
   const [initialOpenCreateBlock, setInitialOpenCreateBlock] = useState(false);
+
+
+  // Check for ?login=true & ?email= in URL from welcome email link
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('login') === 'true' || params.get('login') === '1') {
+        const emailParam = params.get('email') || '';
+        if (emailParam) {
+          setInitialAuthEmail(emailParam);
+        }
+        setAuthModalMode('login');
+        setAuthModalOpen(true);
+        // Clear params cleanly without reload
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    } catch {
+      // Ignore
+    }
+  }, []);
 
   const handleOpenAuth = (mode: 'login' | 'register' = 'login') => {
     setAuthModalMode(mode);
@@ -286,6 +307,7 @@ function AppContent() {
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
         initialMode={authModalMode}
+        initialEmail={initialAuthEmail}
       />
 
       {/* Manual Booking Modal for Admin */}
