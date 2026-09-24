@@ -280,7 +280,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
   return (
     <div className="space-y-6 pb-12">
       {/* Header with Creation Button */}
-      <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
             <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">Alumnos Registrados</h2>
@@ -296,20 +296,20 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           {/* Search */}
           <div className="relative w-full sm:w-64">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5" />
             <input
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Buscar por nombre o email..."
-              className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
           {/* New Student Button */}
           <button
             onClick={handleOpenModal}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs sm:text-sm shadow-xs transition-colors shrink-0"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs sm:text-sm shadow-xs transition-colors shrink-0"
           >
             <UserPlus className="w-4 h-4" />
             <span>Dar de alta Alumno</span>
@@ -320,7 +320,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
       {/* Global Feedback Banner */}
       {feedback && (
         <div
-          className={`p-3.5 rounded-2xl text-xs sm:text-sm flex items-center justify-between gap-2 transition-all ${feedback.type === 'success'
+          className={`p-3.5 rounded-lg text-xs sm:text-sm flex items-center justify-between gap-2 transition-all ${feedback.type === 'success'
             ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
             : 'bg-rose-50 border border-rose-200 text-rose-800'
             }`}
@@ -340,7 +340,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
       )}
 
       {/* Table / Cards */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
         {loading ? (
           <div className="py-16 text-center text-slate-400 text-xs animate-pulse">
             Cargando directorio de alumnos...
@@ -367,7 +367,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   {/* Student Info */}
                   <div className="flex items-center gap-3.5 min-w-0">
                     <div
-                      className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-base shrink-0 shadow-2xs ${isInactive
+                      className={`w-12 h-12 rounded-lg flex items-center justify-center font-bold text-base shrink-0 shadow-2xs ${isInactive
                         ? 'bg-slate-200 text-slate-500'
                         : 'bg-indigo-100 text-indigo-700'
                         }`}
@@ -495,8 +495,8 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
           }}
           className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
         >
-          <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
-            <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+          <div className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
+            <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <h3 className="font-bold text-base text-slate-900">Añadir nuevo alumno</h3>
               <button onClick={() => handleCloseModal()} className="text-slate-400 hover:text-slate-600">
                 <X className="w-5 h-5" />
@@ -508,7 +508,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
               {successData ? (
                 /* Success View */
                 <div className="space-y-5 animate-fadeIn">
-                  <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-2">
+                  <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-2">
                     <div className="flex items-center gap-2 font-bold text-sm text-emerald-800">
                       <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                       <span>¡Alumno registrado con éxito en la plataforma!</span>
@@ -519,7 +519,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   </div>
 
                   {/* Summary of credentials */}
-                  <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3">
+                  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
                         Credenciales asignadas:
@@ -551,7 +551,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                       </p>
                       <p className="flex items-center gap-2">
                         <strong className="text-slate-900">Contraseña inicial:</strong>
-                        <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200 font-mono font-bold text-indigo-600">
+                        <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600">
                           {successData.initialPassword}
                         </span>
                       </p>
@@ -559,7 +559,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   </div>
 
                   {/* Notice about password & Google */}
-                  <div className="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200/80 text-xs text-amber-900 space-y-1.5">
+                  <div className="p-3.5 rounded-lg bg-amber-50/80 border border-amber-200/80 text-xs text-amber-900 space-y-1.5">
                     <p className="font-semibold flex items-center gap-1.5 text-amber-800">
                       <ShieldCheck className="w-4 h-4 text-amber-600" /> Primer acceso del alumno:
                     </p>
@@ -572,7 +572,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   <div className="flex flex-col sm:flex-row items-center justify-end gap-2.5 pt-2">
                     <button
                       onClick={handleCloseModal}
-                      className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                      className="w-full sm:w-auto px-4 py-2.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
                     >
                       Cerrar
                     </button>
@@ -582,7 +582,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                         handleCloseModal();
                         onSelectStudentForBooking(sid);
                       }}
-                      className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                      className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-colors flex items-center justify-center gap-1.5"
                     >
                       <CalendarPlus className="w-4 h-4" />
                       <span>Asignar Primera Clase</span>
@@ -593,7 +593,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                 /* Form View */
                 <form onSubmit={handleCreateStudent} className="space-y-5">
                   {formError && (
-                    <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+                    <div className="p-3.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
                       <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
                       <span>{formError}</span>
                     </div>
@@ -610,7 +610,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                       value={name}
                       onChange={e => setName(e.target.value)}
                       placeholder="Ej. Sofía Martínez Ruiz"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
 
@@ -625,7 +625,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                       value={email}
                       onChange={e => setEmail(e.target.value)}
                       placeholder="Ej. sofia.martinez@gmail.com"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
 
@@ -639,7 +639,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                       value={phone}
                       onChange={e => setPhone(e.target.value)}
                       placeholder="Ej. +34 612 345 678"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
 
@@ -665,7 +665,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                         required
                         value={password}
                         onChange={e => setPassword(e.target.value)}
-                        className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-slate-200 font-mono text-xs sm:text-sm font-semibold focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                        className="w-full pl-3.5 pr-10 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-semibold focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
                       />
                       <button
                         type="button"
@@ -678,7 +678,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   </div>
 
                   {/* Informational Callout Box */}
-                  <div className="p-3.5 rounded-2xl bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-950 space-y-2">
+                  <div className="p-3.5 rounded-lg bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-950 space-y-2">
                     <div className="flex items-start gap-2">
                       <Info className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
                       <div className="space-y-1">
@@ -700,14 +700,14 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                       type="button"
                       onClick={handleCloseModal}
                       disabled={submitting}
-                      className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                      className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                     >
                       Cancelar
                     </button>
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 shadow-xs"
+                      className="px-5 py-2.5 rounded-lg text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 shadow-xs"
                     >
                       {submitting ? 'Dando de alta y enviando correo...' : 'Dar de alta y enviar acceso'}
                     </button>
@@ -727,8 +727,8 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
           }}
           className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
         >
-          <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
-            <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+          <div className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
+            <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-base text-slate-900">Editar Alumno</h3>
                 <p className="text-xs text-slate-500">Modifica datos del alumno o su estado</p>
@@ -740,7 +740,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
 
             <form onSubmit={handleUpdateStudent} className="p-6 space-y-4">
               {editError && (
-                <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+                <div className="p-3.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
                   <span>{editError}</span>
                 </div>
@@ -756,7 +756,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   required
                   value={editName}
                   onChange={e => setEditName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
@@ -770,7 +770,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   required
                   value={editEmail}
                   onChange={e => setEditEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
@@ -784,7 +784,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   value={editPhone}
                   onChange={e => setEditPhone(e.target.value)}
                   placeholder="+34 600 000 000"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
@@ -799,7 +799,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                     value={editPassword}
                     onChange={e => setEditPassword(e.target.value)}
                     placeholder="Dejar en blanco para no modificar"
-                    className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-slate-200 font-mono text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                    className="w-full pl-3.5 pr-10 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
                   />
                   <button
                     type="button"
@@ -840,14 +840,14 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   type="button"
                   onClick={handleCloseEdit}
                   disabled={editSubmitting}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={editSubmitting}
-                  className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 shadow-xs"
+                  className="px-5 py-2.5 rounded-lg text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 shadow-xs"
                 >
                   {editSubmitting ? 'Guardando...' : 'Guardar Cambios'}
                 </button>
@@ -865,8 +865,8 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
           }}
           className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
         >
-          <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
-            <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+          <div className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
+            <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
                 <span>
                   {(deletingStudent.total_bookings || 0) > 0 ? 'Dar de baja alumno' : 'Eliminar alumno'}
@@ -878,7 +878,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
             </div>
 
             <div className="p-6 space-y-4">
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 space-y-1">
+              <div className="p-4 rounded-lg bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-950 space-y-1.5">
                 <p>
                   <strong>Alumno:</strong> {deletingStudent.name}
                 </p>
@@ -893,7 +893,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
               </div>
 
               {(deletingStudent.total_bookings || 0) > 0 ? (
-                <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-2">
+                <div className="p-3.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-2">
                   <p className="font-bold text-amber-950 flex items-center gap-1.5">
                     <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
                     Protección de historial de la autoescuela
@@ -908,7 +908,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   </ul>
                 </div>
               ) : (
-                <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs space-y-1">
+                <div className="p-3.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs space-y-1">
                   <p className="font-bold text-rose-950">Eliminación física definitiva</p>
                   <p className="leading-relaxed">
                     Este alumno no tiene ninguna clase práctica asociada en el sistema. Se eliminará de forma <strong>permanente e irreversible</strong>.
@@ -922,7 +922,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   type="button"
                   onClick={handleCloseDelete}
                   disabled={deleteSubmitting}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
@@ -930,7 +930,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   type="button"
                   onClick={handleConfirmDelete}
                   disabled={deleteSubmitting}
-                  className={`px-5 py-2.5 rounded-xl text-xs font-bold text-white shadow-xs transition-colors ${(deletingStudent.total_bookings || 0) > 0
+                  className={`px-5 py-2.5 rounded-lg text-xs font-bold text-white shadow-xs transition-colors ${(deletingStudent.total_bookings || 0) > 0
                     ? 'bg-amber-600 hover:bg-amber-700 disabled:bg-amber-300'
                     : 'bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300'
                     }`}

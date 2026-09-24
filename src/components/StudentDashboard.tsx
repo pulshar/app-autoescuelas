@@ -102,7 +102,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
   return (
     <div className="space-y-6 pb-12">
       {/* Welcome Greeting Banner */}
-      <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-semibold text-indigo-600 uppercase tracking-wider">Área del Alumno</span>
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mt-0.5">
@@ -115,7 +115,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
 
         <button
           onClick={() => onNavigate('book')}
-          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md shadow-indigo-100 hover:shadow-indigo-200 transition-all shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md shadow-indigo-100 hover:shadow-indigo-200 transition-all shrink-0"
         >
           <CalendarPlus className="w-5 h-5" />
           <span>Reservar nueva clase</span>
@@ -123,21 +123,21 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
       </div>
 
       {cancelSuccess && (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm flex items-center gap-2">
+        <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm flex items-center gap-2">
           <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
           <span>{cancelSuccess}</span>
         </div>
       )}
 
       {cancelError && (
-        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm flex items-center gap-2">
+        <div className="p-4 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm flex items-center gap-2">
           <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
           <span>{cancelError}</span>
         </div>
       )}
 
       {/* SECTION 25: PROMINENT "PRÓXIMA CLASE" CARD */}
-      <div className="bg-gradient-to-br from-indigo-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+      <div className="bg-gradient-to-br from-indigo-900 via-slate-900 to-indigo-950 text-white rounded-xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
         {/* Subtle background decoration */}
         <div className="absolute top-0 right-0 -mr-8 -mt-8 w-64 h-64 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
         <div className="absolute bottom-0 right-1/4 w-32 h-32 bg-indigo-400/10 rounded-full blur-xl pointer-events-none" />
@@ -178,8 +178,8 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                 </div>
 
                 {/* Instructor Card info */}
-                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-indigo-700/80 flex items-center justify-center text-xl font-bold text-white border border-indigo-400/30 overflow-hidden shrink-0">
+                <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/10 flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-lg bg-indigo-700/80 flex items-center justify-center text-xl font-bold text-white border border-indigo-400/30 overflow-hidden shrink-0">
                     <User className="w-7 h-7" />
                   </div>
                   <div>
@@ -207,7 +207,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                       {allowed ? (
                         <button
                           onClick={() => setCancellingId(nextBooking.id)}
-                          className="px-3.5 py-2 rounded-xl text-xs font-semibold text-rose-300 hover:text-white hover:bg-rose-500/20 border border-rose-400/30 transition-colors"
+                          className="px-3.5 py-2 rounded-lg text-xs font-semibold text-rose-300 hover:text-white hover:bg-rose-500/20 border border-rose-400/30 transition-colors"
                         >
                           Cancelar esta clase
                         </button>
@@ -228,7 +228,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
               </p>
               <button
                 onClick={() => onNavigate('book')}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-indigo-900 font-bold text-xs sm:text-sm hover:bg-indigo-50 shadow-md transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white text-indigo-900 font-bold text-xs sm:text-sm hover:bg-indigo-50 shadow-md transition-colors"
               >
                 <CalendarPlus className="w-4 h-4" /> Reservar ahora mi siguiente clase
               </button>
@@ -240,7 +240,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
       {/* Cancellation Confirmation Modal */}
       {cancellingId && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
             <h4 className="text-lg font-bold text-slate-900 flex items-center gap-2">
               <Ban className="w-5 h-5 text-rose-500" /> Cancelar reserva
             </h4>
@@ -257,7 +257,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                 value={cancelReason}
                 onChange={e => setCancelReason(e.target.value)}
                 placeholder="Ej. Imprevisto de horario laboral..."
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
@@ -267,13 +267,13 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                   setCancellingId(null);
                   setCancelReason('');
                 }}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+                className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
               >
                 Volver
               </button>
               <button
                 onClick={() => handleCancel(cancellingId)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-xs transition-colors"
+                className="px-4 py-2 rounded-lg text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-xs transition-colors"
               >
                 Confirmar cancelación
               </button>
@@ -283,7 +283,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
       )}
 
       {/* SECTION 25: RESUMEN DE PRÓXIMAS RESERVAS */}
-      <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs">
+      <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-bold text-base text-slate-900">Tus próximas reservas</h3>
           <button

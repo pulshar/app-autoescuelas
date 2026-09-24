@@ -82,7 +82,7 @@ function AppContent() {
           /* Unauthenticated Landing & Quick Access */
           <div className="space-y-12 py-6">
             {/* Hero Card */}
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900 via-slate-900 to-indigo-950 text-white p-8 sm:p-12 shadow-2xl">
+            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-900 via-slate-900 to-indigo-950 text-white p-8 sm:p-12 shadow-2xl">
               <div className="absolute top-0 right-0 -mr-16 -mt-16 w-96 h-96 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
 
               <div className="relative z-10 max-w-2xl">
@@ -102,7 +102,7 @@ function AppContent() {
                 <div className="flex flex-wrap items-center gap-3.5 mt-8">
                   <button
                     onClick={() => handleOpenAuth('register')}
-                    className="px-6 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2"
+                    className="px-6 py-3.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2"
                   >
                     <span>Empezar ahora</span>
                     <ArrowRight className="w-4 h-4" />
@@ -110,7 +110,7 @@ function AppContent() {
 
                   <button
                     onClick={() => handleOpenAuth('login')}
-                    className="px-6 py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm sm:text-base border border-white/20 backdrop-blur-xs transition-colors"
+                    className="px-6 py-3.5 rounded-lg bg-white/10 hover:bg-white/15 text-white font-bold text-sm sm:text-base border border-white/20 backdrop-blur-xs transition-colors"
                   >
                     Iniciar sesión
                   </button>
@@ -119,7 +119,7 @@ function AppContent() {
             </div>
 
             {/* Quick Demo Switcher (Instant Evaluation for Test Users) */}
-            {/* <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs">
+            {/* <div className="bg-white rounded-xl p-6 sm:p-8 border border-slate-200 shadow-xs">
               <div className="text-center max-w-lg mx-auto mb-6">
                 <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">
                   Acceso Inmediato
@@ -135,7 +135,7 @@ function AppContent() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto">
                 <button
                   onClick={() => login('alvaroq@gmail.com', 'alumno05')}
-                  className="p-5 rounded-2xl border-2 border-indigo-200 hover:border-indigo-600 bg-indigo-50/40 hover:bg-indigo-50 text-left transition-all group"
+                  className="p-5 rounded-lg border-2 border-indigo-200 hover:border-indigo-600 bg-indigo-50/40 hover:bg-indigo-50 text-left transition-all group"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold">
@@ -156,7 +156,7 @@ function AppContent() {
 
                 <button
                   onClick={() => login('alvaroq.dev@gmail.com', 'admin05')}
-                  className="p-5 rounded-2xl border-2 border-amber-200 hover:border-amber-600 bg-amber-50/40 hover:bg-amber-50 text-left transition-all group"
+                  className="p-5 rounded-lg border-2 border-amber-200 hover:border-amber-600 bg-amber-50/40 hover:bg-amber-50 text-left transition-all group"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="w-10 h-10 rounded-xl bg-amber-600 text-white flex items-center justify-center font-bold">
@@ -179,8 +179,8 @@ function AppContent() {
 
             {/* Feature Highlights Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center mb-4">
+              <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs">
+                <div className="w-12 h-12 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center mb-4">
                   <Clock className="w-6 h-6" />
                 </div>
                 <h4 className="font-extrabold text-base text-slate-900">Horarios en Tiempo Real</h4>
@@ -189,8 +189,8 @@ function AppContent() {
                 </p>
               </div>
 
-              <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center mb-4">
+              <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs">
+                <div className="w-12 h-12 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center mb-4">
                   <Car className="w-6 h-6" />
                 </div>
                 <h4 className="font-extrabold text-base text-slate-900">Profesores Titulares</h4>
@@ -199,8 +199,8 @@ function AppContent() {
                 </p>
               </div>
 
-              <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center mb-4">
+              <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs">
+                <div className="w-12 h-12 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center mb-4">
                   <CalendarCheck className="w-6 h-6" />
                 </div>
                 <h4 className="font-extrabold text-base text-slate-900">Cancelaciones Claras</h4>

@@ -343,7 +343,7 @@ export default function AdminSettings() {
   return (
     <div className="space-y-6 pb-16 max-w-4xl">
       {/* Header */}
-      <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs">
+      <div className="bg-white rounded-xl p-6 sm:p-7 border border-slate-200 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
@@ -365,7 +365,7 @@ export default function AdminSettings() {
               type="button"
               onClick={() => handleSave()}
               disabled={saving || loading}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white font-bold text-xs sm:text-sm shadow-sm transition-all"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white font-bold text-xs sm:text-sm shadow-sm transition-all"
             >
               <Save className="w-4 h-4" />
               <span>{saving ? 'Guardando...' : 'Guardar Cambios'}</span>
@@ -378,9 +378,9 @@ export default function AdminSettings() {
           <button
             type="button"
             onClick={() => setActiveSubTab('reminders')}
-            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${activeSubTab === 'reminders'
-                ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
-                : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${activeSubTab === 'reminders'
+              ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
+              : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
               }`}
           >
             <Bell className="w-4 h-4" />
@@ -398,9 +398,9 @@ export default function AdminSettings() {
           <button
             type="button"
             onClick={() => setActiveSubTab('general')}
-            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${activeSubTab === 'general'
-                ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
-                : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${activeSubTab === 'general'
+              ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
+              : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
               }`}
           >
             <Clock className="w-4 h-4" />
@@ -412,11 +412,11 @@ export default function AdminSettings() {
       {/* Global Feedback Banner */}
       {feedback && (
         <div
-          className={`p-4 rounded-2xl text-xs sm:text-sm flex items-start justify-between gap-3 border ${feedback.type === 'success'
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-              : feedback.type === 'error'
-                ? 'bg-rose-50 border-rose-200 text-rose-800'
-                : 'bg-sky-50 border-sky-200 text-sky-800'
+          className={`p-4 rounded-lg text-xs sm:text-sm flex items-start justify-between gap-3 border ${feedback.type === 'success'
+            ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+            : feedback.type === 'error'
+              ? 'bg-rose-50 border-rose-200 text-rose-800'
+              : 'bg-sky-50 border-sky-200 text-sky-800'
             }`}
         >
           <div className="flex items-center gap-2.5">
@@ -436,7 +436,7 @@ export default function AdminSettings() {
       )}
 
       {loading ? (
-        <div className="py-16 text-center text-slate-400 text-sm animate-pulse bg-white rounded-3xl border border-slate-200">
+        <div className="py-16 text-center text-slate-400 text-sm animate-pulse bg-white rounded-xl border border-slate-200">
           Cargando configuración de la autoescuela...
         </div>
       ) : activeSubTab === 'reminders' ? (
@@ -445,13 +445,13 @@ export default function AdminSettings() {
         /* ================================================================= */
         <div className="space-y-6">
           {/* Card 0: Resend Service Integration Status */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
+          <div className="bg-white rounded-xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-start gap-3">
                 <div
-                  className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${resendStatus?.configured
-                      ? 'bg-emerald-100 text-emerald-700'
-                      : 'bg-amber-100 text-amber-700'
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${resendStatus?.configured
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : 'bg-amber-100 text-amber-700'
                     }`}
                 >
                   <Mail className="w-5 h-5" />
@@ -493,7 +493,7 @@ export default function AdminSettings() {
                     onChange={(e) => setTestRecipient(e.target.value)}
                     placeholder="tucorreo@gmail.com"
                     title="Dirección donde se enviará el correo de prueba"
-                    className="w-full sm:w-60 px-3 py-2 rounded-xl border border-slate-300 text-xs font-medium text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-2xs"
+                    className="w-full sm:w-60 px-3 py-2 rounded-lg border border-slate-300 text-xs font-medium text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-2xs"
                   />
                   {resendStatus?.isSandbox && resendStatus.authorizedTestEmail && testRecipient !== resendStatus.authorizedTestEmail && (
                     <button
@@ -509,7 +509,7 @@ export default function AdminSettings() {
                   type="button"
                   onClick={handleSendTestEmail}
                   disabled={testingEmail || !testRecipient.trim()}
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white text-xs font-bold shadow-xs transition-all shrink-0 self-start"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white text-xs font-bold shadow-xs transition-all shrink-0 self-start"
                 >
                   <Send className={`w-3.5 h-3.5 ${testingEmail ? 'animate-pulse' : ''}`} />
                   <span>{testingEmail ? 'Enviando...' : 'Enviar prueba'}</span>
@@ -520,9 +520,9 @@ export default function AdminSettings() {
             {/* Email Test Feedback Banner */}
             {emailFeedback && (
               <div
-                className={`p-3.5 rounded-2xl text-xs flex items-center justify-between border ${emailFeedback.success
-                    ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                    : 'bg-rose-50 border-rose-200 text-rose-800'
+                className={`p-3.5 rounded-lg text-xs flex items-center justify-between border ${emailFeedback.success
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                  : 'bg-rose-50 border-rose-200 text-rose-800'
                   }`}
               >
                 <div className="flex items-center gap-2">
@@ -544,7 +544,7 @@ export default function AdminSettings() {
             )}
 
             {/* Resend details or instructions */}
-            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/70 text-xs space-y-2.5">
+            <div className="bg-slate-50 rounded-lg p-4 border border-slate-200/70 text-xs space-y-2.5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-slate-600">
                 <div>
                   <span className="font-semibold text-slate-700">Remitente actual:</span>{' '}
@@ -572,13 +572,13 @@ export default function AdminSettings() {
           </div>
 
           {/* Card 1: Master Enable Toggle & Channels */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-5">
+          <div className="bg-white rounded-xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
               <div className="flex items-start gap-3">
                 <div
-                  className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${reminderEnabled
-                      ? 'bg-amber-100 text-amber-700'
-                      : 'bg-slate-100 text-slate-400'
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors ${reminderEnabled
+                    ? 'bg-amber-100 text-amber-700'
+                    : 'bg-slate-100 text-slate-400'
                     }`}
                 >
                   <Bell className="w-5 h-5" />
@@ -617,15 +617,15 @@ export default function AdminSettings() {
                 <button
                   type="button"
                   onClick={() => setReminderChannel('both')}
-                  className={`p-3.5 rounded-2xl border text-left flex items-start gap-3 transition-all ${reminderChannel === 'both'
-                      ? 'border-indigo-600 bg-indigo-50/60 ring-2 ring-indigo-600/20'
-                      : 'border-slate-200 hover:border-slate-300 bg-white'
+                  className={`p-3.5 rounded-lg border text-left flex items-start gap-3 transition-all ${reminderChannel === 'both'
+                    ? 'border-indigo-600 bg-indigo-50/60 ring-2 ring-indigo-600/20'
+                    : 'border-slate-200 hover:border-slate-300 bg-white'
                     }`}
                 >
                   <div
                     className={`p-2 rounded-xl shrink-0 ${reminderChannel === 'both'
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-slate-100 text-slate-600'
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-slate-100 text-slate-600'
                       }`}
                   >
                     <Layers className="w-4 h-4" />
@@ -646,15 +646,15 @@ export default function AdminSettings() {
                 <button
                   type="button"
                   onClick={() => setReminderChannel('app')}
-                  className={`p-3.5 rounded-2xl border text-left flex items-start gap-3 transition-all ${reminderChannel === 'app'
-                      ? 'border-indigo-600 bg-indigo-50/60 ring-2 ring-indigo-600/20'
-                      : 'border-slate-200 hover:border-slate-300 bg-white'
+                  className={`p-3.5 rounded-lg border text-left flex items-start gap-3 transition-all ${reminderChannel === 'app'
+                    ? 'border-indigo-600 bg-indigo-50/60 ring-2 ring-indigo-600/20'
+                    : 'border-slate-200 hover:border-slate-300 bg-white'
                     }`}
                 >
                   <div
                     className={`p-2 rounded-xl shrink-0 ${reminderChannel === 'app'
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-slate-100 text-slate-600'
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-slate-100 text-slate-600'
                       }`}
                   >
                     <Smartphone className="w-4 h-4" />
@@ -670,15 +670,15 @@ export default function AdminSettings() {
                 <button
                   type="button"
                   onClick={() => setReminderChannel('email')}
-                  className={`p-3.5 rounded-2xl border text-left flex items-start gap-3 transition-all ${reminderChannel === 'email'
-                      ? 'border-indigo-600 bg-indigo-50/60 ring-2 ring-indigo-600/20'
-                      : 'border-slate-200 hover:border-slate-300 bg-white'
+                  className={`p-3.5 rounded-lg border text-left flex items-start gap-3 transition-all ${reminderChannel === 'email'
+                    ? 'border-indigo-600 bg-indigo-50/60 ring-2 ring-indigo-600/20'
+                    : 'border-slate-200 hover:border-slate-300 bg-white'
                     }`}
                 >
                   <div
                     className={`p-2 rounded-xl shrink-0 ${reminderChannel === 'email'
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-slate-100 text-slate-600'
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-slate-100 text-slate-600'
                       }`}
                   >
                     <Mail className="w-4 h-4" />
@@ -695,9 +695,9 @@ export default function AdminSettings() {
           </div>
 
           {/* Card 2: Advance Time Configuration (Tiempo de Antelación) */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-5">
+          <div className="bg-white rounded-xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
                 <Clock className="w-5 h-5" />
               </div>
               <div>
@@ -723,9 +723,9 @@ export default function AdminSettings() {
                       key={preset.hours}
                       type="button"
                       onClick={() => setReminderHoursBefore(preset.hours)}
-                      className={`p-3 rounded-2xl border text-center transition-all relative ${isSelected
-                          ? 'border-indigo-600 bg-indigo-50/80 ring-2 ring-indigo-600/20 text-indigo-900'
-                          : 'border-slate-200 hover:border-slate-300 bg-slate-50/50 text-slate-700'
+                      className={`p-3 rounded-lg border text-center transition-all relative ${isSelected
+                        ? 'border-indigo-600 bg-indigo-50/80 ring-2 ring-indigo-600/20 text-indigo-900'
+                        : 'border-slate-200 hover:border-slate-300 bg-slate-50/50 text-slate-700'
                         }`}
                     >
                       {preset.recommended && (
@@ -754,13 +754,13 @@ export default function AdminSettings() {
                     max={168}
                     value={reminderHoursBefore}
                     onChange={e => setReminderHoursBefore(Math.max(1, Number(e.target.value)))}
-                    className="w-28 px-3.5 py-2 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-28 px-3.5 py-2 rounded-lg border border-slate-200 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   />
                   <span className="text-xs font-semibold text-slate-500">horas antes del inicio</span>
                 </div>
               </div>
 
-              <div className="bg-slate-50 px-4 py-3 rounded-2xl border border-slate-200/80 text-xs text-slate-600 flex items-center gap-2">
+              <div className="bg-slate-50 px-4 py-3 rounded-lg border border-slate-200/80 text-xs text-slate-600 flex items-center gap-2">
                 <Info className="w-4 h-4 text-indigo-600 shrink-0" />
                 <span>
                   Disparo programado: <strong>{getHumanDuration(reminderHoursBefore)}</strong>
@@ -770,10 +770,10 @@ export default function AdminSettings() {
           </div>
 
           {/* Card 3: Notification Content & Template (Contenido de las Notificaciones) */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-6">
+          <div className="bg-white rounded-xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
                   <Tag className="w-5 h-5" />
                 </div>
                 <div>
@@ -797,7 +797,7 @@ export default function AdminSettings() {
             </div>
 
             {/* Variable Tags Selector */}
-            <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/70 space-y-2.5">
+            <div className="bg-slate-50/80 p-4 rounded-lg border border-slate-200/70 space-y-2.5">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
@@ -844,7 +844,7 @@ export default function AdminSettings() {
                 onFocus={() => setLastFocusedField('title')}
                 onChange={e => setReminderTitleTemplate(e.target.value)}
                 placeholder="Ej: Recordatorio: Clase práctica - {fecha} a las {hora}"
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
 
@@ -893,7 +893,7 @@ export default function AdminSettings() {
                       value={reminderLocationText}
                       onChange={e => setReminderLocationText(e.target.value)}
                       placeholder="Dirección o punto de encuentro..."
-                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     />
                   </div>
                   <span className="text-[11px] text-slate-400 mt-1 block">
@@ -905,7 +905,7 @@ export default function AdminSettings() {
           </div>
 
           {/* Card 4: Live Previews (Tabbed: Email HTML vs App Notification) */}
-          <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-7 shadow-lg space-y-4">
+          <div className="bg-slate-900 text-white rounded-xl p-6 sm:p-7 shadow-lg space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <Mail className="w-5 h-5 text-rose-400" />
@@ -919,8 +919,8 @@ export default function AdminSettings() {
                   type="button"
                   onClick={() => setPreviewTab('email')}
                   className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${previewTab === 'email'
-                      ? 'bg-white text-slate-900 shadow-xs'
-                      : 'text-slate-300 hover:text-white'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-300 hover:text-white'
                     }`}
                 >
                   <Mail className="w-3.5 h-3.5" /> Correo Electrónico (Resend)
@@ -929,8 +929,8 @@ export default function AdminSettings() {
                   type="button"
                   onClick={() => setPreviewTab('app')}
                   className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${previewTab === 'app'
-                      ? 'bg-white text-slate-900 shadow-xs'
-                      : 'text-slate-300 hover:text-white'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-300 hover:text-white'
                     }`}
                 >
                   <Smartphone className="w-3.5 h-3.5" /> Campana en la App
@@ -940,8 +940,8 @@ export default function AdminSettings() {
 
             {previewTab === 'email' ? (
               /* EMAIL PREVIEW MOCKUP */
-              <div className="bg-slate-100 text-slate-900 rounded-2xl p-3 sm:p-6 shadow-inner">
-                <div className="max-w-md mx-auto bg-white rounded-2xl border border-slate-200 shadow-md overflow-hidden text-left">
+              <div className="bg-slate-100 text-slate-900 rounded-lg p-3 sm:p-6 shadow-inner">
+                <div className="max-w-md mx-auto bg-white rounded-lg border border-slate-200 shadow-md overflow-hidden text-left">
                   {/* Brand Header */}
                   <div className="bg-[#da1249] p-5 text-white">
                     <span className="inline-block bg-white/20 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-1.5">
@@ -984,7 +984,7 @@ export default function AdminSettings() {
                     </div>
 
                     <div className="pt-2 text-center">
-                      <span className="inline-block bg-[#da1249] text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-xs">
+                      <span className="inline-block bg-[#da1249] text-white font-bold text-xs px-5 py-2.5 rounded-lg shadow-xs">
                         Ver mis clases en la plataforma
                       </span>
                     </div>
@@ -997,7 +997,7 @@ export default function AdminSettings() {
               </div>
             ) : (
               /* APP NOTIFICATION PREVIEW MOCKUP */
-              <div className="bg-white text-slate-900 rounded-2xl p-4 sm:p-5 shadow-xl border border-white/20">
+              <div className="bg-white text-slate-900 rounded-lg p-4 sm:p-5 shadow-xl border border-white/20">
                 <div className="flex items-start gap-3">
                   <div className="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-sm">
                     <Bell className="w-4 h-4" />
@@ -1029,7 +1029,7 @@ export default function AdminSettings() {
           </div>
 
           {/* Card 5: Testing, Manual Execution & History */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
+          <div className="bg-white rounded-xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
             <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
               <Play className="w-5 h-5 text-indigo-600" /> Pruebas y Acciones del Sistema
             </h3>
@@ -1040,7 +1040,7 @@ export default function AdminSettings() {
                 type="button"
                 onClick={handleSendTest}
                 disabled={testingReminder}
-                className="p-4 rounded-2xl border border-indigo-200 bg-indigo-50/50 hover:bg-indigo-50 text-left transition-all group flex items-start gap-3"
+                className="p-4 rounded-lg border border-indigo-200 bg-indigo-50/50 hover:bg-indigo-50 text-left transition-all group flex items-start gap-3"
               >
                 <div className="p-2.5 rounded-xl bg-indigo-600 text-white group-hover:scale-105 transition-transform shrink-0">
                   <Send className="w-4 h-4" />
@@ -1060,7 +1060,7 @@ export default function AdminSettings() {
                 type="button"
                 onClick={handleProcessRemindersNow}
                 disabled={processingReminders}
-                className="p-4 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-left transition-all group flex items-start gap-3"
+                className="p-4 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-left transition-all group flex items-start gap-3"
               >
                 <div className="p-2.5 rounded-xl bg-slate-800 text-white group-hover:scale-105 transition-transform shrink-0">
                   <RefreshCw className={`w-4 h-4 ${processingReminders ? 'animate-spin' : ''}`} />
@@ -1100,11 +1100,11 @@ export default function AdminSettings() {
               </div>
 
               {remindersLog.length === 0 ? (
-                <div className="py-6 text-center text-slate-400 text-xs bg-slate-50 rounded-2xl border border-slate-100">
+                <div className="py-6 text-center text-slate-400 text-xs bg-slate-50 rounded-lg border border-slate-100">
                   Aún no se han emitido recordatorios automáticos. Se generarán automáticamente según el horario programado.
                 </div>
               ) : (
-                <div className="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden max-h-56 overflow-y-auto">
+                <div className="divide-y divide-slate-100 border border-slate-200 rounded-lg overflow-hidden max-h-56 overflow-y-auto">
                   {remindersLog.slice(0, 5).map(log => (
                     <div key={log.id} className="p-3 bg-white hover:bg-slate-50/80 transition-colors">
                       <div className="flex items-center justify-between text-[11px]">
@@ -1139,7 +1139,7 @@ export default function AdminSettings() {
         /* ================================================================= */
         <div className="space-y-6">
           {/* Duración y Descansos */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
+          <div className="bg-white rounded-xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
             <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
               <Clock className="w-5 h-5 text-indigo-600" /> Duración y Descansos de Clases
             </h3>
@@ -1152,7 +1152,7 @@ export default function AdminSettings() {
                 <select
                   value={classDuration}
                   onChange={e => setClassDuration(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-semibold bg-white"
                 >
                   <option value={30}>30 minutos</option>
                   <option value={45}>45 minutos (Estándar DGT)</option>
@@ -1172,7 +1172,7 @@ export default function AdminSettings() {
                 <select
                   value={restTime}
                   onChange={e => setRestTime(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-semibold bg-white"
                 >
                   <option value={0}>0 minutos (Clases continuas)</option>
                   <option value={5}>5 minutos</option>
@@ -1187,7 +1187,7 @@ export default function AdminSettings() {
           </div>
 
           {/* Cancellation Policy */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
+          <div className="bg-white rounded-xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
             <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
               <Ban className="w-5 h-5 text-rose-600" /> Política de Cancelación
             </h3>
@@ -1204,7 +1204,7 @@ export default function AdminSettings() {
                   required
                   value={minCancellationHours}
                   onChange={e => setMinCancellationHours(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-semibold"
                 />
               </div>
               <span className="text-[11px] text-slate-400 mt-1.5 block leading-relaxed">
@@ -1215,7 +1215,7 @@ export default function AdminSettings() {
           </div>
 
           {/* Timezone */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
+          <div className="bg-white rounded-xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
             <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
               <Calendar className="w-5 h-5 text-indigo-600" /> Zona Horaria Operativa
             </h3>
@@ -1227,7 +1227,7 @@ export default function AdminSettings() {
               <select
                 value={timezone}
                 onChange={e => setTimezone(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold bg-white"
+                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-semibold bg-white"
               >
                 <option value="Europe/Madrid">Europe/Madrid (Península y Baleares)</option>
                 <option value="Atlantic/Canary">Atlantic/Canary (Islas Canarias)</option>
@@ -1246,7 +1246,7 @@ export default function AdminSettings() {
           type="button"
           onClick={() => handleSave()}
           disabled={saving || loading}
-          className="inline-flex items-center gap-2 px-7 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-100 transition-all"
+          className="inline-flex items-center gap-2 px-7 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-100 transition-all"
         >
           <Save className="w-4 h-4" />
           <span>{saving ? 'Guardando configuración...' : 'Guardar Todo'}</span>

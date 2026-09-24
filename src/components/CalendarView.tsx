@@ -112,7 +112,7 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
   return (
     <div className="space-y-6 pb-12">
       {/* Calendar Header */}
-      <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">
             {isAdmin ? 'Calendario General de Clases' : 'Mi Calendario de Prácticas'}
@@ -132,7 +132,7 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
               <select
                 value={selectedTeacherId}
                 onChange={e => setSelectedTeacherId(e.target.value)}
-                className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-white"
+                className="px-3 py-2 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 bg-white"
               >
                 <option value="">Todos los profesores</option>
                 {teachers.map(t => (
@@ -147,7 +147,7 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
           {!isAdmin && onNavigateToBook && (
             <button
               onClick={onNavigateToBook}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition-colors"
             >
               <CalendarPlus className="w-4 h-4" /> Reservar Clase
             </button>
@@ -157,7 +157,7 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* MONTH CALENDAR (2 Cols on lg) */}
-        <div className="lg:col-span-2 bg-white rounded-3xl p-6 border border-slate-200 shadow-xs">
+        <div className="lg:col-span-2 bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
           {/* Month Navigation */}
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-extrabold text-base sm:text-lg text-slate-900 capitalize">
@@ -196,7 +196,7 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
           {/* Days */}
           <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
             {Array.from({ length: startingDayOffset }).map((_, i) => (
-              <div key={`empty-${i}`} className="h-20 rounded-2xl opacity-0" />
+              <div key={`empty-${i}`} className="h-20 rounded-lg opacity-0" />
             ))}
 
             {Array.from({ length: daysInMonth }).map((_, i) => {
@@ -211,21 +211,19 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
                 <button
                   key={dateStr}
                   onClick={() => setSelectedDate(dateStr)}
-                  className={`h-20 rounded-2xl p-1.5 text-left flex flex-col justify-between border transition-all ${
-                    isSelected
-                      ? 'border-indigo-600 bg-indigo-50/50 shadow-xs'
-                      : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50/50'
-                  }`}
+                  className={`h-20 rounded-lg p-1.5 text-left flex flex-col justify-between border transition-all ${isSelected
+                    ? 'border-indigo-600 bg-indigo-50/50 shadow-xs'
+                    : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50/50'
+                    }`}
                 >
                   <div className="flex items-center justify-between">
                     <span
-                      className={`text-xs font-bold rounded-lg px-1.5 py-0.5 ${
-                        isToday
-                          ? 'bg-indigo-600 text-white'
-                          : isSelected
+                      className={`text-xs font-bold rounded-lg px-1.5 py-0.5 ${isToday
+                        ? 'bg-indigo-600 text-white'
+                        : isSelected
                           ? 'text-indigo-700'
                           : 'text-slate-700'
-                      }`}
+                        }`}
                     >
                       {dayNum}
                     </span>
@@ -252,7 +250,7 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
         </div>
 
         {/* SELECTED DAY DETAIL PANEL (1 Col on lg) */}
-        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col h-full">
+        <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col h-full">
           <div className="border-b border-slate-100 pb-3">
             <span className="text-[11px] font-bold text-indigo-600 uppercase tracking-wider block">
               Detalle del Día
@@ -267,7 +265,7 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
             {selectedDayBlocks.map(block => (
               <div
                 key={block.id}
-                className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800"
+                className="p-3.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-800"
               >
                 <div className="flex items-center gap-1.5 font-bold text-xs">
                   <Ban className="w-3.5 h-3.5 text-rose-600" />
@@ -289,20 +287,19 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
               selectedDayBookings.map(b => (
                 <div
                   key={b.id}
-                  className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-slate-300 transition-colors"
+                  className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 hover:border-slate-300 transition-colors"
                 >
                   <div className="flex items-center justify-between text-xs mb-1.5">
                     <span className="font-bold text-slate-900 flex items-center gap-1">
                       <Clock className="w-3.5 h-3.5 text-indigo-600" /> {b.start_time} - {b.end_time}
                     </span>
                     <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                        b.status === 'Confirmada'
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : b.status.startsWith('Cancelada')
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${b.status === 'Confirmada'
+                        ? 'bg-emerald-100 text-emerald-800'
+                        : b.status.startsWith('Cancelada')
                           ? 'bg-rose-100 text-rose-800'
                           : 'bg-indigo-100 text-indigo-800'
-                      }`}
+                        }`}
                     >
                       {b.status}
                     </span>

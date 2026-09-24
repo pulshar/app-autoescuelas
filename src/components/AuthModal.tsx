@@ -117,7 +117,7 @@ export default function AuthModal({
       }}
       className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
     >
-      <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-100 overflow-hidden relative animate-in fade-in zoom-in-95 duration-200 cursor-default">
+      <div className="bg-white w-full max-w-md rounded-xl shadow-2xl border border-slate-100 overflow-hidden relative animate-in fade-in zoom-in-95 duration-200 cursor-default">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -170,7 +170,7 @@ export default function AuthModal({
                     value={name}
                     onChange={e => setName(e.target.value)}
                     placeholder="Ej. Carlos Ruiz"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   />
                 </div>
 
@@ -181,7 +181,7 @@ export default function AuthModal({
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
                     placeholder="Ej. +34 600 000 000"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   />
                 </div>
               </>
@@ -196,7 +196,7 @@ export default function AuthModal({
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="tu@email.com"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
             )}
@@ -225,7 +225,7 @@ export default function AuthModal({
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
             )}
@@ -239,7 +239,7 @@ export default function AuthModal({
                     required
                     value={resetToken}
                     onChange={e => setResetToken(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs font-mono"
                   />
                 </div>
                 <div>
@@ -250,7 +250,7 @@ export default function AuthModal({
                     value={newPassword}
                     onChange={e => setNewPassword(e.target.value)}
                     placeholder="Mínimo 6 caracteres"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   />
                 </div>
               </>
@@ -259,7 +259,7 @@ export default function AuthModal({
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white font-semibold text-xs sm:text-sm shadow-xs transition-colors flex items-center justify-center gap-2 mt-4"
+              className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white font-semibold text-xs sm:text-sm shadow-xs transition-colors flex items-center justify-center gap-2 mt-4"
             >
               {loading ? (
                 <span>Procesando...</span>

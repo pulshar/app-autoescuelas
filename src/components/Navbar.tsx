@@ -136,8 +136,8 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
                   <button
                     onClick={() => onSelectTab('dashboard')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'dashboard'
-                        ? 'bg-slate-100 text-indigo-700 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                      ? 'bg-slate-100 text-indigo-700 font-semibold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
                     Dashboard
@@ -145,8 +145,8 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
                   <button
                     onClick={() => onSelectTab('bookings')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'bookings'
-                        ? 'bg-slate-100 text-indigo-700 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                      ? 'bg-slate-100 text-indigo-700 font-semibold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
                     Reservas
@@ -154,8 +154,8 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
                   <button
                     onClick={() => onSelectTab('calendar')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'calendar'
-                        ? 'bg-slate-100 text-indigo-700 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                      ? 'bg-slate-100 text-indigo-700 font-semibold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
                     Calendario
@@ -163,8 +163,8 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
                   <button
                     onClick={() => onSelectTab('teachers')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'teachers'
-                        ? 'bg-slate-100 text-indigo-700 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                      ? 'bg-slate-100 text-indigo-700 font-semibold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
                     Profesores
@@ -172,8 +172,8 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
                   <button
                     onClick={() => onSelectTab('schedules')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'schedules'
-                        ? 'bg-slate-100 text-indigo-700 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                      ? 'bg-slate-100 text-indigo-700 font-semibold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
                     Agendas
@@ -181,8 +181,8 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
                   <button
                     onClick={() => onSelectTab('blocks')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'blocks'
-                        ? 'bg-slate-100 text-indigo-700 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                      ? 'bg-slate-100 text-indigo-700 font-semibold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
                     Bloqueos
@@ -190,8 +190,8 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
                   <button
                     onClick={() => onSelectTab('students')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'students'
-                        ? 'bg-slate-100 text-indigo-700 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                      ? 'bg-slate-100 text-indigo-700 font-semibold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
                     Alumnos
@@ -199,8 +199,8 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
                   <button
                     onClick={() => onSelectTab('settings')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'settings'
-                        ? 'bg-slate-100 text-indigo-700 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                      ? 'bg-slate-100 text-indigo-700 font-semibold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
                     Configuración
@@ -211,8 +211,8 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
                   <button
                     onClick={() => onSelectTab('dashboard')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'dashboard'
-                        ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                      ? 'bg-indigo-50 text-indigo-700 font-semibold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
                     Inicio
@@ -220,8 +220,8 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
                   <button
                     onClick={() => onSelectTab('book')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'book'
-                        ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                      ? 'bg-indigo-50 text-indigo-700 font-semibold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
                     Reservar Clase
@@ -229,8 +229,8 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
                   <button
                     onClick={() => onSelectTab('my-classes')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'my-classes'
-                        ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                      ? 'bg-indigo-50 text-indigo-700 font-semibold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
                     Mis Clases
@@ -238,8 +238,8 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
                   <button
                     onClick={() => onSelectTab('calendar')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'calendar'
-                        ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                      ? 'bg-indigo-50 text-indigo-700 font-semibold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
                     Calendario
@@ -276,7 +276,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
 
                   {/* Notifications Popover */}
                   {showNotifications && (
-                    <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-slate-200 py-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-lg shadow-xl border border-slate-200 py-3 z-50 animate-in fade-in zoom-in-95 duration-150">
                       <div className="flex items-center justify-between px-4 pb-2 border-b border-slate-100">
                         <h4 className="font-semibold text-slate-900 text-sm">Notificaciones</h4>
                         <button
@@ -355,7 +355,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
 
                   {/* Profile Menu */}
                   {showProfileMenu && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-slate-200 py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
                       <div className="px-4 py-2 border-b border-slate-100">
                         <p className="text-xs font-semibold text-slate-900 truncate">{user.name}</p>
                         <p className="text-[11px] text-slate-500 truncate">{user.email}</p>
@@ -398,7 +398,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
               <div className="flex items-center gap-2">
                 <button
                   onClick={onOpenAuth}
-                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition-colors"
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition-colors"
                 >
                   <LogIn className="w-4 h-4" /> Iniciar sesión
                 </button>

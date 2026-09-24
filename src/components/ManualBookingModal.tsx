@@ -117,7 +117,7 @@ export default function ManualBookingModal({ isOpen, onClose, onSuccess }: Manua
       }}
       className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
     >
-      <div className="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col cursor-default">
+      <div className="bg-white rounded-xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col cursor-default">
         {/* Header */}
         <div className="px-6 py-4 bg-gradient-to-r from-slate-50 to-indigo-50/40 border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -151,7 +151,7 @@ export default function ManualBookingModal({ isOpen, onClose, onSuccess }: Manua
             <select
               value={selectedStudentId}
               onChange={e => setSelectedStudentId(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium bg-white"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium bg-white"
             >
               {students.map(s => (
                 <option key={s.id} value={s.id}>
@@ -167,7 +167,7 @@ export default function ManualBookingModal({ isOpen, onClose, onSuccess }: Manua
             <select
               value={selectedTeacherId}
               onChange={e => setSelectedTeacherId(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium bg-white"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium bg-white"
             >
               {teachers.map(t => (
                 <option key={t.id} value={t.id}>
@@ -187,7 +187,7 @@ export default function ManualBookingModal({ isOpen, onClose, onSuccess }: Manua
               required
               value={selectedDate}
               onChange={e => setSelectedDate(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium bg-white"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium bg-white"
             />
           </div>
 
@@ -212,13 +212,12 @@ export default function ManualBookingModal({ isOpen, onClose, onSuccess }: Manua
                       type="button"
                       disabled={!s.is_available}
                       onClick={() => setSelectedSlot(s)}
-                      className={`p-2.5 rounded-xl border text-xs font-bold text-left transition-all ${
-                        !s.is_available
-                          ? 'bg-slate-100 text-slate-400 border-slate-200 opacity-60 cursor-not-allowed'
-                          : isSelected
+                      className={`p-2.5 rounded-lg border text-xs font-bold text-left transition-all ${!s.is_available
+                        ? 'bg-slate-100 text-slate-400 border-slate-200 opacity-60 cursor-not-allowed'
+                        : isSelected
                           ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
                           : 'bg-white hover:bg-indigo-50 border-slate-200 text-slate-800'
-                      }`}
+                        }`}
                     >
                       <span>{s.start_time} - {s.end_time}</span>
                       {!s.is_available && (
@@ -243,7 +242,7 @@ export default function ManualBookingModal({ isOpen, onClose, onSuccess }: Manua
               value={notes}
               onChange={e => setNotes(e.target.value)}
               placeholder="Ej. Solicitado por teléfono a las 10:00..."
-              className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
+              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs"
             />
           </div>
 
@@ -251,14 +250,14 @@ export default function ManualBookingModal({ isOpen, onClose, onSuccess }: Manua
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting || !selectedSlot}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 shadow-xs transition-colors"
+              className="px-5 py-2.5 rounded-lg text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 shadow-xs transition-colors"
             >
               {submitting ? 'Creando...' : 'Crear Reserva'}
             </button>

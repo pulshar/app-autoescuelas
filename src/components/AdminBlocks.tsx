@@ -150,7 +150,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
   return (
     <div className="space-y-6 pb-12">
       {/* Header */}
-      <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">Bloqueos y Excepciones</h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
@@ -160,7 +160,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
 
         <button
           onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-xs transition-colors shrink-0"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-xs transition-colors shrink-0"
         >
           <PlusCircle className="w-4 h-4" /> Nuevo Bloqueo
         </button>
@@ -168,7 +168,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
 
       {feedback && (
         <div
-          className={`p-3.5 rounded-2xl text-xs sm:text-sm flex items-center justify-between gap-2 transition-all ${feedback.type === 'success'
+          className={`p-3.5 rounded-lg text-xs sm:text-sm flex items-center justify-between gap-2 transition-all ${feedback.type === 'success'
             ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
             : 'bg-rose-50 border border-rose-200 text-rose-800'
             }`}
@@ -193,7 +193,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
           Cargando bloqueos...
         </div>
       ) : blocks.length === 0 ? (
-        <div className="bg-white rounded-3xl p-12 text-center border border-slate-200">
+        <div className="bg-white rounded-xl p-12 text-center border border-slate-200">
           <Ban className="w-12 h-12 text-slate-300 mx-auto mb-3" />
           <h4 className="text-base font-bold text-slate-800">No hay bloqueos activos</h4>
           <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
@@ -201,7 +201,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
           </p>
           <button
             onClick={handleOpenCreate}
-            className="mt-4 px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold"
+            className="mt-4 px-4 py-2 rounded-lg bg-indigo-600 text-white text-xs font-bold"
           >
             Añadir Bloqueo
           </button>
@@ -211,7 +211,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
           {blocks.map(b => (
             <div
               key={b.id}
-              className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between"
+              className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-start justify-between gap-2 mb-2">
@@ -257,8 +257,8 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
           }}
           className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
         >
-          <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
-            <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+          <div className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
+            <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <h3 className="font-bold text-base text-slate-900">Crear Bloqueo de Horario</h3>
               <button onClick={() => setModalOpen(false)} className="text-slate-400 hover:text-slate-600">
                 <X className="w-5 h-5" />
@@ -273,7 +273,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                 <select
                   value={teacherId}
                   onChange={e => setTeacherId(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-semibold bg-white"
                 >
                   <option value="">Todos los profesores (Cierre global)</option>
                   {teachers.map(t => (
@@ -291,7 +291,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                   required
                   value={date}
                   onChange={e => setDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs"
                 />
               </div>
 
@@ -343,7 +343,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                   value={reason}
                   onChange={e => setReason(e.target.value)}
                   placeholder="Ej. Día Festivo Nacional, Exámenes DGT, Baja médica..."
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs"
                 />
               </div>
 
@@ -351,14 +351,14 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 shadow-xs"
+                  className="px-5 py-2.5 rounded-lg text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 shadow-xs"
                 >
                   {saving ? 'Guardando...' : 'Crear Bloqueo'}
                 </button>
@@ -376,8 +376,8 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
           }}
           className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
         >
-          <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
-            <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+          <div className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
+            <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
                 <span>Desbloquear horario y eliminar bloqueo</span>
               </h3>
@@ -387,7 +387,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
             </div>
 
             <div className="p-6 space-y-4">
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 space-y-1.5">
+              <div className="p-4 rounded-lg bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-950 space-y-1.5">
                 <p>
                   <strong>Motivo:</strong> {deletingBlock.reason}
                 </p>
@@ -406,7 +406,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-2">
+              <div className="p-3.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-2">
                 <p className="font-bold text-amber-950 flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
                   Efecto de la reactivación del horario
@@ -422,7 +422,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                   type="button"
                   onClick={handleCloseDelete}
                   disabled={deleteSubmitting}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
@@ -430,7 +430,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                   type="button"
                   onClick={handleConfirmDelete}
                   disabled={deleteSubmitting}
-                  className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300 shadow-xs transition-colors"
+                  className="px-5 py-2.5 rounded-lg text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300 shadow-xs transition-colors"
                 >
                   {deleteSubmitting ? 'Desbloqueando...' : 'Desbloquear horario'}
                 </button>

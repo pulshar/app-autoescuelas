@@ -39,7 +39,7 @@ export default function AdminAuditLogs() {
   return (
     <div className="space-y-6 pb-12">
       {/* Header */}
-      <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">
             Registro de Auditoría y Actividad
@@ -50,19 +50,19 @@ export default function AdminAuditLogs() {
         </div>
 
         <div className="relative w-full sm:w-64">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5" />
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Buscar en el registro..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
           />
         </div>
       </div>
 
       {/* Logs Table */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
         {loading ? (
           <div className="py-16 text-center text-slate-400 text-xs animate-pulse">
             Cargando registros de auditoría...

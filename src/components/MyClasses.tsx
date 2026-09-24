@@ -154,7 +154,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
   return (
     <div className="space-y-6 pb-12">
       {/* Header & Tabs */}
-      <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">Mis Clases de Conducir</h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
@@ -164,21 +164,21 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
 
         <button
           onClick={onNavigateToBook}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-xs transition-colors shrink-0"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-xs transition-colors shrink-0"
         >
           <CalendarPlus className="w-4 h-4" /> Reservar Clase
         </button>
       </div>
 
       {successMessage && (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm flex items-center gap-2">
+        <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm flex items-center gap-2">
           <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
           <span>{successMessage}</span>
         </div>
       )}
 
       {errorMessage && (
-        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm flex items-center gap-2">
+        <div className="p-4 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm flex items-center gap-2">
           <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
           <span>{errorMessage}</span>
         </div>
@@ -189,8 +189,8 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
         <button
           onClick={() => setActiveTab('upcoming')}
           className={`pb-3 text-sm font-bold transition-all relative ${activeTab === 'upcoming'
-              ? 'text-indigo-600'
-              : 'text-slate-500 hover:text-slate-800'
+            ? 'text-indigo-600'
+            : 'text-slate-500 hover:text-slate-800'
             }`}
         >
           Próximas Clases ({upcomingClasses.length})
@@ -202,8 +202,8 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
         <button
           onClick={() => setActiveTab('history')}
           className={`pb-3 text-sm font-bold transition-all relative ${activeTab === 'history'
-              ? 'text-indigo-600'
-              : 'text-slate-500 hover:text-slate-800'
+            ? 'text-indigo-600'
+            : 'text-slate-500 hover:text-slate-800'
             }`}
         >
           Historial Pasado ({historyClasses.length})
@@ -219,7 +219,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
           Cargando tus clases...
         </div>
       ) : displayedList.length === 0 ? (
-        <div className="bg-white rounded-3xl p-12 text-center border border-slate-200">
+        <div className="bg-white rounded-xl p-12 text-center border border-slate-200">
           <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-3" />
           <h4 className="text-base font-bold text-slate-800">
             {activeTab === 'upcoming' ? 'No tienes próximas clases' : 'Sin clases en el historial'}
@@ -232,7 +232,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
           {activeTab === 'upcoming' && (
             <button
               onClick={onNavigateToBook}
-              className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition-colors"
+              className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition-colors"
             >
               <CalendarPlus className="w-4 h-4" /> Reservar ahora
             </button>
@@ -247,7 +247,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
             return (
               <div
                 key={booking.id}
-                className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between"
+                className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-3">
@@ -273,7 +273,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
                   </div>
 
                   {/* Teacher & Notes */}
-                  <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 mt-3 text-xs space-y-1.5">
+                  <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 mt-3 text-xs space-y-1.5">
                     <div className="flex items-center gap-2 text-slate-700">
                       <User className="w-4 h-4 text-slate-400 shrink-0" />
                       <span>
@@ -319,7 +319,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
       {/* Cancellation Modal */}
       {cancellingBooking && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
             <h4 className="text-lg font-bold text-slate-900 flex items-center gap-2">
               <Ban className="w-5 h-5 text-rose-500" /> Cancelar reserva de clase
             </h4>
@@ -339,7 +339,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
                 value={cancelReason}
                 onChange={e => setCancelReason(e.target.value)}
                 placeholder="Ej. Imprevisto personal..."
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
@@ -350,7 +350,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
                   setCancellingBooking(null);
                   setCancelReason('');
                 }}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+                className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
               >
                 Volver
               </button>
@@ -358,7 +358,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
                 type="button"
                 disabled={cancelLoading}
                 onClick={handleExecuteCancel}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-xs transition-colors"
+                className="px-4 py-2 rounded-lg text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-xs transition-colors"
               >
                 {cancelLoading ? 'Cancelando...' : 'Confirmar cancelación'}
               </button>

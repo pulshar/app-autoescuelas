@@ -171,7 +171,7 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-200 shadow-md overflow-hidden max-w-3xl mx-auto">
+    <div className="bg-white rounded-xl border border-slate-200 shadow-md overflow-hidden max-w-3xl mx-auto">
       {/* Header & Step progress */}
       <div className="p-5 sm:p-6 bg-gradient-to-r from-slate-50 to-indigo-50/40 border-b border-slate-200">
         <div className="flex items-center justify-between">
@@ -202,9 +202,8 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
           {[1, 2, 3, 4].map(s => (
             <div
               key={s}
-              className={`h-1.5 rounded-full transition-all ${
-                s <= step ? 'bg-indigo-600' : 'bg-slate-200'
-              }`}
+              className={`h-1.5 rounded-full transition-all ${s <= step ? 'bg-indigo-600' : 'bg-slate-200'
+                }`}
             />
           ))}
         </div>
@@ -226,11 +225,10 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                 setSelectedTeacherId('');
                 setStep(2);
               }}
-              className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between gap-4 ${
-                selectedTeacherId === ''
-                  ? 'border-indigo-600 bg-indigo-50/40 shadow-xs'
-                  : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-              }`}
+              className={`p-4 rounded-lg border-2 cursor-pointer transition-all flex items-center justify-between gap-4 ${selectedTeacherId === ''
+                ? 'border-indigo-600 bg-indigo-50/40 shadow-xs'
+                : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                }`}
             >
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold">
@@ -255,11 +253,10 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                     setSelectedTeacherId(teacher.id);
                     setStep(2);
                   }}
-                  className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex flex-col justify-between ${
-                    selectedTeacherId === teacher.id
-                      ? 'border-indigo-600 bg-indigo-50/40 shadow-xs'
-                      : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-                  }`}
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all flex flex-col justify-between ${selectedTeacherId === teacher.id
+                    ? 'border-indigo-600 bg-indigo-50/40 shadow-xs'
+                    : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                    }`}
                 >
                   <div className="flex items-start gap-3">
                     {teacher.photo_url ? (
@@ -301,7 +298,7 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
         {/* ======================================================== */}
         {step === 2 && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <div className="flex items-center justify-between bg-slate-50 p-3 rounded-lg border border-slate-200">
               <button
                 onClick={prevMonth}
                 className="p-2 rounded-xl hover:bg-white text-slate-700 transition-colors"
@@ -354,15 +351,14 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                     type="button"
                     disabled={isPast}
                     onClick={() => handleSelectDate(dateStr)}
-                    className={`h-14 rounded-2xl p-1 flex flex-col items-center justify-between transition-all relative ${
-                      isPast
-                        ? 'opacity-30 cursor-not-allowed bg-slate-50 text-slate-400'
-                        : isSelected
+                    className={`h-14 rounded-lg p-1 flex flex-col items-center justify-between transition-all relative ${isPast
+                      ? 'opacity-30 cursor-not-allowed bg-slate-50 text-slate-400'
+                      : isSelected
                         ? 'bg-indigo-600 text-white font-bold shadow-md shadow-indigo-200'
                         : hasSlots
-                        ? 'bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 text-slate-900'
-                        : 'bg-slate-50/80 border border-slate-100 text-slate-400 hover:bg-slate-100'
-                    }`}
+                          ? 'bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 text-slate-900'
+                          : 'bg-slate-50/80 border border-slate-100 text-slate-400 hover:bg-slate-100'
+                      }`}
                   >
                     <span className="text-xs sm:text-sm font-semibold">{dayNum}</span>
 
@@ -370,11 +366,10 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                       <div className="w-full flex justify-center pb-0.5">
                         {hasSlots ? (
                           <span
-                            className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold truncate max-w-full ${
-                              isSelected
-                                ? 'bg-white text-indigo-700'
-                                : 'bg-emerald-100 text-emerald-800'
-                            }`}
+                            className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold truncate max-w-full ${isSelected
+                              ? 'bg-white text-indigo-700'
+                              : 'bg-emerald-100 text-emerald-800'
+                              }`}
                           >
                             {avail.available} {avail.available === 1 ? 'libre' : 'libres'}
                           </span>
@@ -404,7 +399,7 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
         {/* ======================================================== */}
         {step === 3 && (
           <div className="space-y-4">
-            <div className="p-3 bg-indigo-50/60 rounded-2xl border border-indigo-100 flex items-center justify-between">
+            <div className="p-3 bg-indigo-50/60 rounded-lg border border-indigo-100 flex items-center justify-between">
               <div>
                 <span className="text-[11px] font-semibold text-indigo-700 block">Fecha seleccionada</span>
                 <p className="text-xs sm:text-sm font-bold text-slate-900 capitalize">
@@ -445,19 +440,17 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                         type="button"
                         disabled={!slot.is_available}
                         onClick={() => handleSelectSlot(slot)}
-                        className={`p-3 rounded-2xl border text-left transition-all relative ${
-                          !slot.is_available
-                            ? 'bg-slate-50/80 border-slate-200 opacity-60 cursor-not-allowed'
-                            : isSelected
+                        className={`p-3 rounded-lg border text-left transition-all relative ${!slot.is_available
+                          ? 'bg-slate-50/80 border-slate-200 opacity-60 cursor-not-allowed'
+                          : isSelected
                             ? 'border-indigo-600 bg-indigo-600 text-white shadow-md'
                             : 'bg-white border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/40 text-slate-900'
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center justify-between">
                           <span
-                            className={`text-sm font-bold ${
-                              isSelected ? 'text-white' : slot.is_available ? 'text-slate-900' : 'text-slate-400'
-                            }`}
+                            className={`text-sm font-bold ${isSelected ? 'text-white' : slot.is_available ? 'text-slate-900' : 'text-slate-400'
+                              }`}
                           >
                             {slot.start_time} - {slot.end_time}
                           </span>
@@ -489,14 +482,14 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
         {step === 4 && selectedSlot && (
           <div className="space-y-5">
             {bookingError && (
-              <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm flex items-center gap-2">
+              <div className="p-4 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
                 <span>{bookingError}</span>
               </div>
             )}
 
             {/* Summary card */}
-            <div className="bg-slate-50 rounded-3xl p-5 sm:p-6 border border-slate-200 space-y-4">
+            <div className="bg-slate-50 rounded-xl p-5 sm:p-6 border border-slate-200 space-y-4">
               <h4 className="font-bold text-sm text-slate-900 uppercase tracking-wider text-indigo-700">
                 Resumen de la Clase
               </h4>
@@ -538,12 +531,12 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
                   placeholder="Ej. Quiero practicar aparcamiento en batería o conducción en autovía..."
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
               {/* Cancellation policy notice */}
-              <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-amber-800 text-[11px] leading-relaxed">
+              <div className="p-3 bg-amber-50 rounded-lg border border-amber-200 text-amber-800 text-[11px] leading-relaxed">
                 <strong>Política de cancelación:</strong> Podrás cancelar tu clase de forma gratuita hasta{' '}
                 <strong>{settings?.min_cancellation_hours || 24} horas antes</strong> del inicio de la misma.
               </div>
@@ -553,7 +546,7 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
               <button
                 type="button"
                 onClick={() => setStep(3)}
-                className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+                className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
               >
                 Modificar Horario
               </button>
@@ -562,7 +555,7 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                 type="button"
                 disabled={bookingLoading}
                 onClick={handleConfirmBooking}
-                className="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-100 hover:shadow-indigo-200 transition-all flex items-center gap-2"
+                className="px-6 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-100 hover:shadow-indigo-200 transition-all flex items-center gap-2"
               >
                 {bookingLoading ? (
                   <span>Confirmando reserva...</span>
