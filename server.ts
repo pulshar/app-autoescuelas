@@ -37,6 +37,8 @@ function formatToDisplayDate(dateStr?: string | null): string {
 async function startServer() {
   await initDatabase();
 
+  // Auto-complete bookings whose end_time has already passed
+  await autoCompletePassedBookings();
   const app = express();
   const PORT = 3000;
 
@@ -912,8 +914,34 @@ async function startServer() {
   // BOOKINGS & RESERVATIONS
   // ==========================================
 
+
+  // Automatically update status of bookings that have already finished (date + end_time passed)
+  async function autoCompletePassedBookings(): Promise<number> {
+    try {
+      const settings = await getAppSettings();
+      const tz = settings.timezone || 'Europe/Madrid';
+      const now = new Date();
+      const currentDate = now.toLocaleDateString('en-CA', { timeZone: tz }); // "YYYY-MM-DD"
+      const currentTime = now.toLocaleTimeString('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false }); // "HH:mm"
+      const nowIso = now.toISOString();
+
+      const res = await db.prepare(`
+        UPDATE bookings
+        SET status = 'Completada', updated_at = ?
+        WHERE status = 'Reservada'
+          AND (date < ? OR (date = ? AND end_time <= ?))
+      `).run(nowIso, currentDate, currentDate, currentTime);
+
+      return Number(res.changes || 0);
+    } catch (err) {
+      console.error('Error auto-completing passed bookings:', err);
+      return 0;
+    }
+  }
+
   app.get('/api/bookings', requireAuth, async (req: AuthenticatedRequest, res) => {
     try {
+      await autoCompletePassedBookings();
       const isAdmin = req.user!.role === 'admin';
       const { student_id, teacher_id, status, date, start_date, end_date } = req.query;
 
@@ -1108,11 +1136,34 @@ async function startServer() {
     try {
       const { id } = req.params;
       const { status, notes } = req.body;
-      const allowedStatuses = ['Reservada', 'Confirmada', 'Cancelada por alumno', 'Cancelada por administrador', 'Completada', 'No presentado'];
+      const allowedStatuses = ['Reservada', 'Cancelada por alumno', 'Cancelada por administrador', 'Completada', 'No presentado'];
 
       if (!allowedStatuses.includes(status)) {
         res.status(400).json({ error: 'Estado no válido.' });
         return;
+      }
+
+      const booking = (await db.prepare('SELECT student_id, date, start_time, end_time FROM bookings WHERE id = ?').get(id)) as any;
+      if (!booking) {
+        res.status(404).json({ error: 'Reserva no encontrada.' });
+        return;
+      }
+
+      // If the booking is already in the past, it cannot be changed to 'Reservada'
+      if (status === 'Reservada') {
+        const settings = await getAppSettings();
+        const tz = settings.timezone || 'Europe/Madrid';
+        const nowObj = new Date();
+        const currentDate = nowObj.toLocaleDateString('en-CA', { timeZone: tz });
+        const currentTime = nowObj.toLocaleTimeString('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false });
+
+        const isPassed = booking.date < currentDate || (booking.date === currentDate && booking.end_time <= currentTime);
+        if (isPassed) {
+          res.status(400).json({
+            error: 'No es posible cambiar a "Reservada" una clase cuya fecha y hora ya han finalizado.'
+          });
+          return;
+        }
       }
 
       const now = new Date().toISOString();
@@ -1120,8 +1171,6 @@ async function startServer() {
         UPDATE bookings SET status = ?, notes = COALESCE(?, notes), updated_at = ?
         WHERE id = ?
       `).run(status, notes || null, now, id);
-
-      const booking = (await db.prepare('SELECT student_id, date, start_time FROM bookings WHERE id = ?').get(id)) as any;
 
       await db.prepare(`
         INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
@@ -1244,11 +1293,12 @@ async function startServer() {
 
   app.get('/api/students', requireAdmin, async (req, res) => {
     try {
+      await autoCompletePassedBookings();
       const rows = (await db.prepare(`
         SELECT u.id, u.name, u.email, u.phone, u.avatar_url, u.is_active, u.created_at,
                COUNT(b.id) as total_bookings,
                SUM(CASE WHEN b.status = 'Completada' THEN 1 ELSE 0 END) as completed_classes,
-               SUM(CASE WHEN b.status IN ('Reservada', 'Confirmada') THEN 1 ELSE 0 END) as active_classes
+               SUM(CASE WHEN b.status = 'Reservada' THEN 1 ELSE 0 END) as active_classes
         FROM users u
         LEFT JOIN bookings b ON u.id = b.student_id
         WHERE u.role = 'student'
@@ -1425,7 +1475,7 @@ async function startServer() {
         await db.prepare(`
           UPDATE bookings
           SET status = 'Cancelada', notes = 'Cancelada automáticamente por baja del alumno', updated_at = ?
-          WHERE student_id = ? AND status IN ('Reservada', 'Confirmada')
+         WHERE student_id = ? AND status = 'Reservada'
         `).run(now, id);
       }
 
@@ -1463,7 +1513,7 @@ async function startServer() {
         SELECT u.id, u.name, u.email, u.phone, u.avatar_url, u.is_active, u.created_at,
                COUNT(b.id) as total_bookings,
                SUM(CASE WHEN b.status = 'Completada' THEN 1 ELSE 0 END) as completed_classes,
-               SUM(CASE WHEN b.status IN ('Reservada', 'Confirmada') THEN 1 ELSE 0 END) as active_classes
+               SUM(CASE WHEN b.status = 'Reservada' THEN 1 ELSE 0 END) as active_classes
         FROM users u
         LEFT JOIN bookings b ON u.id = b.student_id
         WHERE u.id = ?
@@ -1505,7 +1555,7 @@ async function startServer() {
         await db.prepare(`
           UPDATE bookings
           SET status = 'Cancelada', notes = 'Cancelada automáticamente por baja del alumno', updated_at = ?
-          WHERE student_id = ? AND status IN ('Reservada', 'Confirmada')
+         WHERE student_id = ? AND status = 'Reservada'
         `).run(now, id);
 
         await db.prepare('UPDATE users SET is_active = 0, updated_at = ? WHERE id = ?').run(now, id);
@@ -1603,16 +1653,17 @@ async function startServer() {
 
   app.get('/api/stats', requireAdmin, async (req, res) => {
     try {
+      await autoCompletePassedBookings();
       const todayStr = new Date().toISOString().split('T')[0];
 
       const todayClasses = (await db.prepare(`
         SELECT COUNT(*) as count FROM bookings
-        WHERE date = ? AND status IN ('Reservada', 'Confirmada')
+        WHERE date = ? AND status IN ('Reservada', 'Completada')
       `).get(todayStr)) as any;
 
       const upcomingClasses = (await db.prepare(`
         SELECT COUNT(*) as count FROM bookings
-        WHERE date >= ? AND status IN ('Reservada', 'Confirmada')
+         WHERE date >= ? AND status = 'Reservada'
       `).get(todayStr)) as any;
 
       const totalBookings = (await db.prepare('SELECT COUNT(*) as count FROM bookings').get()) as any;
@@ -1706,7 +1757,7 @@ async function startServer() {
       FROM bookings b
       JOIN users u ON b.student_id = u.id
       JOIN teachers t ON b.teacher_id = t.id
-      WHERE b.status IN ('Reservada', 'Confirmada')
+      WHERE b.status = 'Reservada'
         AND b.date >= ? AND b.date <= ?
     `).all(nowStr, windowEndStr)) as any[];
 
@@ -2005,6 +2056,15 @@ async function startServer() {
       console.error('Periodic automatic reminder scan error:', e);
     }
   }, 5 * 60 * 1000);
+
+  // Periodically auto-complete passed bookings every 60 seconds
+  setInterval(async () => {
+    try {
+      await autoCompletePassedBookings();
+    } catch (e) {
+      console.error('Periodic auto-completion error:', e);
+    }
+  }, 60 * 1000);
 
   // ==========================================
   // VITE DEV MIDDLEWARE / STATIC ASSETS

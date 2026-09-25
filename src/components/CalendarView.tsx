@@ -98,15 +98,17 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
   const selectedDayBookings = bookingsByDate[selectedDate] || [];
   const selectedDayBlocks = blocksByDate[selectedDate] || [];
 
-  const formatDateSpanish = (dateStr: string) => {
-    const [y, m, d] = dateStr.split('-').map(Number);
-    const date = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
-    return date.toLocaleDateString('es-ES', {
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return '';
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const date = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+    const formatted = date.toLocaleDateString('es-ES', {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
       year: 'numeric',
     });
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
   };
 
   return (
@@ -114,8 +116,8 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
       {/* Calendar Header */}
       <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">
-            {isAdmin ? 'Calendario General de Clases' : 'Mi Calendario de Prácticas'}
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+            {isAdmin ? 'Calendario general de clases' : 'Mi calendario de prácticas'}
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             {isAdmin
@@ -145,12 +147,14 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
           )}
 
           {!isAdmin && onNavigateToBook && (
+
             <button
               onClick={onNavigateToBook}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold  transition-colors shrink-0"
             >
-              <CalendarPlus className="w-4 h-4" /> Reservar Clase
+              <CalendarPlus className="w-4 h-4" /> Reservar clase
             </button>
+
           )}
         </div>
       </div>
@@ -160,11 +164,13 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
         <div className="lg:col-span-2 bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
           {/* Month Navigation */}
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-extrabold text-base sm:text-lg text-slate-900 capitalize">
-              {new Date(currentYear, currentMonth - 1, 1).toLocaleDateString('es-ES', {
-                month: 'long',
-                year: 'numeric',
-              })}
+            <h3 className="font-extrabold text-base sm:text-lg text-slate-900">
+              {new Date(currentYear, currentMonth - 1, 1)
+                .toLocaleDateString('es-ES', {
+                  month: 'long',
+                  year: 'numeric',
+                })
+                .replace(/^./, (char) => char.toUpperCase())}
             </h3>
             <div className="flex items-center gap-1">
               <button
@@ -255,8 +261,8 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
             <span className="text-[11px] font-bold text-indigo-600 uppercase tracking-wider block">
               Detalle del Día
             </span>
-            <h4 className="font-extrabold text-base text-slate-900 capitalize mt-0.5">
-              {formatDateSpanish(selectedDate)}
+            <h4 className="font-extrabold text-base text-slate-900 mt-0.5">
+              {formatDate(selectedDate)}
             </h4>
           </div>
 
@@ -294,11 +300,13 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
                       <Clock className="w-3.5 h-3.5 text-indigo-600" /> {b.start_time} - {b.end_time}
                     </span>
                     <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${b.status === 'Confirmada'
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${b.status === 'Reservada'
                         ? 'bg-emerald-100 text-emerald-800'
                         : b.status.startsWith('Cancelada')
                           ? 'bg-rose-100 text-rose-800'
-                          : 'bg-indigo-100 text-indigo-800'
+                          : b.status === 'No presentado'
+                            ? 'bg-amber-100 text-amber-800'
+                            : 'bg-indigo-100 text-indigo-800'
                         }`}
                     >
                       {b.status}

@@ -99,7 +99,8 @@ export default function ManualBookingModal({ isOpen, onClose, onSuccess }: Manua
         teacher_id: selectedTeacherId,
         date: selectedDate,
         start_time: selectedSlot.start_time,
-        notes: notes.trim() ? `[Reserva manual]: ${notes.trim()}` : '[Reserva manual administrativa]',
+        // notes: notes.trim() ? `[Reserva manual]: ${notes.trim()}` : '[Reserva manual administrativa]',
+        notes: notes.trim(),
       });
       onSuccess();
       onClose();
@@ -125,7 +126,7 @@ export default function ManualBookingModal({ isOpen, onClose, onSuccess }: Manua
               <CalendarPlus className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-slate-900">Crear Reserva Manual</h3>
+              <h3 className="font-bold text-base text-slate-900">Crear nueva reserva</h3>
               <p className="text-[11px] text-slate-500">Para reservas telefónicas o presenciales</p>
             </div>
           </div>
@@ -193,7 +194,7 @@ export default function ManualBookingModal({ isOpen, onClose, onSuccess }: Manua
 
           {/* Slots selection */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-700">
               Horario disponible
             </label>
             {loadingSlots ? (
@@ -203,7 +204,7 @@ export default function ManualBookingModal({ isOpen, onClose, onSuccess }: Manua
                 El profesor no tiene turnos configurados para esta fecha.
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-1">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-1">
                 {slots.map((s, idx) => {
                   const isSelected = selectedSlot?.start_time === s.start_time;
                   return (
@@ -212,10 +213,10 @@ export default function ManualBookingModal({ isOpen, onClose, onSuccess }: Manua
                       type="button"
                       disabled={!s.is_available}
                       onClick={() => setSelectedSlot(s)}
-                      className={`p-2.5 rounded-lg border text-xs font-bold text-left transition-all ${!s.is_available
+                      className={`p-2.5 rounded-lg border text-xs font-bold text-center transition-all ${!s.is_available
                         ? 'bg-slate-100 text-slate-400 border-slate-200 opacity-60 cursor-not-allowed'
                         : isSelected
-                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
+                          ? 'bg-indigo-600 text-white border-indigo-600'
                           : 'bg-white hover:bg-indigo-50 border-slate-200 text-slate-800'
                         }`}
                     >
@@ -250,16 +251,16 @@ export default function ManualBookingModal({ isOpen, onClose, onSuccess }: Manua
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+              className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting || !selectedSlot}
-              className="px-5 py-2.5 rounded-lg text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 shadow-xs transition-colors"
+              className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300  transition-colors"
             >
-              {submitting ? 'Creando...' : 'Crear Reserva'}
+              {submitting ? 'Creando...' : 'Crear reserva'}
             </button>
           </div>
         </form>

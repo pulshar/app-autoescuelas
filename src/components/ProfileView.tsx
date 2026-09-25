@@ -72,7 +72,7 @@ export default function ProfileView() {
       {/* Header */}
       <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex items-center justify-between">
         <div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">Mi Perfil</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Mi Perfil</h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             Gestiona tus datos personales de contacto y credenciales de acceso.
           </p>
@@ -180,7 +180,7 @@ export default function ProfileView() {
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm transition-colors"
             >
               <Save className="w-4 h-4" />
               <span>{saving ? 'Guardando...' : 'Guardar Cambios'}</span>
@@ -238,13 +238,13 @@ export default function ProfileView() {
               <button
                 type="button"
                 onClick={() => setShowPasswordChange(false)}
-                className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 rounded-lg text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-xs"
+                className="px-5 py-2.5 rounded-lg text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-xs"
               >
                 Actualizar Contraseña
               </button>

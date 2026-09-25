@@ -41,8 +41,8 @@ export default function AdminAuditLogs() {
       {/* Header */}
       <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">
-            Registro de Auditoría y Actividad
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+            Registro de auditoría y actividad
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             Trazabilidad completa de operaciones administrativas, reservas, bloqueos y modificaciones.
@@ -56,7 +56,7 @@ export default function AdminAuditLogs() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Buscar en el registro..."
-            className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
           />
         </div>
       </div>
@@ -80,7 +80,7 @@ export default function AdminAuditLogs() {
                     <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
                       {log.action}
                     </span>
-                    <span className="text-xs font-bold text-slate-900">
+                    <span className="text-xs font-semibold text-slate-900">
                       por {log.user_name}
                     </span>
                     <span className="text-[10px] text-slate-400">({log.user_email})</span>

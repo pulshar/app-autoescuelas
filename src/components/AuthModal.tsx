@@ -259,7 +259,7 @@ export default function AuthModal({
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white font-semibold text-xs sm:text-sm shadow-xs transition-colors flex items-center justify-center gap-2 mt-4"
+              className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white font-semibold text-xs sm:text-sm  transition-colors flex items-center justify-center gap-2 mt-4"
             >
               {loading ? (
                 <span>Procesando...</span>

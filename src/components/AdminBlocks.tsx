@@ -152,7 +152,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
       {/* Header */}
       <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">Bloqueos y Excepciones</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Bloqueos y excepciones</h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             Gestiona días festivos, vacaciones, bajas médicas o exámenes prácticos donde no se impartirán clases.
           </p>
@@ -160,9 +160,9 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
 
         <button
           onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-xs transition-colors shrink-0"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold transition-colors shrink-0"
         >
-          <PlusCircle className="w-4 h-4" /> Nuevo Bloqueo
+          <PlusCircle className="w-4 h-4" /> Nuevo bloqueo
         </button>
       </div>
 
@@ -201,9 +201,9 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
           </p>
           <button
             onClick={handleOpenCreate}
-            className="mt-4 px-4 py-2 rounded-lg bg-indigo-600 text-white text-xs font-bold"
+            className="mt-4 px-5 py-2.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold"
           >
-            Añadir Bloqueo
+            Añadir bloqueo
           </button>
         </div>
       ) : (
@@ -221,7 +221,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                   <button
                     onClick={() => handleOpenDelete(b)}
                     title="Desbloquear / Eliminar bloqueo"
-                    className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                    className="p-1.5 rounded-full text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -259,7 +259,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
         >
           <div className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-              <h3 className="font-bold text-base text-slate-900">Crear Bloqueo de Horario</h3>
+              <h3 className="font-bold text-base text-slate-900">Crear bloqueo de horario</h3>
               <button onClick={() => setModalOpen(false)} className="text-slate-400 hover:text-slate-600">
                 <X className="w-5 h-5" />
               </button>
@@ -351,16 +351,16 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2.5 rounded-lg text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 shadow-xs"
+                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300"
                 >
-                  {saving ? 'Guardando...' : 'Crear Bloqueo'}
+                  {saving ? 'Guardando...' : 'Crear bloqueo'}
                 </button>
               </div>
             </form>
@@ -422,7 +422,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                   type="button"
                   onClick={handleCloseDelete}
                   disabled={deleteSubmitting}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
@@ -430,7 +430,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                   type="button"
                   onClick={handleConfirmDelete}
                   disabled={deleteSubmitting}
-                  className="px-5 py-2.5 rounded-lg text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300 shadow-xs transition-colors"
+                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300  transition-colors"
                 >
                   {deleteSubmitting ? 'Desbloqueando...' : 'Desbloquear horario'}
                 </button>

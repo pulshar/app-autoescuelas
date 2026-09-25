@@ -61,7 +61,6 @@ export interface ScheduleBlock {
 
 export type BookingStatus =
   | 'Reservada'
-  | 'Confirmada'
   | 'Cancelada por alumno'
   | 'Cancelada por administrador'
   | 'Completada'

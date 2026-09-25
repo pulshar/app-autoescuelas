@@ -211,7 +211,7 @@ export default function AdminSchedules() {
       {/* Header */}
       <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">Agendas de Profesores</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Agendas de profesores</h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             Configura los intervalos semanales de disponibilidad (turnos de mañana y tarde).
           </p>
@@ -219,7 +219,7 @@ export default function AdminSchedules() {
 
         <button
           onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-xs transition-colors shrink-0"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold transition-colors shrink-0"
         >
           <PlusCircle className="w-4 h-4" /> Crear nueva agenda
         </button>
@@ -260,7 +260,7 @@ export default function AdminSchedules() {
           </p>
           <button
             onClick={handleOpenCreate}
-            className="mt-4 px-4 py-2 rounded-lg bg-indigo-600 text-white text-xs font-bold"
+            className="mt-4 px-5 py-2.5 rounded-lg bg-indigo-600 text-white text-xs font-bold"
           >
             Crear Agenda
           </button>
@@ -272,12 +272,12 @@ export default function AdminSchedules() {
               key={s.id}
               className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200 shadow-xs hover:border-slate-300 transition-all"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="font-extrabold text-base text-slate-900">{s.name}</h3>
+                    <h3 className="font-bold text-base text-slate-900">{s.name}</h3>
                     <span
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${s.is_active
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${s.is_active
                         ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                         : 'bg-slate-100 text-slate-600'
                         }`}
@@ -285,8 +285,8 @@ export default function AdminSchedules() {
                       {s.is_active ? 'Activa' : 'Pausada'}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Profesor: <strong className="text-slate-800">{s.teacher_name}</strong> • Vigencia:{' '}
+                  <p className="text-xs text-slate-500 mt-2">
+                    Profesor: <span className="font-semibold">{s.teacher_name}</span> • Vigencia:{' '}
                     {formatDisplayDate(s.start_date)}{' '}
                     {s.end_date ? `hasta ${formatDisplayDate(s.end_date)}` : '(Indefinida)'}
                   </p>
@@ -295,13 +295,13 @@ export default function AdminSchedules() {
                 <div className="flex items-center gap-2 self-end sm:self-center">
                   <button
                     onClick={() => handleOpenEdit(s)}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
                   >
                     <Edit2 className="w-3.5 h-3.5" /> Editar
                   </button>
                   <button
                     onClick={() => handleOpenDelete(s)}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors"
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 transition-colors"
                   >
                     <Trash2 className="w-3.5 h-3.5" /> Eliminar
                   </button>
@@ -326,7 +326,7 @@ export default function AdminSchedules() {
                         {day.name.slice(0, 3)}
                       </span>
                       {isConfigured ? (
-                        <div className="space-y-1">
+                        <div className="flex flex-wrap gap-x-1 gap-y-2 justify-center">
                           {intervals.map((inv, idx) => (
                             <span
                               key={idx}
@@ -521,16 +521,16 @@ export default function AdminSchedules() {
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2.5 rounded-lg text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 shadow-xs"
+                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300"
                 >
-                  {saving ? 'Guardando...' : 'Guardar Agenda'}
+                  {saving ? 'Guardando...' : 'Guardar agenda'}
                 </button>
               </div>
             </form>
@@ -593,7 +593,7 @@ export default function AdminSchedules() {
                   type="button"
                   onClick={handleCloseDelete}
                   disabled={deleteSubmitting}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
@@ -601,9 +601,9 @@ export default function AdminSchedules() {
                   type="button"
                   onClick={handleConfirmDelete}
                   disabled={deleteSubmitting}
-                  className="px-5 py-2.5 rounded-lg text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300 shadow-xs transition-colors"
+                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300 transition-colors"
                 >
-                  {deleteSubmitting ? 'Eliminando...' : 'Eliminar Agenda'}
+                  {deleteSubmitting ? 'Eliminando...' : 'Eliminar agenda'}
                 </button>
               </div>
             </div>

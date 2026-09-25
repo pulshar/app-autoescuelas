@@ -283,8 +283,8 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
       <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">Alumnos Registrados</h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Alumnos registrados</h2>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
               {students.length} alumnos
             </span>
           </div>
@@ -302,17 +302,17 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Buscar por nombre o email..."
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
           {/* New Student Button */}
           <button
             onClick={handleOpenModal}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs sm:text-sm shadow-xs transition-colors shrink-0"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm  transition-colors shrink-0"
           >
             <UserPlus className="w-4 h-4" />
-            <span>Dar de alta Alumno</span>
+            <span>Dar de alta alumno</span>
           </button>
         </div>
       </div>
@@ -376,7 +376,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <h4 className="font-extrabold text-sm sm:text-base text-slate-900 truncate">
+                        <h4 className="font-bold text-sm sm:text-base text-slate-900 truncate">
                           {s.name}
                         </h4>
                         {isInactive && (
@@ -435,7 +435,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                         onClick={() => handleResendWelcome(s)}
                         disabled={resendingId === s.id}
                         title="Reenviar correo de bienvenida con instrucciones de acceso"
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-semibold transition-colors disabled:opacity-50"
+                        className="inline-flex items-center gap-1.5 p-1.5 xl:px-3 rounded-full border border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-semibold transition-colors disabled:opacity-50"
                       >
                         <Mail className="w-3.5 h-3.5 text-indigo-600" />
                         <span className="hidden xl:inline">
@@ -448,7 +448,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                         onClick={() => onSelectStudentForBooking(s.id)}
                         disabled={isInactive}
                         title={isInactive ? 'Alumno dado de baja' : 'Asignar clase práctica'}
-                        className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${isInactive
+                        className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${isInactive
                           ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
                           : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700'
                           }`}
@@ -461,7 +461,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                       <button
                         onClick={() => handleOpenEdit(s)}
                         title="Editar alumno"
-                        className="p-1.5 rounded-xl border border-slate-200 text-slate-600 hover:text-indigo-600 hover:bg-slate-100 transition-colors"
+                        className="p-1.5 rounded-full text-slate-600 hover:text-indigo-600 hover:bg-slate-100 transition-colors"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
@@ -474,7 +474,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                             ? 'Dar de baja al alumno (proteger histórico)'
                             : 'Eliminar alumno permanentemente'
                         }
-                        className="p-1.5 rounded-xl border border-slate-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                        className="p-1.5 rounded-full text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -582,7 +582,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                         handleCloseModal();
                         onSelectStudentForBooking(sid);
                       }}
-                      className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                      className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs  transition-colors flex items-center justify-center gap-1.5"
                     >
                       <CalendarPlus className="w-4 h-4" />
                       <span>Asignar Primera Clase</span>
@@ -700,14 +700,14 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                       type="button"
                       onClick={handleCloseModal}
                       disabled={submitting}
-                      className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                      className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                     >
                       Cancelar
                     </button>
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="px-5 py-2.5 rounded-lg text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 shadow-xs"
+                      className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300"
                     >
                       {submitting ? 'Dando de alta y enviando correo...' : 'Dar de alta y enviar acceso'}
                     </button>
@@ -840,16 +840,16 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   type="button"
                   onClick={handleCloseEdit}
                   disabled={editSubmitting}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={editSubmitting}
-                  className="px-5 py-2.5 rounded-lg text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 shadow-xs"
+                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300"
                 >
-                  {editSubmitting ? 'Guardando...' : 'Guardar Cambios'}
+                  {editSubmitting ? 'Guardando...' : 'Guardar cambios'}
                 </button>
               </div>
             </form>
@@ -922,7 +922,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   type="button"
                   onClick={handleCloseDelete}
                   disabled={deleteSubmitting}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
@@ -930,7 +930,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   type="button"
                   onClick={handleConfirmDelete}
                   disabled={deleteSubmitting}
-                  className={`px-5 py-2.5 rounded-lg text-xs font-bold text-white shadow-xs transition-colors ${(deletingStudent.total_bookings || 0) > 0
+                  className={`px-5 py-2.5 rounded-lg text-xs font-bold text-white  transition-colors ${(deletingStudent.total_bookings || 0) > 0
                     ? 'bg-amber-600 hover:bg-amber-700 disabled:bg-amber-300'
                     : 'bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300'
                     }`}

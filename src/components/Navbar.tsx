@@ -106,12 +106,12 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
             className="flex items-center gap-3 cursor-pointer group"
             onClick={() => onSelectTab('dashboard')}
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-700 flex items-center justify-center text-white shadow-sm shadow-indigo-200 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-700 flex items-center justify-center text-white  shadow-indigo-200 group-hover:scale-105 transition-transform">
               <Car className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900">
+                <span className="font-bold text-lg sm:text-xl tracking-tight text-slate-900">
                   Autoescuela<span className="text-indigo-600">Pro</span>
                 </span>
                 {role === 'admin' ? (
@@ -124,7 +124,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
                   </span>
                 ) : null}
               </div>
-              <p className="text-[11px] text-slate-500 hidden sm:block">Gestión y Reserva Online de Clases</p>
+              <p className="text-[11px] text-slate-500 hidden sm:block">Gestión y reserva online de clases</p>
             </div>
           </div>
 
@@ -224,7 +224,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
-                    Reservar Clase
+                    Reservar clase
                   </button>
                   <button
                     onClick={() => onSelectTab('my-classes')}
@@ -233,7 +233,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
-                    Mis Clases
+                    Mis clases
                   </button>
                   <button
                     onClick={() => onSelectTab('calendar')}
@@ -355,8 +355,8 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
 
                   {/* Profile Menu */}
                   {showProfileMenu && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-slate-200 py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                      <div className="px-4 py-2 border-b border-slate-100">
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl overflow-hidden border border-slate-200 z-50 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-200">
                         <p className="text-xs font-semibold text-slate-900 truncate">{user.name}</p>
                         <p className="text-[11px] text-slate-500 truncate">{user.email}</p>
                       </div>
@@ -365,7 +365,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
                           onSelectTab('profile');
                           setShowProfileMenu(false);
                         }}
-                        className="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2"
+                        className="w-full text-left px-5 py-3.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2"
                       >
                         <UserIcon className="w-4 h-4 text-slate-400" /> Mi Perfil
                       </button>
@@ -375,18 +375,17 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
                             onSelectTab('audit');
                             setShowProfileMenu(false);
                           }}
-                          className="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2"
+                          className="w-full text-left px-5 py-3.5 border-t border-slate-200 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2"
                         >
                           <CheckCheck className="w-4 h-4 text-slate-400" /> Registro de Auditoría
                         </button>
                       )}
-                      <div className="my-1 border-t border-slate-100" />
                       <button
                         onClick={() => {
                           logout();
                           setShowProfileMenu(false);
                         }}
-                        className="w-full text-left px-4 py-2 text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2 font-medium"
+                        className="w-full text-left border-t border-slate-200 px-5 py-3.5 text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2 font-medium"
                       >
                         <LogOut className="w-4 h-4 text-rose-500" /> Cerrar sesión
                       </button>
@@ -398,7 +397,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
               <div className="flex items-center gap-2">
                 <button
                   onClick={onOpenAuth}
-                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition-colors"
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white  transition-colors"
                 >
                   <LogIn className="w-4 h-4" /> Iniciar sesión
                 </button>

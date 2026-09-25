@@ -59,12 +59,12 @@ export default function AdminDashboard({
       <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
-              Panel de Administración
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+              Panel de administración
             </span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">
-            Gestión Integral de la Autoescuela
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+            Gestión de la autoescuela
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             Supervisa la ocupación de profesores, clases diarias y configuración de agendas.
@@ -74,25 +74,24 @@ export default function AdminDashboard({
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center gap-2.5">
           <button
-            onClick={onOpenManualBooking}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
+            onClick={onOpenCreateBlock}
+            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs sm:text-sm transition-colors"
           >
-            <CalendarPlus className="w-4 h-4" /> Crear Reserva Manual
+            <Ban className="w-4 h-4 text-rose-600" /> Bloquear horario
           </button>
-
           <button
             onClick={onOpenCreateTeacher}
-            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm transition-colors"
+            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs sm:text-sm transition-colors"
           >
-            <PlusCircle className="w-4 h-4" /> Nuevo Profesor
+            <PlusCircle className="w-4 h-4" /> Nuevo profesor
+          </button>
+          <button
+            onClick={onOpenManualBooking}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm  transition-colors"
+          >
+            <CalendarPlus className="w-4 h-4" /> Nueva reserva
           </button>
 
-          <button
-            onClick={onOpenCreateBlock}
-            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm transition-colors"
-          >
-            <Ban className="w-4 h-4 text-rose-600" /> Bloquear Horario
-          </button>
         </div>
       </div>
 
@@ -101,10 +100,10 @@ export default function AdminDashboard({
         {/* Metric 1 */}
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between text-indigo-600 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Clases Hoy</span>
+            <span className="font-mono text-slate-500">Clases Hoy</span>
             <Calendar className="w-5 h-5" />
           </div>
-          <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+          <div className="text-2xl sm:text-3xl font-bold text-slate-900">
             {loading ? '...' : stats?.today_classes || 0}
           </div>
           <span className="text-[11px] text-slate-500 mt-1 block">Programadas para el día de hoy</span>
@@ -113,10 +112,10 @@ export default function AdminDashboard({
         {/* Metric 2 */}
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between text-emerald-600 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Próximas Clases</span>
+            <span className="font-mono text-slate-500">Próximas Clases</span>
             <Clock className="w-5 h-5" />
           </div>
-          <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+          <div className="text-2xl sm:text-3xl font-bold text-slate-900">
             {loading ? '...' : stats?.upcoming_classes || 0}
           </div>
           <span className="text-[11px] text-slate-500 mt-1 block">En las próximas semanas</span>
@@ -125,10 +124,10 @@ export default function AdminDashboard({
         {/* Metric 3 */}
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between text-purple-600 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Alumnos</span>
+            <span className="font-mono text-slate-500">Alumnos</span>
             <Users className="w-5 h-5" />
           </div>
-          <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+          <div className="text-2xl sm:text-3xl font-bold text-slate-900">
             {loading ? '...' : stats?.registered_students || 0}
           </div>
           <span className="text-[11px] text-slate-500 mt-1 block">Usuarios registrados</span>
@@ -137,10 +136,10 @@ export default function AdminDashboard({
         {/* Metric 4 */}
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between text-blue-600 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Profesores</span>
+            <span className="font-mono text-slate-500">Profesores</span>
             <UserCheck className="w-5 h-5" />
           </div>
-          <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+          <div className="text-2xl sm:text-3xl font-bold text-slate-900">
             {loading ? '...' : stats?.active_teachers || 0}
           </div>
           <span className="text-[11px] text-slate-500 mt-1 block">Profesores en plantilla activa</span>
@@ -149,10 +148,10 @@ export default function AdminDashboard({
         {/* Metric 5 */}
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between text-teal-600 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Huecos Libres Hoy</span>
+            <span className="font-mono text-slate-500">Huecos Libres Hoy</span>
             <CheckCircle2 className="w-5 h-5" />
           </div>
-          <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+          <div className="text-2xl sm:text-3xl font-bold text-slate-900">
             {loading ? '...' : stats?.available_slots_today || 0}
           </div>
           <span className="text-[11px] text-slate-500 mt-1 block">Plazas aún no reservadas</span>
@@ -161,10 +160,10 @@ export default function AdminDashboard({
         {/* Metric 6 */}
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between text-slate-600 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Total Histórico</span>
+            <span className="font-mono text-slate-500">Total Histórico</span>
             <ShieldCheck className="w-5 h-5" />
           </div>
-          <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+          <div className="text-2xl sm:text-3xl font-bold text-slate-900">
             {loading ? '...' : stats?.total_bookings || 0}
           </div>
           <span className="text-[11px] text-slate-500 mt-1 block">Reservas procesadas</span>
@@ -173,10 +172,10 @@ export default function AdminDashboard({
         {/* Metric 7 */}
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between text-rose-600 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Cancelaciones</span>
+            <span className="font-mono text-slate-500">Cancelaciones</span>
             <Ban className="w-5 h-5" />
           </div>
-          <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+          <div className="text-2xl sm:text-3xl font-bold text-slate-900">
             {loading ? '...' : stats?.cancelled_classes || 0}
           </div>
           <span className="text-[11px] text-slate-500 mt-1 block">Clases anuladas</span>
@@ -187,7 +186,7 @@ export default function AdminDashboard({
       <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-base font-extrabold text-slate-900">Clases del Día de Hoy</h3>
+            <h3 className="text-base font-bold text-slate-900">Clases del día de hoy</h3>
             <p className="text-xs text-slate-500">
               {new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
             </p>
@@ -216,11 +215,11 @@ export default function AdminDashboard({
                   </div>
 
                   <div>
-                    <h5 className="font-bold text-sm text-slate-900">
-                      Alumno: {b.student_name}
+                    <h5 className="text-sm text-slate-500">
+                      Alumno: <span className="text-slate-900 font-semibold">{b.student_name}</span>
                     </h5>
                     <div className="text-xs text-slate-500 mt-0.5">
-                      Profesor: <strong className="text-slate-700">{b.teacher_name}</strong> • Duración:{' '}
+                      Profesor: <span className=" font-semibold">{b.teacher_name}</span> • Duración:{' '}
                       {b.duration_minutes} min
                     </div>
                   </div>
@@ -228,11 +227,13 @@ export default function AdminDashboard({
 
                 <div className="flex items-center gap-2 sm:self-center">
                   <span
-                    className={`px-2.5 py-1 rounded-full text-xs font-bold ${b.status === 'Confirmada'
-                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                      : b.status === 'Reservada'
-                        ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                        : 'bg-slate-100 text-slate-700 border border-slate-200'
+                    className={`px-2.5 py-1 rounded-full text-xs font-semibold ${b.status === 'Reservada'
+                      ? 'bg-emerald-100 text-emerald-800'
+                      : b.status.startsWith('Cancelada')
+                        ? 'bg-rose-100 text-rose-800'
+                        : b.status === 'No presentado'
+                          ? 'bg-amber-100 text-amber-800'
+                          : 'bg-indigo-100 text-indigo-800'
                       }`}
                   >
                     {b.status}

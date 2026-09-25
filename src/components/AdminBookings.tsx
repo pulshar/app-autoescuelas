@@ -17,6 +17,7 @@ import {
   X,
   Edit2,
   Check,
+  AlertTriangle,
   ShieldCheck,
 } from 'lucide-react';
 
@@ -25,6 +26,7 @@ interface AdminBookingsProps {
 }
 
 export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps) {
+  const [activeTab, setActiveTab] = useState<'upcoming' | 'history'>('upcoming');
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,11 +54,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
     try {
       setLoading(true);
       const [bRes, tRes] = await Promise.all([
-        api.getBookings({
-          teacher_id: filterTeacher || undefined,
-          status: filterStatus || undefined,
-          date: filterDate || undefined,
-        }),
+        api.getBookings(),
         api.getTeachers(),
       ]);
       setBookings(bRes.bookings);
@@ -70,7 +68,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
 
   useEffect(() => {
     fetchBookings();
-  }, [filterTeacher, filterStatus, filterDate]);
+  }, []);
 
   useEffect(() => {
     if (!selectedBooking && !cancellingBooking) return;
@@ -138,33 +136,78 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
     }
   };
 
-  const filteredBookings = bookings.filter(b => {
-    if (!searchQuery) return true;
-    const q = searchQuery.toLowerCase();
-    return (
-      b.student_name?.toLowerCase().includes(q) ||
-      b.student_email?.toLowerCase().includes(q) ||
-      b.teacher_name?.toLowerCase().includes(q) ||
-      b.date.includes(q) ||
-      formatDisplayDate(b.date).includes(q)
-    );
-  });
+  const now = new Date();
+  const todayStr = now.toISOString().split('T')[0];
+  const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+  const isBookingPassed = (b: Booking) => {
+    if (b.date < todayStr) return true;
+    if (b.date === todayStr && b.end_time <= currentTime) return true;
+    return false;
+  };
+  const isUpcoming = (b: Booking) => {
+    if (b.status !== 'Reservada') return false;
+    return !isBookingPassed(b);
+  };
+
+  // Split bookings into upcoming (soonest first) and history (most recent first)
+  const upcomingBookings = bookings
+    .filter(isUpcoming)
+    .sort((a, b) => a.date.localeCompare(b.date) || a.start_time.localeCompare(b.start_time));
+
+  const historyBookings = bookings
+    .filter(b => !isUpcoming(b))
+    .sort((a, b) => b.date.localeCompare(a.date) || b.start_time.localeCompare(a.start_time));
+
+  // Common filter function for search, teacher, status, and date
+  const applyFilters = (list: Booking[]) => {
+    return list.filter(b => {
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        const match =
+          b.student_name?.toLowerCase().includes(q) ||
+          b.student_email?.toLowerCase().includes(q) ||
+          b.teacher_name?.toLowerCase().includes(q) ||
+          b.date.includes(q) ||
+          formatDisplayDate(b.date).includes(q);
+        if (!match) return false;
+      }
+      if (filterTeacher && b.teacher_id !== filterTeacher) return false;
+      if (filterStatus && b.status !== filterStatus) return false;
+      if (filterDate && b.date !== filterDate) return false;
+      return true;
+    });
+  };
+
+  const filteredUpcoming = applyFilters(upcomingBookings);
+  const filteredHistory = applyFilters(historyBookings);
+
+  const hasActiveFilters = Boolean(searchQuery || filterTeacher || filterStatus || filterDate);
+  const upcomingCount = hasActiveFilters ? filteredUpcoming.length : upcomingBookings.length;
+  const historyCount = hasActiveFilters ? filteredHistory.length : historyBookings.length;
+
+  const displayedBookings = activeTab === 'upcoming' ? filteredUpcoming : filteredHistory;
+
+  const handleTabChange = (tab: 'upcoming' | 'history') => {
+    setActiveTab(tab);
+    if (tab === 'upcoming' && filterStatus && filterStatus !== 'Reservada') {
+      setFilterStatus('');
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'Reservada':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">Reservada</span>;
-      case 'Confirmada':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Confirmada</span>;
+        return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Reservada</span>;
       case 'Completada':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">Completada</span>;
+        return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">Completada</span>;
       case 'Cancelada por alumno':
       case 'Cancelada por administrador':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">{status}</span>;
+        return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">{status}</span>;
       case 'No presentado':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">No presentado</span>;
+        return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">No presentado</span>;
       default:
-        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700">{status}</span>;
+        return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">{status}</span>;
     }
   };
 
@@ -173,17 +216,17 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
       {/* Header */}
       <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">Gestión de Reservas</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Gestión de reservas</h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Administra, confirma, modifica el estado o cancela reservas de clases prácticas.
+            Administra, modifica el estado o cancela reservas de clases prácticas.
           </p>
         </div>
 
         <button
           onClick={onOpenManualModal}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-xs transition-colors shrink-0"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold  transition-colors shrink-0"
         >
-          <CalendarPlus className="w-4 h-4" /> Nueva Reserva Manual
+          <CalendarPlus className="w-4 h-4" /> Nueva reserva
         </button>
       </div>
 
@@ -210,6 +253,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
           </button>
         </div>
       )}
+
 
       {/* Filter Bar */}
       <div className="bg-white rounded-xl p-4 sm:p-5 border border-slate-200 shadow-xs space-y-3">
@@ -250,12 +294,16 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
               className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 bg-white"
             >
               <option value="">Todos los estados</option>
-              <option value="Reservada">Reservada</option>
-              <option value="Confirmada">Confirmada</option>
-              <option value="Completada">Completada</option>
-              <option value="Cancelada por alumno">Cancelada por alumno</option>
-              <option value="Cancelada por administrador">Cancelada por administrador</option>
-              <option value="No presentado">No presentado</option>
+              {activeTab === 'upcoming' ? (
+                <option value="Reservada">Reservada</option>
+              ) : (
+                <>
+                  <option value="Completada">Completada</option>
+                  <option value="No presentado">No presentado</option>
+                  <option value="Cancelada por alumno">Cancelada por alumno</option>
+                  <option value="Cancelada por administrador">Cancelada por administrador</option>
+                </>
+              )}
             </select>
           </div>
 
@@ -272,7 +320,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
 
         {(filterTeacher || filterStatus || filterDate || searchQuery) && (
           <div className="flex items-center justify-between pt-2 text-xs text-slate-500">
-            <span>Resultados filtrados: {filteredBookings.length} reservas</span>
+            <span>Resultados filtrados: {displayedBookings.length} reservas</span>
             <button
               onClick={() => {
                 setFilterTeacher('');
@@ -288,93 +336,147 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
         )}
       </div>
 
-      {/* Bookings Table / Cards */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
-        {loading ? (
-          <div className="py-16 text-center text-slate-400 text-xs animate-pulse">
-            Cargando reservas...
-          </div>
-        ) : filteredBookings.length === 0 ? (
-          <div className="py-16 text-center text-slate-400 text-xs">
-            No se encontraron reservas con los criterios seleccionados.
-          </div>
-        ) : (
-          <div className="divide-y divide-slate-100">
-            {filteredBookings.map(b => (
-              <div
-                key={b.id}
-                className="p-4 sm:p-5 hover:bg-slate-50/70 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4"
-              >
-                {/* Info block */}
-                <div className="space-y-1.5">
-                  <div className="flex flex-wrap items-center gap-2.5">
-                    <span className="font-extrabold text-sm text-slate-900">
-                      {b.student_name}
-                    </span>
-                    {getStatusBadge(b.status)}
-                    <span className="text-[11px] text-slate-400">ID: {b.id.slice(0, 8)}</span>
+      {/* Booking list} */}
+      <div className="space-y-6">
+        {/* Tabs */}
+        <div className="flex border-b border-slate-200 gap-6">
+          <button
+            onClick={() => handleTabChange('upcoming')}
+            className={`pb-3 text-sm font-bold transition-all relative flex items-center gap-2 ${activeTab === 'upcoming'
+              ? 'text-indigo-600'
+              : 'text-slate-500 hover:text-slate-800'
+              }`}
+          >
+            Próximas clases ({upcomingCount})
+            {activeTab === 'upcoming' && (
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 rounded-full" />
+            )}
+          </button>
+
+          <button
+            onClick={() => handleTabChange('history')}
+            className={`pb-3 text-sm font-bold transition-all relative flex items-center gap-2 ${activeTab === 'history'
+              ? 'text-indigo-600'
+              : 'text-slate-500 hover:text-slate-800'
+              }`}
+          >
+            Histórico ({historyCount})
+            {activeTab === 'history' && (
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 rounded-full" />
+            )}
+          </button>
+        </div>
+
+        {/* Bookings Table / Cards */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+          {loading ? (
+            <div className="py-16 text-center text-slate-400 text-xs animate-pulse">
+              Cargando reservas...
+            </div>
+          ) : displayedBookings.length === 0 ? (
+            <div className="py-16 text-center text-slate-400 text-xs flex flex-col items-center justify-center p-6">
+              <Calendar className="w-10 h-10 text-slate-300 mb-2" />
+              <p className="font-semibold text-slate-600 text-sm">
+                {activeTab === 'upcoming'
+                  ? hasActiveFilters
+                    ? 'No se encontraron próximas clases con los criterios seleccionados.'
+                    : 'No hay próximas clases programadas en este momento.'
+                  : hasActiveFilters
+                    ? 'No se encontraron clases pasadas con los criterios seleccionados.'
+                    : 'No hay clases en el historial pasado.'}
+              </p>
+              {hasActiveFilters && (
+                <button
+                  onClick={() => {
+                    setFilterTeacher('');
+                    setFilterStatus('');
+                    setFilterDate('');
+                    setSearchQuery('');
+                  }}
+                  className="mt-3 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors"
+                >
+                  Limpiar filtros
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="divide-y divide-slate-100">
+              {displayedBookings.map(b => (
+                <div
+                  key={b.id}
+                  className="p-4 sm:p-5 hover:bg-slate-50/70 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4"
+                >
+                  {/* Info block */}
+                  <div className="space-y-1.5">
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      <span className="font-bold text-sm text-slate-900">
+                        {b.student_name}
+                      </span>
+                      {getStatusBadge(b.status)}
+                      <span className="text-[11px] text-slate-400">ID: {b.id.slice(0, 8)}</span>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600">
+                      <span className="flex items-center gap-1 font-semibold text-slate-800">
+                        <Calendar className="w-3.5 h-3.5 text-indigo-600" /> {formatDisplayDate(b.date)}
+                      </span>
+                      <span className="flex items-center gap-1 font-semibold text-slate-800">
+                        <Clock className="w-3.5 h-3.5 text-indigo-600" /> {b.start_time} - {b.end_time}{' '}
+                        ({b.duration_minutes} min)
+                      </span>
+                      <span className="flex items-center gap-1 text-slate-700">
+                        <UserIcon className="w-3.5 h-3.5 text-slate-400" /> Profesor: {b.teacher_name}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 pt-0.5">
+                      {b.student_email && (
+                        <span className="flex items-center gap-1">
+                          <Mail className="w-3 h-3 text-slate-400" /> {b.student_email}
+                        </span>
+                      )}
+                      {b.student_phone && (
+                        <span className="flex items-center gap-1">
+                          <Phone className="w-3 h-3 text-slate-400" /> {b.student_phone}
+                        </span>
+                      )}
+                      {b.notes && (
+                        <span className="italic text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md text-[11px]">
+                          "{b.notes}"
+                        </span>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600">
-                    <span className="flex items-center gap-1 font-semibold text-slate-800">
-                      <Calendar className="w-3.5 h-3.5 text-indigo-600" /> {formatDisplayDate(b.date)}
-                    </span>
-                    <span className="flex items-center gap-1 font-semibold text-slate-800">
-                      <Clock className="w-3.5 h-3.5 text-indigo-600" /> {b.start_time} - {b.end_time}{' '}
-                      ({b.duration_minutes} min)
-                    </span>
-                    <span className="flex items-center gap-1 text-slate-700">
-                      <UserIcon className="w-3.5 h-3.5 text-slate-400" /> Profesor: {b.teacher_name}
-                    </span>
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 pt-0.5">
-                    {b.student_email && (
-                      <span className="flex items-center gap-1">
-                        <Mail className="w-3 h-3 text-slate-400" /> {b.student_email}
-                      </span>
-                    )}
-                    {b.student_phone && (
-                      <span className="flex items-center gap-1">
-                        <Phone className="w-3 h-3 text-slate-400" /> {b.student_phone}
-                      </span>
-                    )}
-                    {b.notes && (
-                      <span className="italic text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md text-[11px]">
-                        "{b.notes}"
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-2 shrink-0 self-end md:self-center">
-                  <button
-                    onClick={() => {
-                      setSelectedBooking(b);
-                      setNewStatus(b.status);
-                      setStatusNotes(b.notes || '');
-                    }}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
-                  >
-                    <Edit2 className="w-3.5 h-3.5" /> Estado
-                  </button>
-
-                  {!b.status.startsWith('Cancelada') && (
+                  {/* Actions */}
+                  <div className="flex items-center gap-2 shrink-0 self-end md:self-center">
                     <button
-                      onClick={() => handleOpenCancel(b)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 transition-colors"
+                      onClick={() => {
+                        setSelectedBooking(b);
+                        const isPassed = isBookingPassed(b);
+                        setNewStatus(isPassed && b.status === 'Reservada' ? 'Completada' : b.status);
+                        setStatusNotes(b.notes || '');
+                      }}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
                     >
-                      <Ban className="w-3.5 h-3.5" /> Cancelar
+                      <Edit2 className="w-3.5 h-3.5" /> Estado
                     </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
 
+                    {!b.status.startsWith('Cancelada') && !isBookingPassed(b) && (
+                      <button
+                        onClick={() => handleOpenCancel(b)}
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 transition-colors"
+                      >
+                        <Ban className="w-3.5 h-3.5" /> Cancelar
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
       {/* Change Status Modal */}
       {selectedBooking && (
         <div
@@ -408,13 +510,24 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
                   onChange={e => setNewStatus(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-semibold bg-white"
                 >
-                  <option value="Reservada">Reservada</option>
-                  <option value="Confirmada">Confirmada</option>
-                  <option value="Completada">Completada</option>
-                  <option value="Cancelada por administrador">Cancelada por administrador</option>
-                  <option value="Cancelada por alumno">Cancelada por alumno</option>
-                  <option value="No presentado">No presentado</option>
+                  {isBookingPassed(selectedBooking) ? (
+                    <>
+                      <option value="Completada">Completada</option>
+                      <option value="No presentado">No presentado</option>
+                      <option value="Cancelada por administrador">Cancelada por administrador</option>
+                      <option value="Cancelada por alumno">Cancelada por alumno</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="Reservada">Reservada</option>
+                      <option value="Completada">Completada</option>
+                      <option value="Cancelada por administrador">Cancelada por administrador</option>
+                      <option value="Cancelada por alumno">Cancelada por alumno</option>
+                      <option value="No presentado">No presentado</option>
+                    </>
+                  )}
                 </select>
+
               </div>
 
               <div>
@@ -432,16 +545,16 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
               <div className="mt-6 flex items-center justify-end gap-2">
                 <button
                   onClick={() => setSelectedBooking(null)}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
                 <button
                   disabled={statusLoading}
                   onClick={handleUpdateStatus}
-                  className="px-4 py-2 rounded-lg text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-xs"
+                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-xs"
                 >
-                  {statusLoading ? 'Guardando...' : 'Guardar Estado'}
+                  {statusLoading ? 'Guardando...' : 'Guardar estado'}
                 </button>
               </div>
             </div>
@@ -516,7 +629,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
                   type="button"
                   onClick={handleCloseCancel}
                   disabled={cancelLoading}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Volver
                 </button>
@@ -524,7 +637,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
                   type="button"
                   onClick={handleConfirmCancel}
                   disabled={cancelLoading}
-                  className="px-5 py-2.5 rounded-lg text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300 shadow-xs transition-colors"
+                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300  transition-colors"
                 >
                   {cancelLoading ? 'Cancelando reserva...' : 'Confirmar cancelación'}
                 </button>
@@ -536,3 +649,4 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
     </div>
   );
 }
+

@@ -96,16 +96,17 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
   }, [selectedDate, selectedTeacherId]);
 
   // Helper date formatting
-  const formatDateSpanish = (dateStr: string) => {
+  const formatDate = (dateStr: string) => {
     if (!dateStr) return '';
-    const [y, m, d] = dateStr.split('-').map(Number);
-    const date = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
-    return date.toLocaleDateString('es-ES', {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const date = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+    const formatted = date.toLocaleDateString('es-ES', {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
       year: 'numeric',
     });
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
   };
 
   // Month navigation
@@ -176,21 +177,21 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
       <div className="p-5 sm:p-6 bg-gradient-to-r from-slate-50 to-indigo-50/40 border-b border-slate-200">
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">
+            <span className="font-mono text-indigo-600">
               Paso {step} de 4
             </span>
-            <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 mt-0.5">
-              {step === 1 && 'Selecciona tu Profesor'}
-              {step === 2 && 'Elige la Fecha'}
-              {step === 3 && 'Selecciona el Horario'}
-              {step === 4 && 'Confirmar Reserva'}
+            <h2 className="text-lg sm:text-xl font-bold text-slate-900 mt-0.5">
+              {step === 1 && 'Selecciona tu profesor'}
+              {step === 2 && 'Elige la fecha'}
+              {step === 3 && 'Selecciona el horario'}
+              {step === 4 && 'Confirmar reserva'}
             </h2>
           </div>
 
           {step > 1 && (
             <button
               onClick={() => setStep((step - 1) as any)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-white transition-colors"
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-white transition-colors"
             >
               <ChevronLeft className="w-4 h-4" /> Volver
             </button>
@@ -231,7 +232,7 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                 }`}
             >
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold">
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold">
                   <Sparkles className="w-6 h-6" />
                 </div>
                 <div>
@@ -263,10 +264,10 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                       <img
                         src={teacher.photo_url}
                         alt={teacher.name}
-                        className="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0"
+                        className="w-12 h-12 rounded-lg object-cover border border-slate-200 shrink-0"
                       />
                     ) : (
-                      <div className="w-12 h-12 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-sm shrink-0">
+                      <div className="w-12 h-12 rounded-lg bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-sm shrink-0">
                         {teacher.name[0]}
                         {teacher.last_name[0]}
                       </div>
@@ -305,11 +306,13 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <h3 className="font-bold text-sm sm:text-base text-slate-900 capitalize">
-                {new Date(currentYear, currentMonth - 1, 1).toLocaleDateString('es-ES', {
-                  month: 'long',
-                  year: 'numeric',
-                })}
+              <h3 className="font-bold text-sm sm:text-base text-slate-900">
+                {new Date(currentYear, currentMonth - 1, 1)
+                  .toLocaleDateString('es-ES', {
+                    month: 'long',
+                    year: 'numeric',
+                  })
+                  .replace(/^./, (char) => char.toUpperCase())}
               </h3>
               <button
                 onClick={nextMonth}
@@ -402,8 +405,8 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
             <div className="p-3 bg-indigo-50/60 rounded-lg border border-indigo-100 flex items-center justify-between">
               <div>
                 <span className="text-[11px] font-semibold text-indigo-700 block">Fecha seleccionada</span>
-                <p className="text-xs sm:text-sm font-bold text-slate-900 capitalize">
-                  {formatDateSpanish(selectedDate)}
+                <p className="text-xs sm:text-sm font-bold text-slate-900">
+                  {formatDate(selectedDate)}
                 </p>
               </div>
               <button
@@ -490,9 +493,7 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
 
             {/* Summary card */}
             <div className="bg-slate-50 rounded-xl p-5 sm:p-6 border border-slate-200 space-y-4">
-              <h4 className="font-bold text-sm text-slate-900 uppercase tracking-wider text-indigo-700">
-                Resumen de la Clase
-              </h4>
+
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -509,8 +510,8 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
 
                 <div>
                   <span className="text-xs text-slate-500 block">Fecha:</span>
-                  <span className="text-sm font-bold text-slate-900 capitalize">
-                    {formatDateSpanish(selectedDate)}
+                  <span className="text-sm font-bold text-slate-900">
+                    {formatDate(selectedDate)}
                   </span>
                 </div>
 
@@ -522,7 +523,7 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-slate-200">
+              <div className="pt-5 border-t border-slate-200">
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Notas para el profesor (opcional):
                 </label>
@@ -548,21 +549,21 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                 onClick={() => setStep(3)}
                 className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
               >
-                Modificar Horario
+                Modificar horario
               </button>
 
               <button
                 type="button"
                 disabled={bookingLoading}
                 onClick={handleConfirmBooking}
-                className="px-6 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-100 hover:shadow-indigo-200 transition-all flex items-center gap-2"
+                className="px-6 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white font-semibold text-xs sm:text-sm transition-all flex items-center gap-2"
               >
                 {bookingLoading ? (
                   <span>Confirmando reserva...</span>
                 ) : (
                   <>
                     <CheckCircle2 className="w-5 h-5" />
-                    <span>Confirmar Reserva</span>
+                    <span>Confirmar reserva</span>
                   </>
                 )}
               </button>

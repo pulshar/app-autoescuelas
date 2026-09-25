@@ -90,7 +90,7 @@ function AppContent() {
                   <Sparkles className="w-3.5 h-3.5" /> Autoescuela Online 24/7
                 </span>
 
-                <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
+                <h1 className="text-3xl sm:text-5xl font-bold tracking-tight leading-tight">
                   Reserva tus clases de conducir <span className="text-indigo-400">online</span> en segundos.
                 </h1>
 
@@ -102,7 +102,7 @@ function AppContent() {
                 <div className="flex flex-wrap items-center gap-3.5 mt-8">
                   <button
                     onClick={() => handleOpenAuth('register')}
-                    className="px-6 py-3.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2"
+                    className="px-6 py-3.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm sm:text-base transition-all flex items-center gap-2"
                   >
                     <span>Empezar ahora</span>
                     <ArrowRight className="w-4 h-4" />
@@ -110,7 +110,7 @@ function AppContent() {
 
                   <button
                     onClick={() => handleOpenAuth('login')}
-                    className="px-6 py-3.5 rounded-lg bg-white/10 hover:bg-white/15 text-white font-bold text-sm sm:text-base border border-white/20 backdrop-blur-xs transition-colors"
+                    className="px-6 py-3.5 rounded-lg bg-white/10 hover:bg-white/15 text-white font-semibold text-sm sm:text-base border border-white/20 backdrop-blur-xs transition-colors"
                   >
                     Iniciar sesión
                   </button>
@@ -119,7 +119,7 @@ function AppContent() {
             </div>
 
             {/* Quick Demo Switcher (Instant Evaluation for Test Users) */}
-            {/* <div className="bg-white rounded-xl p-6 sm:p-8 border border-slate-200 shadow-xs">
+            <div className="bg-white rounded-xl p-6 sm:p-8 border border-slate-200 shadow-xs">
               <div className="text-center max-w-lg mx-auto mb-6">
                 <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">
                   Acceso Inmediato
@@ -175,7 +175,7 @@ function AppContent() {
                   </span>
                 </button>
               </div>
-            </div> */}
+            </div>
 
             {/* Feature Highlights Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -183,7 +183,7 @@ function AppContent() {
                 <div className="w-12 h-12 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center mb-4">
                   <Clock className="w-6 h-6" />
                 </div>
-                <h4 className="font-extrabold text-base text-slate-900">Horarios en Tiempo Real</h4>
+                <h4 className="font-bold text-base text-slate-900">Horarios en tiempo real</h4>
                 <p className="text-xs text-slate-600 mt-2 leading-relaxed">
                   Algoritmo inteligente de turnos que previene solapamientos y reservas dobles de forma atómica.
                 </p>
@@ -193,7 +193,7 @@ function AppContent() {
                 <div className="w-12 h-12 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center mb-4">
                   <Car className="w-6 h-6" />
                 </div>
-                <h4 className="font-extrabold text-base text-slate-900">Profesores Titulares</h4>
+                <h4 className="font-bold text-base text-slate-900">Profesores titulares</h4>
                 <p className="text-xs text-slate-600 mt-2 leading-relaxed">
                   Elige al profesor con el que tengas mayor afinidad o consulta los turnos de cualquier instructor libre.
                 </p>
@@ -203,7 +203,7 @@ function AppContent() {
                 <div className="w-12 h-12 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center mb-4">
                   <CalendarCheck className="w-6 h-6" />
                 </div>
-                <h4 className="font-extrabold text-base text-slate-900">Cancelaciones Claras</h4>
+                <h4 className="font-bold text-base text-slate-900">Cancelaciones claras</h4>
                 <p className="text-xs text-slate-600 mt-2 leading-relaxed">
                   Política de cancelación con plazo de 24 horas y liberación instantánea de huecos para otros alumnos.
                 </p>
