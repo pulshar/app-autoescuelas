@@ -147,7 +147,7 @@ export default function AdminDashboard({
 
         {/* Metric 5 */}
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between text-teal-600 mb-2">
+          <div className="flex items-center justify-between text-emerald-600 mb-2">
             <span className="font-mono text-slate-500">Huecos Libres Hoy</span>
             <CheckCircle2 className="w-5 h-5" />
           </div>
