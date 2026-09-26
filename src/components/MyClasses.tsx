@@ -117,6 +117,12 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
+      case 'Pendiente de revisión':
+        return (
+          <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+            Pendiente de validación
+          </span>
+        );
       case 'Reservada':
         return (
           <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">

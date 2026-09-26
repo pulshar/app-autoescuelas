@@ -7,7 +7,6 @@ import {
   Clock,
   User as UserIcon,
   Search,
-  Filter,
   CheckCircle2,
   AlertCircle,
   CalendarPlus,
@@ -18,6 +17,7 @@ import {
   Edit2,
   Check,
   AlertTriangle,
+  UserX,
   ShieldCheck,
 } from 'lucide-react';
 
@@ -26,7 +26,7 @@ interface AdminBookingsProps {
 }
 
 export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps) {
-  const [activeTab, setActiveTab] = useState<'upcoming' | 'history'>('upcoming');
+  const [activeTab, setActiveTab] = useState<'pending_review' | 'upcoming' | 'history'>('pending_review');
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,6 +44,15 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
   const [statusLoading, setStatusLoading] = useState(false);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+
+  // Quick Action Modal (e.g. Complete with optional notes or Mark No-Show)
+  const [quickActionModal, setQuickActionModal] = useState<{
+    booking: Booking;
+    type: 'complete' | 'noshow';
+    notes: string;
+  } | null>(null);
+
+  const [quickActionLoading, setQuickActionLoading] = useState(false);
 
   // Cancellation modal
   const [cancellingBooking, setCancellingBooking] = useState<Booking | null>(null);
@@ -71,16 +80,17 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
   }, []);
 
   useEffect(() => {
-    if (!selectedBooking && !cancellingBooking) return;
+    if (!selectedBooking && !cancellingBooking && !quickActionModal) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setSelectedBooking(null);
         setCancellingBooking(null);
+        setQuickActionModal(null);
       }
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [selectedBooking, cancellingBooking]);
+  }, [selectedBooking, cancellingBooking, quickActionModal]);
 
   const handleUpdateStatus = async () => {
     if (!selectedBooking || !newStatus) return;
@@ -99,6 +109,39 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
       setTimeout(() => setActionError(null), 6000);
     } finally {
       setStatusLoading(false);
+    }
+  };
+
+  // Quick Action execution (Mark Complete or Mark No-show)
+  const handleExecuteQuickAction = async () => {
+    if (!quickActionModal) return;
+    setQuickActionLoading(true);
+    setActionError(null);
+    setActionMessage(null);
+
+    const { booking, type, notes } = quickActionModal;
+    const targetStatus = type === 'complete' ? 'Completada' : 'No presentado';
+    const finalNotes = notes.trim()
+      ? notes.trim()
+      : type === 'complete'
+        ? (booking.notes ? booking.notes : 'Clase realizada y validada por el administrador')
+        : (booking.notes ? `${booking.notes} - No se presentó` : 'El alumno no se presentó a la clase');
+
+    try {
+      const res = await api.updateBookingStatus(booking.id, targetStatus, finalNotes);
+      setActionMessage(
+        type === 'complete'
+          ? `Clase de ${booking.student_name} validada como Completada.`
+          : `Clase de ${booking.student_name} registrada como No presentado.`
+      );
+      setTimeout(() => setActionMessage(null), 5000);
+      setQuickActionModal(null);
+      fetchBookings();
+    } catch (err: any) {
+      setActionError(err.message || 'Error al actualizar el estado.');
+      setTimeout(() => setActionError(null), 6000);
+    } finally {
+      setQuickActionLoading(false);
     }
   };
 
@@ -150,13 +193,19 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
     return !isBookingPassed(b);
   };
 
-  // Split bookings into upcoming (soonest first) and history (most recent first)
+  // 1. Pending review: passed bookings in 'Pendiente de revisión' (or passed 'Reservada')
+  const pendingReviewBookings = bookings
+    .filter(b => b.status === 'Pendiente de revisión' || (b.status === 'Reservada' && isBookingPassed(b)))
+    .sort((a, b) => b.date.localeCompare(a.date) || b.start_time.localeCompare(a.start_time));
+
+  // 2. Upcoming bookings: strictly future and active
   const upcomingBookings = bookings
     .filter(isUpcoming)
     .sort((a, b) => a.date.localeCompare(b.date) || a.start_time.localeCompare(b.start_time));
 
+  // 3. History bookings: past finalized or cancelled (not in pending review and not upcoming)
   const historyBookings = bookings
-    .filter(b => !isUpcoming(b))
+    .filter(b => b.status !== 'Pendiente de revisión' && !isUpcoming(b))
     .sort((a, b) => b.date.localeCompare(a.date) || b.start_time.localeCompare(a.start_time));
 
   // Common filter function for search, teacher, status, and date
@@ -179,24 +228,31 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
     });
   };
 
+  const filteredPending = applyFilters(pendingReviewBookings);
   const filteredUpcoming = applyFilters(upcomingBookings);
   const filteredHistory = applyFilters(historyBookings);
 
   const hasActiveFilters = Boolean(searchQuery || filterTeacher || filterStatus || filterDate);
+  const pendingCount = hasActiveFilters ? filteredPending.length : pendingReviewBookings.length;
   const upcomingCount = hasActiveFilters ? filteredUpcoming.length : upcomingBookings.length;
   const historyCount = hasActiveFilters ? filteredHistory.length : historyBookings.length;
 
-  const displayedBookings = activeTab === 'upcoming' ? filteredUpcoming : filteredHistory;
+  const displayedBookings =
+    activeTab === 'pending_review'
+      ? filteredPending
+      : activeTab === 'upcoming'
+        ? filteredUpcoming
+        : filteredHistory;
 
-  const handleTabChange = (tab: 'upcoming' | 'history') => {
+  const handleTabChange = (tab: 'pending_review' | 'upcoming' | 'history') => {
     setActiveTab(tab);
-    if (tab === 'upcoming' && filterStatus && filterStatus !== 'Reservada') {
-      setFilterStatus('');
-    }
+    setFilterStatus('');
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
+      case 'Pendiente de revisión':
+        return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">Pendiente de revisión</span>;
       case 'Reservada':
         return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Reservada</span>;
       case 'Completada':
@@ -294,7 +350,12 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
               className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 bg-white"
             >
               <option value="">Todos los estados</option>
-              {activeTab === 'upcoming' ? (
+              {activeTab === 'pending_review' ? (
+                <>
+                  <option value="Pendiente de revisión">Pendiente de revisión</option>
+                  <option value="Reservada">Reservada (Pasada)</option>
+                </>
+              ) : activeTab === 'upcoming' ? (
                 <option value="Reservada">Reservada</option>
               ) : (
                 <>
@@ -339,10 +400,10 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
       {/* Booking list} */}
       <div className="space-y-6">
         {/* Tabs */}
-        <div className="flex border-b border-slate-200 gap-6">
+        <div className="flex border-b border-slate-200 gap-4 sm:gap-6 overflow-x-auto">
           <button
             onClick={() => handleTabChange('upcoming')}
-            className={`pb-3 text-sm font-bold transition-all relative flex items-center gap-2 ${activeTab === 'upcoming'
+            className={`pb-3 text-sm font-bold transition-all relative flex items-center gap-2 whitespace-nowrap ${activeTab === 'upcoming'
               ? 'text-indigo-600'
               : 'text-slate-500 hover:text-slate-800'
               }`}
@@ -355,7 +416,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
 
           <button
             onClick={() => handleTabChange('history')}
-            className={`pb-3 text-sm font-bold transition-all relative flex items-center gap-2 ${activeTab === 'history'
+            className={`pb-3 text-sm font-bold transition-all relative flex items-center gap-2 whitespace-nowrap ${activeTab === 'history'
               ? 'text-indigo-600'
               : 'text-slate-500 hover:text-slate-800'
               }`}
@@ -365,8 +426,52 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
               <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 rounded-full" />
             )}
           </button>
+          <button
+            onClick={() => handleTabChange('pending_review')}
+            className={`pb-3 text-sm font-bold transition-all relative flex items-center gap-2 whitespace-nowrap ${activeTab === 'pending_review'
+              ? 'text-indigo-600'
+              : 'text-slate-500 hover:text-slate-800'
+              }`}
+          >
+            <span className="flex items-center gap-1.5">
+              Clases por revisar
+            </span>
+            <span
+              className={`px-2 py-0.5 rounded-full text-xs font-bold ${pendingCount > 0
+                ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                : 'bg-slate-100 text-slate-500'
+                }`}
+            >
+              {pendingCount}
+            </span>
+            {activeTab === 'pending_review' && (
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 rounded-full" />
+            )}
+          </button>
         </div>
 
+        {/* Alert banner if on pending_review tab */}
+        {activeTab === 'pending_review' && (
+          <div className="p-5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in">
+            <div className="flex items-start sm:items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-slate-900 text-sm sm:text-base">
+                    Clases finalizadas pendientes de revisión
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 mt-0.5">
+                  Confirma si fueron <strong>completadas</strong> o si el alumno <strong>no se presentó</strong>. Si no se revisa en 72 horas, la clase pasará automáticamente a Completada.
+                </p>
+              </div>
+            </div>
+          </div>
+
+
+        )}
         {/* Bookings Table / Cards */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
           {loading ? (
@@ -377,14 +482,23 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
             <div className="py-16 text-center text-slate-400 text-xs flex flex-col items-center justify-center p-6">
               <Calendar className="w-10 h-10 text-slate-300 mb-2" />
               <p className="font-semibold text-slate-600 text-sm">
-                {activeTab === 'upcoming'
+                {activeTab === 'pending_review'
                   ? hasActiveFilters
-                    ? 'No se encontraron próximas clases con los criterios seleccionados.'
-                    : 'No hay próximas clases programadas en este momento.'
-                  : hasActiveFilters
-                    ? 'No se encontraron clases pasadas con los criterios seleccionados.'
-                    : 'No hay clases en el historial pasado.'}
+                    ? 'No hay clases pendientes de revisión con los filtros actuales.'
+                    : '¡Al día! No hay clases pendientes de revisión.'
+                  : activeTab === 'upcoming'
+                    ? hasActiveFilters
+                      ? 'No se encontraron próximas clases con los criterios seleccionados.'
+                      : 'No hay próximas clases programadas en este momento.'
+                    : hasActiveFilters
+                      ? 'No se encontraron clases pasadas con los criterios seleccionados.'
+                      : 'No hay clases en el historial pasado.'}
               </p>
+              {activeTab === 'pending_review' && !hasActiveFilters && (
+                <p className="text-xs text-slate-400 mt-1 max-w-sm">
+                  Todas las clases pasadas han sido validadas por el administrador o cerradas tras 72 horas.
+                </p>
+              )}
               {hasActiveFilters && (
                 <button
                   onClick={() => {
@@ -401,82 +515,196 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
             </div>
           ) : (
             <div className="divide-y divide-slate-100">
-              {displayedBookings.map(b => (
-                <div
-                  key={b.id}
-                  className="p-4 sm:p-5 hover:bg-slate-50/70 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4"
-                >
-                  {/* Info block */}
-                  <div className="space-y-1.5">
-                    <div className="flex flex-wrap items-center gap-2.5">
-                      <span className="font-bold text-sm text-slate-900">
-                        {b.student_name}
-                      </span>
-                      {getStatusBadge(b.status)}
-                      <span className="text-[11px] text-slate-400">ID: {b.id.slice(0, 8)}</span>
+              {displayedBookings.map(b => {
+                const isPassed = isBookingPassed(b);
+                const isPendingReview = b.status === 'Pendiente de revisión' || (isPassed && b.status === 'Reservada');
+
+                return (
+                  <div
+                    key={b.id}
+                    className="p-4 sm:p-5 transition-colors flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    {/* Info block */}
+                    <div className="space-y-1.5 flex-1">
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        <span className="font-bold text-sm text-slate-900">
+                          {b.student_name}
+                        </span>
+                        {getStatusBadge(b.status)}
+                        <span className="text-[11px] text-slate-400">ID: {b.id.slice(0, 8)}</span>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600">
+                        <span className="flex items-center gap-1 font-semibold text-slate-800">
+                          <Calendar className="w-3.5 h-3.5 text-indigo-600" /> {formatDisplayDate(b.date)}
+                        </span>
+                        <span className="flex items-center gap-1 font-semibold text-slate-800">
+                          <Clock className="w-3.5 h-3.5 text-indigo-600" /> {b.start_time} - {b.end_time}{' '}
+                          ({b.duration_minutes} min)
+                        </span>
+                        <span className="flex items-center gap-1 text-slate-700">
+                          <UserIcon className="w-3.5 h-3.5 text-slate-400" /> Profesor: {b.teacher_name}
+                        </span>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 pt-0.5">
+                        {b.student_email && (
+                          <span className="flex items-center gap-1">
+                            <Mail className="w-3 h-3 text-slate-400" /> {b.student_email}
+                          </span>
+                        )}
+                        {b.student_phone && (
+                          <span className="flex items-center gap-1">
+                            <Phone className="w-3 h-3 text-slate-400" /> {b.student_phone}
+                          </span>
+                        )}
+                        {b.notes && (
+                          <span className="italic text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md text-[11px]">
+                            "{b.notes}"
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600">
-                      <span className="flex items-center gap-1 font-semibold text-slate-800">
-                        <Calendar className="w-3.5 h-3.5 text-indigo-600" /> {formatDisplayDate(b.date)}
-                      </span>
-                      <span className="flex items-center gap-1 font-semibold text-slate-800">
-                        <Clock className="w-3.5 h-3.5 text-indigo-600" /> {b.start_time} - {b.end_time}{' '}
-                        ({b.duration_minutes} min)
-                      </span>
-                      <span className="flex items-center gap-1 text-slate-700">
-                        <UserIcon className="w-3.5 h-3.5 text-slate-400" /> Profesor: {b.teacher_name}
-                      </span>
-                    </div>
+                    {/* Actions Area */}
+                    <div className="flex flex-wrap items-center gap-2 shrink-0 self-end lg:self-center">
+                      {/* If in pending review: show the two prominent 1-click quick action buttons */}
+                      {isPendingReview && (
+                        <>
+                          <button
+                            onClick={() => setQuickActionModal({ booking: b, type: 'complete', notes: b.notes || '' })}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors"
+                            title="Confirmar que la clase se impartió con normalidad"
+                          >
+                            <Check className="w-3.5 h-3.5" /> Completada
+                          </button>
 
-                    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 pt-0.5">
-                      {b.student_email && (
-                        <span className="flex items-center gap-1">
-                          <Mail className="w-3 h-3 text-slate-400" /> {b.student_email}
-                        </span>
+                          <button
+                            onClick={() => setQuickActionModal({ booking: b, type: 'noshow', notes: b.notes || '' })}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-colors"
+                            title="Marcar falta de asistencia del alumno"
+                          >
+                            <UserX className="w-3.5 h-3.5" /> No presentado
+                          </button>
+                        </>
                       )}
-                      {b.student_phone && (
-                        <span className="flex items-center gap-1">
-                          <Phone className="w-3 h-3 text-slate-400" /> {b.student_phone}
-                        </span>
-                      )}
-                      {b.notes && (
-                        <span className="italic text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md text-[11px]">
-                          "{b.notes}"
-                        </span>
-                      )}
-                    </div>
-                  </div>
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-2 shrink-0 self-end md:self-center">
-                    <button
-                      onClick={() => {
-                        setSelectedBooking(b);
-                        const isPassed = isBookingPassed(b);
-                        setNewStatus(isPassed && b.status === 'Reservada' ? 'Completada' : b.status);
-                        setStatusNotes(b.notes || '');
-                      }}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
-                    >
-                      <Edit2 className="w-3.5 h-3.5" /> Estado
-                    </button>
-
-                    {!b.status.startsWith('Cancelada') && !isBookingPassed(b) && (
+                      {/* Standard Edit Status Button */}
                       <button
-                        onClick={() => handleOpenCancel(b)}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 transition-colors"
+                        onClick={() => {
+                          setSelectedBooking(b);
+                          setNewStatus(b.status);
+                          setStatusNotes(b.notes || '');
+                        }}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
                       >
-                        <Ban className="w-3.5 h-3.5" /> Cancelar
+                        <Edit2 className="w-3.5 h-3.5" /> Estado
                       </button>
-                    )}
+
+                      {/* Cancel button if strictly upcoming */}
+                      {!b.status.startsWith('Cancelada') && !isPassed && (
+                        <button
+                          onClick={() => handleOpenCancel(b)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 transition-colors"
+                        >
+                          <Ban className="w-3.5 h-3.5" /> Cancelar
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
       </div>
+
+      {/* Quick Action Modal (Realizada con notas / No presentado) */}
+      {quickActionModal && (
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setQuickActionModal(null);
+          }}
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
+        >
+          <div className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
+            <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+              <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
+                {quickActionModal.type === 'complete' ? (
+                  <>
+                    Validar clase como completada
+                  </>
+                ) : (
+                  <>
+                    Marcar alumno no presentado
+                  </>
+                )}
+              </h3>
+              <button
+                onClick={() => setQuickActionModal(null)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-5 animate-fadeIn">
+              <div className="p-4 rounded-lg bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-950 space-y-1.5">
+                <p className="font-bold text-slate-800">
+                  {quickActionModal.booking.student_name}
+                </p>
+                <p className="text-slate-600">
+                  {formatDisplayDate(quickActionModal.booking.date)} • {quickActionModal.booking.start_time} - {quickActionModal.booking.end_time} ({quickActionModal.booking.duration_minutes} min)
+                </p>
+                <p className="text-slate-500">
+                  Profesor: {quickActionModal.booking.teacher_name}
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  {quickActionModal.type === 'complete'
+                    ? 'Notas u observaciones de la práctica (opcional)'
+                    : 'Motivo de la ausencia'}
+                </label>
+                <textarea
+                  rows={3}
+                  value={quickActionModal.notes}
+                  onChange={e => setQuickActionModal({ ...quickActionModal, notes: e.target.value })}
+                  placeholder={
+                    quickActionModal.type === 'complete'
+                      ? 'Ej. Maniobras de estacionamiento realizadas correctamente. Buena progresión.'
+                      : 'Ej. No acudió al punto de encuentro ni respondió a las llamadas.'
+                  }
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
+                />
+              </div>
+              <div className="mt-6 flex items-center justify-end gap-2">
+                <button
+                  onClick={() => setQuickActionModal(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                >
+                  Volver
+                </button>
+                <button
+                  disabled={quickActionLoading}
+                  onClick={handleExecuteQuickAction}
+                  className={`px-5 py-2.5 rounded-lg text-xs font-semibold text-white transition-colors ${quickActionModal.type === 'complete'
+                    ? 'bg-emerald-600 hover:bg-emerald-700'
+                    : 'bg-rose-600 hover:bg-rose-700'
+                    }`}
+                >
+                  {quickActionLoading
+                    ? 'Guardando...'
+                    : quickActionModal.type === 'complete'
+                      ? 'Confirmar como completada'
+                      : 'Confirmar ausencia'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Change Status Modal */}
       {selectedBooking && (
         <div
@@ -510,24 +738,20 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
                   onChange={e => setNewStatus(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-semibold bg-white"
                 >
-                  {isBookingPassed(selectedBooking) ? (
-                    <>
-                      <option value="Completada">Completada</option>
-                      <option value="No presentado">No presentado</option>
-                      <option value="Cancelada por administrador">Cancelada por administrador</option>
-                      <option value="Cancelada por alumno">Cancelada por alumno</option>
-                    </>
-                  ) : (
-                    <>
-                      <option value="Reservada">Reservada</option>
-                      <option value="Completada">Completada</option>
-                      <option value="Cancelada por administrador">Cancelada por administrador</option>
-                      <option value="Cancelada por alumno">Cancelada por alumno</option>
-                      <option value="No presentado">No presentado</option>
-                    </>
+                  <option value="Pendiente de revisión">Pendiente de revisión</option>
+                  <option value="Completada">Completada</option>
+                  <option value="No presentado">No presentado</option>
+                  <option value="Cancelada por administrador">Cancelada por administrador</option>
+                  <option value="Cancelada por alumno">Cancelada por alumno</option>
+                  {!isBookingPassed(selectedBooking) && (
+                    <option value="Reservada">Reservada</option>
                   )}
                 </select>
-
+                {isBookingPassed(selectedBooking) && newStatus === 'Reservada' && (
+                  <p className="mt-1.5 text-[11px] text-amber-700 bg-amber-50/80 p-2 rounded-xl border border-amber-200">
+                    Al ser una clase ya finalizada, no puede restablecerse como &ldquo;Reservada&rdquo;.
+                  </p>
+                )}
               </div>
 
               <div>
@@ -602,7 +826,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Motivo de la cancelación (visible en el registro e historial)
+                  Motivo de la cancelación (visible en el registro e historial). Se notificará al alumno.
                 </label>
                 <textarea
                   rows={2}

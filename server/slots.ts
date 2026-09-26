@@ -92,11 +92,11 @@ export async function generateSlotsForDate(params: GenerateSlotsParams): Promise
     WHERE date = ?
   `).all(date)) as { teacher_id: string | null; is_full_day: number; start_time: string | null; end_time: string | null; reason: string }[];
 
-  // 3. Fetch bookings for this date with status in ('Reservada', 'Completada')
+  // 3. Fetch bookings for this date with status in ('Reservada', 'Pendiente de revisión', 'Completada')
   const bookings = (await db.prepare(`
     SELECT teacher_id, student_id, start_time, end_time
     FROM bookings
-    WHERE date = ? AND status IN ('Reservada', 'Completada')
+    WHERE date = ? AND status IN ('Reservada', 'Pendiente de revisión', 'Completada')
   `).all(date)) as { teacher_id: string; student_id: string; start_time: string; end_time: string }[];
 
   const allSlots: TimeSlot[] = [];
@@ -325,7 +325,7 @@ export async function createBookingAtomic(params: CreateBookingParams) {
       SELECT id FROM bookings
       WHERE teacher_id = ?
         AND date = ?
-         AND status IN ('Reservada', 'Completada')
+         AND status IN ('Reservada', 'Pendiente de revisión', 'Completada')
         AND NOT (end_time <= ? OR start_time >= ?)
       LIMIT 1
     `).get(teacherId, date, startTime, endTime);
@@ -339,7 +339,7 @@ export async function createBookingAtomic(params: CreateBookingParams) {
       SELECT id, start_time, end_time FROM bookings
       WHERE student_id = ?
         AND date = ?
-        AND status IN ('Reservada', 'Completada')
+        AND status IN ('Reservada', 'Pendiente de revisión', 'Completada')
         AND NOT (end_time <= ? OR start_time >= ?)
       LIMIT 1
     `).get(studentId, date, startTime, endTime);

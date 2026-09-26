@@ -916,6 +916,8 @@ async function startServer() {
 
 
   // Automatically update status of bookings that have already finished (date + end_time passed)
+  // Transition to 'Pendiente de revisión', and auto-complete after 72 hours if unreviewed
+
   async function autoCompletePassedBookings(): Promise<number> {
     try {
       const settings = await getAppSettings();
@@ -925,16 +927,35 @@ async function startServer() {
       const currentTime = now.toLocaleTimeString('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false }); // "HH:mm"
       const nowIso = now.toISOString();
 
-      const res = await db.prepare(`
+      // 1. Move passed 'Reservada' bookings into 'Pendiente de revisión'
+      const reviewRes = await db.prepare(`
         UPDATE bookings
-        SET status = 'Completada', updated_at = ?
+        SET status = 'Pendiente de revisión', updated_at = ?
         WHERE status = 'Reservada'
           AND (date < ? OR (date = ? AND end_time <= ?))
       `).run(nowIso, currentDate, currentDate, currentTime);
 
-      return Number(res.changes || 0);
+
+      // 2. Safety auto-close: Bookings in 'Pendiente de revisión' older than 72 hours auto-complete
+      const seventyTwoHoursAgo = new Date(now.getTime() - 72 * 60 * 60 * 1000);
+      const limitDate = seventyTwoHoursAgo.toLocaleDateString('en-CA', { timeZone: tz });
+      const limitTime = seventyTwoHoursAgo.toLocaleTimeString('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false });
+
+      const autoCloseRes = await db.prepare(`
+        UPDATE bookings
+        SET status = 'Completada',
+            notes = CASE
+              WHEN notes IS NULL OR notes = '' THEN 'Validada automáticamente tras 72h sin incidencias'
+              ELSE notes || ' (Auto-validada tras 72h)'
+            END,
+            updated_at = ?
+        WHERE status = 'Pendiente de revisión'
+          AND (date < ? OR (date = ? AND end_time <= ?))
+      `).run(nowIso, limitDate, limitDate, limitTime);
+
+      return Number(reviewRes.changes || 0) + Number(autoCloseRes.changes || 0);
     } catch (err) {
-      console.error('Error auto-completing passed bookings:', err);
+      console.error('Error in autoCompletePassedBookings (review & auto-close):', err);
       return 0;
     }
   }
@@ -1136,8 +1157,14 @@ async function startServer() {
     try {
       const { id } = req.params;
       const { status, notes } = req.body;
-      const allowedStatuses = ['Reservada', 'Cancelada por alumno', 'Cancelada por administrador', 'Completada', 'No presentado'];
-
+      const allowedStatuses = [
+        'Reservada',
+        'Pendiente de revisión',
+        'Cancelada por alumno',
+        'Cancelada por administrador',
+        'Completada',
+        'No presentado'
+      ];
       if (!allowedStatuses.includes(status)) {
         res.status(400).json({ error: 'Estado no válido.' });
         return;
@@ -1303,7 +1330,8 @@ async function startServer() {
         SELECT u.id, u.name, u.email, u.phone, u.avatar_url, u.is_active, u.created_at,
                COUNT(b.id) as total_bookings,
                SUM(CASE WHEN b.status = 'Completada' THEN 1 ELSE 0 END) as completed_classes,
-               SUM(CASE WHEN b.status = 'Reservada' THEN 1 ELSE 0 END) as active_classes
+               SUM(CASE WHEN b.status = 'Reservada' THEN 1 ELSE 0 END) as active_classes,
+               SUM(CASE WHEN b.status = 'Pendiente de revisión' THEN 1 ELSE 0 END) as pending_review_classes
         FROM users u
         LEFT JOIN bookings b ON u.id = b.student_id
         WHERE u.role = 'student'
@@ -1317,6 +1345,7 @@ async function startServer() {
         total_bookings: Number(s.total_bookings || 0),
         completed_classes: Number(s.completed_classes || 0),
         active_classes: Number(s.active_classes || 0),
+        pending_review_classes: Number(s.pending_review_classes || 0),
       }));
 
       res.json({ students });
@@ -1674,6 +1703,12 @@ async function startServer() {
          WHERE date >= ? AND status = 'Reservada'
       `).get(todayStr)) as any;
 
+      const pendingReviews = (await db.prepare(`
+        SELECT COUNT(*) as count FROM bookings
+        WHERE status = 'Pendiente de revisión'
+      `).get()) as any;
+
+
       const totalBookings = (await db.prepare('SELECT COUNT(*) as count FROM bookings').get()) as any;
       const activeTeachers = (await db.prepare('SELECT COUNT(*) as count FROM teachers WHERE is_active = 1').get()) as any;
       const registeredStudents = (await db.prepare("SELECT COUNT(*) as count FROM users WHERE role = 'student'").get()) as any;
@@ -1687,6 +1722,7 @@ async function startServer() {
         stats: {
           today_classes: Number(todayClasses?.count || 0),
           upcoming_classes: Number(upcomingClasses?.count || 0),
+          pending_reviews: Number(pendingReviews?.count || 0),
           total_bookings: Number(totalBookings?.count || 0),
           active_teachers: Number(activeTeachers?.count || 0),
           registered_students: Number(registeredStudents?.count || 0),

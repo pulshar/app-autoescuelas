@@ -302,9 +302,9 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
                     <span
                       className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${b.status === 'Reservada'
                         ? 'bg-emerald-100 text-emerald-800'
-                        : b.status.startsWith('Cancelada')
+                        : b.status.startsWith('Cancelada') || b.status === 'No presentado'
                           ? 'bg-rose-100 text-rose-800'
-                          : b.status === 'No presentado'
+                          : b.status === 'Pendiente de revisión'
                             ? 'bg-amber-100 text-amber-800'
                             : 'bg-indigo-100 text-indigo-800'
                         }`}

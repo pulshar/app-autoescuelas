@@ -61,10 +61,11 @@ export interface ScheduleBlock {
 
 export type BookingStatus =
   | 'Reservada'
-  | 'Cancelada por alumno'
-  | 'Cancelada por administrador'
+  | 'Pendiente de revisión'
   | 'Completada'
-  | 'No presentado';
+  | 'No presentado'
+  | 'Cancelada por alumno'
+  | 'Cancelada por administrador';
 
 export interface Booking {
   id: string;
@@ -149,6 +150,7 @@ export interface TimeSlot {
 
 export interface DashboardStats {
   today_classes: number;
+  pending_reviews?: number;
   upcoming_classes: number;
   total_bookings: number;
   active_teachers: number;

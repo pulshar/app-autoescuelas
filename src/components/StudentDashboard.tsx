@@ -66,7 +66,6 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
   }, [user]);
 
   const nextBooking = upcomingBookings[0] || null;
-  console.log(nextBooking);
 
   // Check if student can cancel next booking based on settings.min_cancellation_hours
   const canCancelBooking = (booking: Booking): { allowed: boolean; hoursRemaining: number } => {
