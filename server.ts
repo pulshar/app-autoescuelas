@@ -1242,8 +1242,8 @@ async function startServer() {
       const finalSchoolName = school_name && typeof school_name === 'string' && school_name.trim() ? school_name.trim() : 'AutoescuelaPro';
 
       await db.prepare(`
-        school_name = ?,
         UPDATE settings SET
+          school_name = ?,
           class_duration_minutes = ?,
           rest_time_minutes = ?,
           min_cancellation_hours = ?,

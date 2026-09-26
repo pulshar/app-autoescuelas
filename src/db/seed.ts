@@ -21,6 +21,7 @@ async function seed() {
             .insert(schema.settings)
             .values({
                 id: 'default',
+                schoolName: 'AutoescuelaPro',
                 classDurationMinutes: 45,
                 restTimeMinutes: 0,
                 minCancellationHours: 24,
