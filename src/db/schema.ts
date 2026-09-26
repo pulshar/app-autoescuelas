@@ -92,6 +92,7 @@ export const bookings = pgTable('bookings', {
 // App Settings
 export const settings = pgTable('settings', {
     id: text('id').primaryKey(),
+    schoolName: text('school_name').default('AutoescuelaPro'),
     classDurationMinutes: integer('class_duration_minutes').notNull().default(45),
     restTimeMinutes: integer('rest_time_minutes').notNull().default(0),
     minCancellationHours: integer('min_cancellation_hours').notNull().default(24),

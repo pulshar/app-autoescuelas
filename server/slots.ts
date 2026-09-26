@@ -27,6 +27,7 @@ export async function getAppSettings(): Promise<AppSettings> {
   if (!row) {
     return {
       id: 'default',
+      school_name: 'AutoescuelaPro',
       class_duration_minutes: 45,
       rest_time_minutes: 0,
       min_cancellation_hours: 24,
@@ -42,6 +43,7 @@ export async function getAppSettings(): Promise<AppSettings> {
   }
   return {
     id: row.id,
+    school_name: row.school_name || 'AutoescuelaPro',
     class_duration_minutes: Number(row.class_duration_minutes),
     rest_time_minutes: Number(row.rest_time_minutes),
     min_cancellation_hours: Number(row.min_cancellation_hours),

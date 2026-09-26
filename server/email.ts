@@ -23,8 +23,8 @@ export function isResendConfigured(): boolean {
   return !!(apiKey && apiKey.trim() !== '' && apiKey !== 'MY_RESEND_API_KEY');
 }
 
-export function getSenderEmail(): string {
-  return process.env.RESEND_FROM_EMAIL?.trim() || 'AutoescuelaPro <onboarding@resend.dev>';
+export function getSenderEmail(schoolName: string = 'AutoescuelaPro'): string {
+  return process.env.RESEND_FROM_EMAIL?.trim() || `${schoolName} <onboarding@resend.dev>`;
 }
 
 export function isSandboxDomain(): boolean {
@@ -193,6 +193,7 @@ export async function sendClassReminderEmail({
   location,
   customTitle,
   customMessage,
+  schoolName,
 }: {
   to: string;
   studentName: string;
@@ -203,7 +204,9 @@ export async function sendClassReminderEmail({
   location?: string;
   customTitle?: string;
   customMessage?: string;
+  schoolName?: string;
 }): Promise<EmailResult> {
+  const brandName = schoolName || 'AutoescuelaPro';
   const match = date.match(/^(\d{4})-(\d{2})-(\d{2})/);
   const displayDate = match ? `${match[3]}/${match[2]}/${match[1]}` : date;
   const subject = customTitle || `Recordatorio: Clase práctica el ${displayDate} a las ${time}`;
@@ -231,7 +234,7 @@ export async function sendClassReminderEmail({
                 <tr>
                   <td>
                     <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 8px;">
-                      AutoescuelaPro
+                      ${brandName}
                     </span>
                     <h1 style="margin: 0; color: #ffffff; font-size: 20px; font-weight: 800; line-height: 1.3;">
                       Recordatorio de tu próxima clase práctica
@@ -323,7 +326,7 @@ export async function sendClassReminderEmail({
           <!-- Footer -->
           <tr>
             <td style="background-color: #f8fafc; padding: 16px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8;">
-              Este es un aviso automático generado por AutoescuelaPro. No respondas directamente a este correo.
+              Este es un aviso automático generado por ${brandName}. No respondas directamente a este correo.
             </td>
           </tr>
 
@@ -352,15 +355,18 @@ export async function sendStudentWelcomeEmail({
   studentName,
   temporaryPassword,
   appUrl,
+  schoolName,
 }: {
   to: string;
   studentName: string;
   temporaryPassword?: string;
   appUrl?: string;
+  schoolName?: string;
 }): Promise<EmailResult> {
+  const brandName = schoolName || 'AutoescuelaPro';
   const baseUrl = (appUrl || process.env.APP_URL || '').replace(/\/$/, '');
   const loginUrl = baseUrl ? `${baseUrl}?login=true&email=${encodeURIComponent(to)}` : '#';
-  const subject = `¡Bienvenido/a a AutoescuelaPro! Tu cuenta de alumno ha sido activada`;
+  const subject = `¡Bienvenido/a a ${brandName}! Tu cuenta de alumno ha sido activada`;
 
   const html = `
 <!DOCTYPE html>
@@ -384,7 +390,7 @@ export async function sendStudentWelcomeEmail({
                 <tr>
                   <td>
                     <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
-                      AutoescuelaPro • Portal del Alumno
+                      ${brandName} • Portal del Alumno
                     </span>
                     <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 800; line-height: 1.3;">
                       ¡Bienvenido/a a la Autoescuela!
@@ -403,7 +409,7 @@ export async function sendStudentWelcomeEmail({
               </p>
               
               <p style="margin: 0 0 20px 0; font-size: 14px; line-height: 1.6; color: #475569;">
-                Has sido dado de alta en la plataforma oficial de AutoescuelaPro. Ya puedes reservar tus clases prácticas de conducir con tus profesores, ver el calendario disponible y gestionar tus horarios desde tu móvil o cualquier dispositivo.
+                Has sido dado de alta en la plataforma oficial de ${brandName}. Ya puedes reservar tus clases prácticas de conducir con tus profesores, ver el calendario disponible y gestionar tus horarios desde tu móvil o cualquier dispositivo.
               </p>
 
               <!-- Credentials Box -->
@@ -468,7 +474,7 @@ export async function sendStudentWelcomeEmail({
           <!-- Footer -->
           <tr>
             <td style="background-color: #f8fafc; padding: 20px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8; line-height: 1.5;">
-              Este es un correo automático generado por AutoescuelaPro para la activación de tu cuenta de alumno.<br>
+              Este es un correo automático generado por ${brandName} para la activación de tu cuenta de alumno.<br>
               Por favor, no respondas directamente a este mensaje.
             </td>
           </tr>
@@ -481,7 +487,7 @@ export async function sendStudentWelcomeEmail({
 </html>
   `;
 
-  const text = `${subject}\n\nHola ${studentName},\n\nEl Administrador Central te ha dado de alta en la plataforma de AutoescuelaPro.\n\nDatos de acceso:\n- Email: ${to}\n${temporaryPassword ? `- Contraseña provisional: ${temporaryPassword}\n` : ''
+  const text = `${subject}\n\nHola ${studentName},\n\nEl Administrador Central te ha dado de alta en la plataforma de ${brandName}.\n\nDatos de acceso:\n- Email: ${to}\n${temporaryPassword ? `- Contraseña provisional: ${temporaryPassword}\n` : ''
     }\nEnlace de acceso: ${loginUrl}\n\nIMPORTANTE: Te recomendamos cambiar tu contraseña una vez accedas por primera vez desde la sección "Mi perfil".\n\nSi usas cuenta de Google con este mismo email, también puedes acceder pulsando en "Continuar con Google".\n\n¡Bienvenido/a y feliz aprendizaje!\n`;
 
   return sendEmail({

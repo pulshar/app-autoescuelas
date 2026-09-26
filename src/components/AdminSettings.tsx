@@ -4,6 +4,7 @@ import { api } from '../lib/api.ts';
 import type { AppSettings, ReminderLogItem, ResendStatus } from '../types.ts';
 import {
   Clock,
+  Car,
   Ban,
   Bell,
   CheckCircle2,
@@ -58,7 +59,8 @@ export default function AdminSettings() {
   const [previewTab, setPreviewTab] = useState<'app' | 'email'>('email');
   const [loading, setLoading] = useState(true);
 
-  // Form State: General Settings
+  // Form State: General & Identity Settings
+  const [schoolName, setSchoolName] = useState<string>('AutoescuelaPro');
   const [classDuration, setClassDuration] = useState<number>(45);
   const [restTime, setRestTime] = useState<number>(0);
   const [minCancellationHours, setMinCancellationHours] = useState<number>(24);
@@ -101,6 +103,7 @@ export default function AdminSettings() {
       setLoading(true);
       const res = await api.getSettings();
       const s = res.settings;
+      setSchoolName(s.school_name || 'AutoescuelaPro');
       setClassDuration(s.class_duration_minutes ?? 45);
       setRestTime(s.rest_time_minutes ?? 0);
       setMinCancellationHours(s.min_cancellation_hours ?? 24);
@@ -157,6 +160,7 @@ export default function AdminSettings() {
 
     try {
       const res = await api.updateSettings({
+        school_name: schoolName.trim() || 'AutoescuelaPro',
         class_duration_minutes: Number(classDuration),
         rest_time_minutes: Number(restTime),
         min_cancellation_hours: Number(minCancellationHours),
@@ -174,6 +178,12 @@ export default function AdminSettings() {
         type: 'success',
         message: res.message || 'Configuración guardada correctamente.',
       });
+      // Notify other components like Navbar about the new school name
+      window.dispatchEvent(
+        new CustomEvent('app-settings-updated', {
+          detail: { school_name: schoolName.trim() || 'AutoescuelaPro' },
+        })
+      );
       fetchLogs();
     } catch (err: any) {
       setFeedback({
@@ -308,6 +318,7 @@ export default function AdminSettings() {
   };
 
   // Generate live sample preview text
+  const currentSchoolName = schoolName.trim() || 'AutoescuelaPro';
   const previewTitle = reminderTitleTemplate
     .replace(/{alumno}/g, 'Carlos Gómez')
     .replace(/{profesor}/g, 'Manuel Serrano')
@@ -315,7 +326,7 @@ export default function AdminSettings() {
     .replace(/{hora}/g, '10:00')
     .replace(/{duracion}/g, '45')
     .replace(/{ubicacion}/g, reminderLocationText)
-    .replace(/{autoescuela}/g, 'AutoescuelaPro');
+    .replace(/{autoescuela}/g, currentSchoolName);
 
   let previewMessage = reminderMessageTemplate
     .replace(/{alumno}/g, 'Carlos Gómez')
@@ -324,7 +335,7 @@ export default function AdminSettings() {
     .replace(/{hora}/g, '10:00')
     .replace(/{duracion}/g, '45')
     .replace(/{ubicacion}/g, reminderLocationText)
-    .replace(/{autoescuela}/g, 'AutoescuelaPro');
+    .replace(/{autoescuela}/g, currentSchoolName);
 
   if (reminderIncludeLocation && reminderLocationText && !previewMessage.includes(reminderLocationText)) {
     previewMessage += ` Punto de encuentro: ${reminderLocationText}.`;
@@ -549,7 +560,7 @@ export default function AdminSettings() {
                 <div>
                   <span className="font-semibold text-slate-700">Remitente actual:</span>{' '}
                   <code className="bg-white px-2 py-0.5 rounded-md border border-slate-200 font-mono text-[11px] text-slate-800">
-                    {resendStatus?.sender || 'AutoescuelaPro <onboarding@resend.dev>'}
+                    {resendStatus?.sender || `${currentSchoolName} <onboarding@resend.dev>`}
                   </code>
                 </div>
                 <div className="text-slate-500 text-[11px]">
@@ -942,7 +953,7 @@ export default function AdminSettings() {
                   {/* Brand Header */}
                   <div className="bg-[#da1249] p-5 text-white">
                     <span className="inline-block bg-white/20 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-1.5">
-                      AutoescuelaPro
+                      {currentSchoolName}
                     </span>
                     <h5 className="font-bold text-base leading-snug">
                       Recordatorio de tu próxima clase práctica
@@ -987,7 +998,7 @@ export default function AdminSettings() {
                     </div>
 
                     <div className="pt-3 border-t border-slate-100 text-[10px] text-slate-400 text-center">
-                      AutoescuelaPro • Correo enviado automáticamente mediante Resend
+                      {currentSchoolName} • Correo enviado automáticamente mediante Resend
                     </div>
                   </div>
                 </div>
@@ -1012,7 +1023,7 @@ export default function AdminSettings() {
                       {previewMessage}
                     </p>
                     <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
-                      <span>AutoescuelaPro • Recordatorios</span>
+                      <span>{currentSchoolName} • Recordatorios</span>
                       <span className="font-medium text-slate-500">Antelación: {reminderHoursBefore}h</span>
                     </div>
                   </div>
@@ -1135,6 +1146,51 @@ export default function AdminSettings() {
         /* PANEL DE HORARIOS, DURACIÓN Y POLÍTICAS GENERALES                  */
         /* ================================================================= */
         <div className="space-y-6">
+          {/* Identidad y Nombre de la Autoescuela */}
+          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+                Nombre comercial de la autoescuela
+              </h3>
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                Marca pública
+              </span>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                Nombre de la autoescuela / plataforma
+              </label>
+              <div className="max-w-md">
+                <input
+                  type="text"
+                  required
+                  value={schoolName}
+                  onChange={e => setSchoolName(e.target.value)}
+                  placeholder="Ej. Autoescuela San Cristóbal, AutoescuelaPro..."
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-bold text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <p className="text-[11px] text-slate-500 mt-2 leading-relaxed">
+                Este nombre sustituye al término <code className="bg-slate-100 text-indigo-600 px-1.5 py-0.5 rounded font-mono font-bold text-[11px]">AutoescuelaPro</code> en toda la aplicación: en el logotipo de la barra de navegación superior, en los emails de bienvenida a nuevos alumnos, en los recordatorios automáticos (Resend) y en la etiqueta variable <code className="bg-slate-100 text-indigo-600 px-1.5 py-0.5 rounded font-mono font-bold text-[11px]">{'{autoescuela}'}</code>.
+              </p>
+            </div>
+
+            {/* Live brand preview badge */}
+            <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shrink-0">
+                <Car className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-400 font-mono block">
+                  Vista previa en la barra superior
+                </span>
+                <span className="text-sm font-extrabold text-slate-900">
+                  {currentSchoolName}
+                </span>
+              </div>
+            </div>
+          </div>
           {/* Duración y Descansos */}
           <div className="bg-white rounded-xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
             <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">

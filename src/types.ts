@@ -87,6 +87,7 @@ export interface Booking {
 
 export interface AppSettings {
   id: string;
+  school_name?: string;
   class_duration_minutes: number;
   rest_time_minutes: number;
   min_cancellation_hours: number;

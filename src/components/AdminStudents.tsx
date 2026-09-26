@@ -72,6 +72,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   // Re-send welcome email state
+  const [schoolName, setSchoolName] = useState<string>('AutoescuelaPro');
   const [resendingId, setResendingId] = useState<string | null>(null);
 
   const generateRandomPassword = () => {
@@ -111,6 +112,9 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
 
   useEffect(() => {
     fetchStudents();
+    api.getSettings().then(res => {
+      if (res?.settings?.school_name) setSchoolName(res.settings.school_name);
+    }).catch(() => { });
   }, []);
 
   // Creation Handler
@@ -159,7 +163,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
 
   const handleCopyCredentials = () => {
     if (!successData) return;
-    const textToCopy = `Acceso AutoescuelaPro\nAlumno: ${successData.student.name}\nEmail: ${successData.student.email}\nContraseña inicial: ${successData.initialPassword}\n\n*Recuerda cambiar tu contraseña en "Mi perfil" tras acceder.`;
+    const textToCopy = `Acceso ${schoolName}\nAlumno: ${successData.student.name}\nEmail: ${successData.student.email}\nContraseña inicial: ${successData.initialPassword}\n\n*Recuerda cambiar tu contraseña en "Mi perfil" tras acceder.`;
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);

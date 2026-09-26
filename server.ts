@@ -1219,6 +1219,7 @@ async function startServer() {
   app.put('/api/settings', requireAdmin, async (req: AuthenticatedRequest, res) => {
     try {
       const {
+        school_name,
         class_duration_minutes,
         rest_time_minutes,
         min_cancellation_hours,
@@ -1238,7 +1239,10 @@ async function startServer() {
       }
 
       const now = new Date().toISOString();
+      const finalSchoolName = school_name && typeof school_name === 'string' && school_name.trim() ? school_name.trim() : 'AutoescuelaPro';
+
       await db.prepare(`
+        school_name = ?,
         UPDATE settings SET
           class_duration_minutes = ?,
           rest_time_minutes = ?,
@@ -1254,6 +1258,7 @@ async function startServer() {
           updated_at = ?
         WHERE id = 'default'
       `).run(
+        finalSchoolName,
         Number(class_duration_minutes),
         Number(rest_time_minutes || 0),
         Number(min_cancellation_hours || 24),
@@ -1277,7 +1282,7 @@ async function startServer() {
         req.user!.id,
         req.user!.name,
         req.user!.email,
-        `Configuración actualizada: Recordatorios automáticos (${reminder_enabled ? 'Activados' : 'Desactivados'}, antelación: ${reminder_hours_before}h). Duración clase: ${class_duration_minutes}m, Descanso: ${rest_time_minutes}m.`,
+        `Configuración actualizada: Autoescuela: "${finalSchoolName}", Recordatorios (${reminder_enabled ? 'Activados' : 'Desactivados'}, antelación: ${reminder_hours_before}h). Duración clase: ${class_duration_minutes}m.`,
         now
       );
 
@@ -1395,11 +1400,13 @@ async function startServer() {
       // Send Welcome / Onboarding Email to student
       let emailResult = null;
       try {
+        const appSettings = await getAppSettings();
         emailResult = await sendStudentWelcomeEmail({
           to: normalizedEmail,
           studentName: name.trim(),
           temporaryPassword: initialPassword,
           appUrl,
+          schoolName: appSettings.school_name || 'AutoescuelaPro',
         });
       } catch (emailErr: any) {
         console.warn('[Welcome Email Warning]', emailErr.message || emailErr);
@@ -1621,11 +1628,12 @@ async function startServer() {
         process.env.APP_URL ||
         ''
       ).replace(/\/$/, '');
-
+      const appSettings = await getAppSettings();
       const emailResult = await sendStudentWelcomeEmail({
         to: student.email,
         studentName: student.name,
         appUrl,
+        schoolName: appSettings.school_name || 'AutoescuelaPro',
       });
 
       // Audit log
@@ -1799,7 +1807,7 @@ async function startServer() {
             .replace(/{hora}/g, b.start_time)
             .replace(/{duracion}/g, String(b.duration_minutes || 45))
             .replace(/{ubicacion}/g, settings.reminder_location_text || '')
-            .replace(/{autoescuela}/g, 'AutoescuelaPro');
+            .replace(/{autoescuela}/g, settings.school_name || 'AutoescuelaPro');
         };
 
         const title = replacePlaceholders(titleTemplate);
@@ -1828,6 +1836,7 @@ async function startServer() {
               location: settings.reminder_location_text,
               customTitle: title,
               customMessage: message,
+              schoolName: settings.school_name || 'AutoescuelaPro',
             }).catch(err => {
               console.error(`[Resend Auto-Reminder] Error enviando correo a ${b.student_email}:`, err);
             });
@@ -1898,7 +1907,8 @@ async function startServer() {
         durationMinutes: settings.class_duration_minutes || 45,
         location: settings.reminder_location_text || 'Sede Central Autoescuela',
         customTitle: `[PRUEBA REAL RESEND] Clase práctica - ${formattedDate} a las 10:00`,
-        customMessage: '¡Hola! Este es un correo electrónico real de prueba generado desde AutoescuelaPro mediante la API de Resend para validar la correcta recepción y diseño.',
+        customMessage: `¡Hola! Este es un correo electrónico real de prueba generado desde ${settings.school_name || 'AutoescuelaPro'} mediante la API de Resend para validar la correcta recepción y diseño.`,
+        schoolName: settings.school_name || 'AutoescuelaPro',
       });
 
       if (!emailRes.configured) {
@@ -1975,7 +1985,7 @@ async function startServer() {
           .replace(/{hora}/g, '10:00')
           .replace(/{duracion}/g, '45')
           .replace(/{ubicacion}/g, locText)
-          .replace(/{autoescuela}/g, 'AutoescuelaPro');
+          .replace(/{autoescuela}/g, settings.school_name || 'AutoescuelaPro');
       };
 
       const title = replacePlaceholders(titleTpl);
@@ -2002,6 +2012,7 @@ async function startServer() {
           location: locText,
           customTitle: `[PRUEBA] ${title}`,
           customMessage: message,
+          schoolName: settings.school_name || 'AutoescuelaPro',
         });
       }
 

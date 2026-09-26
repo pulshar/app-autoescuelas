@@ -15,6 +15,13 @@
       "when": 1790320948744,
       "tag": "0001_smiling_aqueduct",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790413185318,
+      "tag": "0002_nifty_machine_man",
+      "breakpoints": true
     }
   ]
 }

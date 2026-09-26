@@ -19,16 +19,45 @@ interface NavbarProps {
   currentTab: string;
   onSelectTab: (tab: string) => void;
   onOpenAuth: () => void;
+  schoolName?: string;
 }
 
-export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarProps) {
+export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName }: NavbarProps) {
   const { user, role, logout } = useAuth();
+  const [currentSchoolName, setCurrentSchoolName] = useState<string>(schoolName || 'AutoescuelaPro');
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const notificationsRef = useRef<HTMLDivElement>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (schoolName) {
+      setCurrentSchoolName(schoolName);
+    }
+  }, [schoolName]);
+
+  useEffect(() => {
+    // Fetch initial settings to get configured school name
+    api.getSettings()
+      .then(res => {
+        if (res?.settings?.school_name) {
+          setCurrentSchoolName(res.settings.school_name);
+        }
+      })
+      .catch(() => { });
+
+    // Listen for real-time updates when admin saves settings
+    const handleSettingsUpdated = (e: any) => {
+      if (e?.detail?.school_name) {
+        setCurrentSchoolName(e.detail.school_name);
+      }
+    };
+    window.addEventListener('app-settings-updated', handleSettingsUpdated);
+    return () => window.removeEventListener('app-settings-updated', handleSettingsUpdated);
+  }, []);
+
 
   const fetchNotifications = async () => {
     if (!user) return;
@@ -106,13 +135,17 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
             className="flex items-center gap-3 cursor-pointer group"
             onClick={() => onSelectTab('dashboard')}
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-700 flex items-center justify-center text-white  shadow-indigo-200 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-indigo-600 to-indigo-700 flex items-center justify-center text-white  shadow-indigo-200 group-hover:scale-105 transition-transform">
               <Car className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-lg sm:text-xl tracking-tight text-slate-900">
-                  Autoescuela<span className="text-indigo-600">Pro</span>
+                  {currentSchoolName.toLowerCase() === 'autoescuelapro' ? (
+                    <>Autoescuela<span className="text-indigo-600">Pro</span></>
+                  ) : (
+                    currentSchoolName
+                  )}
                 </span>
                 {role === 'admin' ? (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
@@ -261,7 +294,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
                       setShowNotifications(prev => !prev);
                       setShowProfileMenu(false);
                     }}
-                    className="p-2 rounded-xl text-slate-600 hover:bg-slate-100 relative transition-colors focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20"
+                    className="p-2 rounded-lg text-slate-600 hover:bg-slate-100 relative transition-colors focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20"
                     aria-label="Notificaciones"
                     aria-expanded={showNotifications}
                     aria-haspopup="true"
@@ -332,7 +365,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth }: NavbarPr
                       setShowProfileMenu(prev => !prev);
                       setShowNotifications(false);
                     }}
-                    className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-100 transition-colors focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20"
+                    className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 transition-colors focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20"
                     aria-label="Menú de usuario"
                     aria-expanded={showProfileMenu}
                     aria-haspopup="true"

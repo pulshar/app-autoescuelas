@@ -188,7 +188,14 @@ export default function AdminDashboard({
           <div>
             <h3 className="text-base font-bold text-slate-900">Clases del día de hoy</h3>
             <p className="text-xs text-slate-500">
-              {new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+              {new Date()
+                .toLocaleDateString('es-ES', {
+                  weekday: 'long',
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })
+                .replace(/^./, (char) => char.toUpperCase())}
             </p>
           </div>
 
