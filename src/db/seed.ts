@@ -15,6 +15,9 @@ async function seed() {
     try {
         const now = new Date().toISOString();
 
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowStr = tomorrow.toISOString().split('T')[0];
         // 1. Configuración general de la autoescuela (Settings)
         console.log('⚙️ [Seed] Verificando configuración general...');
         await db
@@ -256,7 +259,7 @@ async function seed() {
                 studentId: 'usr_student_01',
                 teacherId: 'tch_juan_01',
                 scheduleId: 'sch_juan_01',
-                date: '2026-09-24',
+                date: tomorrowStr,
                 startTime: '10:30',
                 endTime: '11:15',
                 durationMinutes: 45,
@@ -270,7 +273,7 @@ async function seed() {
                 studentId: 'usr_student_01',
                 teacherId: 'tch_maria_02',
                 scheduleId: 'sch_maria_02',
-                date: '2026-09-20',
+                date: tomorrowStr,
                 startTime: '16:00',
                 endTime: '16:45',
                 durationMinutes: 45,
