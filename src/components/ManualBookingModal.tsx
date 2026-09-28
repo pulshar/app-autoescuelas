@@ -214,7 +214,7 @@ export default function ManualBookingModal({ isOpen, onClose, onSuccess }: Manua
                       type="button"
                       disabled={!s.is_available}
                       onClick={() => setSelectedSlot(s)}
-                      className={`p-2.5 rounded-lg border text-xs font-bold text-center transition-all ${!s.is_available
+                      className={`p-2.5 min-h-[52px] rounded-lg border text-xs font-bold text-center transition-all ${!s.is_available
                         ? 'bg-slate-100 text-slate-400 border-slate-200 opacity-60 cursor-not-allowed'
                         : isSelected
                           ? 'bg-brand-600 text-white border-brand-600'

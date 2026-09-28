@@ -277,7 +277,7 @@ async function seed() {
                 startTime: '16:00',
                 endTime: '16:45',
                 durationMinutes: 45,
-                status: 'Completada',
+                status: 'Reservada',
                 notes: 'Primera clase de maniobras de estacionamiento en línea y batería.',
                 createdAt: now,
                 updatedAt: now,
