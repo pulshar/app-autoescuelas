@@ -1478,7 +1478,7 @@ async function startServer() {
       const { id } = req.params;
       const { name, email, phone, password, is_active } = req.body;
 
-      const existing = (await db.prepare('SELECT * FROM users WHERE id = ? AND role = "student"').get(id)) as any;
+      const existing = (await db.prepare("SELECT * FROM users WHERE id = ? AND role = 'student'").get(id)) as any;
       if (!existing) {
         res.status(404).json({ error: 'Alumno no encontrado.' });
         return;
@@ -1575,7 +1575,7 @@ async function startServer() {
   app.delete('/api/students/:id', requireAdmin, async (req: AuthenticatedRequest, res) => {
     try {
       const { id } = req.params;
-      const student = (await db.prepare('SELECT id, name, email, is_active FROM users WHERE id = ? AND role = "student"').get(id)) as any;
+      const student = (await db.prepare("SELECT id, name, email, is_active FROM users WHERE id = ? AND role = 'student'").get(id)) as any;
 
       if (!student) {
         res.status(404).json({ error: 'Alumno no encontrado.' });
@@ -1614,7 +1614,9 @@ async function startServer() {
           message: `El alumno tiene ${count} clases en su historial. Para proteger las estadísticas y registros de la autoescuela, ha sido dado de baja y sus reservas activas pendientes han sido canceladas.`,
         });
       } else {
-        // Physical permanent deletion
+        // Physical permanent deletion: clean notifications and password resets first
+        await db.prepare('DELETE FROM notifications WHERE user_id = ?').run(id);
+        await db.prepare('DELETE FROM password_resets WHERE email = ?').run(student.email);
         await db.prepare('DELETE FROM users WHERE id = ?').run(id);
 
         await db.prepare(`

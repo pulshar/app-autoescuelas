@@ -365,6 +365,7 @@ export async function sendStudentWelcomeEmail({
   schoolName?: string;
 }): Promise<EmailResult> {
   const brandName = schoolName || 'AutoescuelaPro';
+  const brandColor = '#19887f';
   const baseUrl = (appUrl || process.env.APP_URL || '').replace(/\/$/, '');
   const loginUrl = baseUrl ? `${baseUrl}?login=true&email=${encodeURIComponent(to)}` : '#';
   const subject = `¡Bienvenido/a a ${brandName}! Tu cuenta de alumno ha sido activada`;
@@ -386,12 +387,12 @@ export async function sendStudentWelcomeEmail({
           
           <!-- Header Banner -->
           <tr>
-            <td style="background-color: #4f46e5; padding: 32px 32px; text-align: left;">
+            <td style="background-color: ${brandColor}; padding: 32px 32px; text-align: left;">
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td>
                     <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
-                      ${brandName} • Portal del Alumno
+                      ${brandName}
                     </span>
                     <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 800; line-height: 1.3;">
                       ¡Bienvenido/a a la Autoescuela!
@@ -434,7 +435,7 @@ export async function sendStudentWelcomeEmail({
                   <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">
                     Contraseña provisional:
                   </td>
-                  <td style="padding: 6px 0; font-size: 14px; color: #4f46e5; font-weight: 800; font-family: monospace;">
+                  <td style="padding: 6px 0; font-size: 14px; color: ${brandColor}; font-weight: 800; font-family: monospace;">
                     ${temporaryPassword}
                   </td>
                 </tr>
@@ -447,7 +448,7 @@ export async function sendStudentWelcomeEmail({
               <table width="100%" cellpadding="0" cellspacing="0" style="margin: 28px 0 24px 0;">
                 <tr>
                   <td align="center">
-                    <a href="${loginUrl}" target="_blank" style="display: inline-block; background-color: #4f46e5; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; padding: 14px 34px; border-radius: 14px; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);">
+                    <a href="${loginUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; padding: 14px 34px; border-radius: 14px; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);">
                       Acceder a la Plataforma
                     </a>
                   </td>

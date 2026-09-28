@@ -439,7 +439,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
           </button>
           <button
             onClick={() => handleTabChange('pending_review')}
-            className={`pb-3 text-sm font-bold transition-all relative flex items-center gap-2 whitespace-nowrap ${activeTab === 'pending_review'
+            className={`pb-3 text-sm font-bold transition-all relative flex items-center ${pendingCount > 0 ? 'gap-1.5' : 'gap-0.5'} whitespace-nowrap ${activeTab === 'pending_review'
               ? 'text-brand-600'
               : 'text-slate-500 hover:text-slate-800'
               }`}
@@ -448,12 +448,11 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
               Clases por revisar
             </span>
             <span
-              className={`px-2 py-0.5 rounded-full text-xs font-bold ${pendingCount > 0
-                ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                : 'bg-slate-100 text-slate-500'
+              className={`${pendingCount > 0
+                && 'px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300'
                 }`}
             >
-              {pendingCount}
+              {pendingCount > 0 ? pendingCount : `(${pendingCount})`}
             </span>
             {activeTab === 'pending_review' && (
               <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-600 rounded-full" />

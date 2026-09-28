@@ -525,7 +525,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   {/* Summary of credentials */}
                   <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                      <span className="text-xs font-mono text-slate-500">
                         Credenciales asignadas:
                       </span>
                       <button
