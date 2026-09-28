@@ -606,7 +606,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   {/* Name */}
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Nombre y Apellidos *
+                      Nombre y apellidos *
                     </label>
                     <input
                       type="text"
@@ -621,7 +621,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   {/* Email */}
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Correo Electrónico *
+                      Correo electrónico *
                     </label>
                     <input
                       type="email"
@@ -636,7 +636,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   {/* Phone */}
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Teléfono Móvil (Opcional)
+                      Teléfono móvil (opcional)
                     </label>
                     <input
                       type="tel"
@@ -651,7 +651,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="text-xs font-bold text-slate-700">
-                        Contraseña Provisional *
+                        Contraseña provisional *
                       </label>
                       <button
                         type="button"
