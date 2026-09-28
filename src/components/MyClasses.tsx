@@ -238,7 +238,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
           {activeTab === 'upcoming' && (
             <button
               onClick={onNavigateToBook}
-              className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 text-white text-xs font-bold hover:bg-brand-700 transition-colors"
+              className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700 transition-colors"
             >
               <CalendarPlus className="w-4 h-4" /> Reservar ahora
             </button>

@@ -113,6 +113,7 @@ export default function ProfileView() {
                 src={avatarUrl}
                 alt={name}
                 className="w-16 h-16 rounded-lg object-cover border border-slate-200"
+                referrerPolicy="no-referrer"
               />
             ) : (
               <div className="w-16 h-16 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-xl">
@@ -127,7 +128,7 @@ export default function ProfileView() {
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Nombre y Apellidos *
+              Nombre y apellidos *
             </label>
             <input
               type="text"
@@ -140,7 +141,7 @@ export default function ProfileView() {
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Correo Electrónico (No modificable)
+              Correo electrónico (no modificable)
             </label>
             <input
               type="email"
@@ -152,7 +153,7 @@ export default function ProfileView() {
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Teléfono Móvil
+              Teléfono móvil
             </label>
             <input
               type="tel"
@@ -165,7 +166,7 @@ export default function ProfileView() {
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              URL Foto de Perfil (Opcional)
+              URL foto de perfil (opcional)
             </label>
             <input
               type="url"

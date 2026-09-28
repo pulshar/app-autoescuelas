@@ -375,6 +375,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                         src={user.avatar_url}
                         alt={user.name}
                         className="w-8 h-8 rounded-lg object-cover border border-slate-200"
+                        referrerPolicy="no-referrer"
                       />
                     ) : (
                       <div className="w-8 h-8 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-xs">

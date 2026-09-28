@@ -236,7 +236,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
               </p>
               <button
                 onClick={() => onNavigate('book')}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white text-brand-900 font-bold text-xs sm:text-sm hover:bg-brand-50 shadow-md transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white text-brand-900 font-semibold text-xs sm:text-sm hover:bg-brand-50 shadow-md transition-colors"
               >
                 <CalendarPlus className="w-4 h-4" /> Reservar ahora mi siguiente clase
               </button>
