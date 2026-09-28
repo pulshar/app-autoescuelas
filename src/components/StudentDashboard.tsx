@@ -113,7 +113,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
       {/* Welcome Greeting Banner */}
       <div className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="font-mono text-indigo-600">Área del Alumno</span>
+          <span className="font-mono text-brand-600">Área del Alumno</span>
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mt-0.5">
             ¡Hola, {user?.name.split(' ')[0]}!
           </h2>
@@ -124,7 +124,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
 
         <button
           onClick={() => onNavigate('book')}
-          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition-all shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition-all shrink-0"
         >
           <CalendarPlus className="w-5 h-5" />
           <span>Reservar nueva clase</span>
@@ -146,25 +146,25 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
       )}
 
       {/* SECTION 25: PROMINENT "PRÓXIMA CLASE" CARD */}
-      <div className="bg-gradient-to-br from-indigo-900 via-slate-900 to-indigo-950 text-white rounded-xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+      <div className="bg-gradient-to-br from-brand-900 via-slate-900 to-brand-950 text-white rounded-xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
         {/* Subtle background decoration */}
-        <div className="absolute top-0 right-0 -mr-8 -mt-8 w-64 h-64 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-32 h-32 bg-indigo-400/10 rounded-full blur-xl pointer-events-none" />
+        <div className="absolute top-0 right-0 -mr-8 -mt-8 w-64 h-64 bg-brand-500/10 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-32 h-32 bg-brand-400/10 rounded-full blur-xl pointer-events-none" />
 
         <div className="relative z-10">
           <div className="flex items-center justify-between gap-2 mb-4">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand-500/20 text-brand-300 border border-brand-400/30">
               <Car className="w-3.5 h-3.5" /> Próxima clase
             </span>
             {nextBooking && (
-              <span className="text-xs text-indigo-200 font-medium">
+              <span className="text-xs text-brand-200 font-medium">
                 Duración: <strong className="text-white font-bold">{nextBooking.duration_minutes} minutos</strong>
               </span>
             )}
           </div>
 
           {loading ? (
-            <div className="py-8 text-center text-indigo-200 text-sm animate-pulse">
+            <div className="py-8 text-center text-brand-200 text-sm animate-pulse">
               Cargando tu próxima clase...
             </div>
           ) : nextBooking ? (
@@ -177,10 +177,10 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                   </h3>
                   <div className="flex items-center gap-3 mt-3">
                     <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/10 text-white font-bold text-sm sm:text-base backdrop-blur-xs border border-white/10">
-                      <Clock className="w-4 h-4 text-indigo-300" />
+                      <Clock className="w-4 h-4 text-brand-300" />
                       <span>{nextBooking.start_time} - {nextBooking.end_time}</span>
                     </div>
-                    <span className="text-xs text-indigo-200">
+                    <span className="text-xs text-brand-200">
                       ({nextBooking.duration_minutes} min)
                     </span>
                   </div>
@@ -188,11 +188,11 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
 
                 {/* Instructor Card info */}
                 <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/10 flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-lg bg-indigo-700/80 flex items-center justify-center text-xl font-bold text-white border border-indigo-400/30 overflow-hidden shrink-0">
+                  <div className="w-14 h-14 rounded-lg bg-brand-700/80 flex items-center justify-center text-xl font-bold text-white border border-brand-400/30 overflow-hidden shrink-0">
                     <User className="w-7 h-7" />
                   </div>
                   <div>
-                    <span className="text-[11px] font-mono text-indigo-300 block">
+                    <span className="text-[11px] font-mono text-brand-300 block">
                       Profesor Asignado
                     </span>
                     <h4 className="font-bold text-base text-white">{nextBooking.teacher_name}</h4>
@@ -202,8 +202,8 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
 
               {/* Action Buttons for Next Booking */}
               <div className="pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
-                <div className="text-xs text-indigo-200 flex items-center gap-1.5">
-                  <Compass className="w-4 h-4 text-indigo-300 shrink-0" />
+                <div className="text-xs text-brand-200 flex items-center gap-1.5">
+                  <Compass className="w-4 h-4 text-brand-300 shrink-0" />
                   <span>Punto de encuentro: Puerta principal de la autoescuela</span>
                 </div>
 
@@ -231,12 +231,12 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
             </div>
           ) : (
             <div className="py-8 text-center">
-              <p className="text-indigo-200 text-sm mb-4">
+              <p className="text-brand-200 text-sm mb-4">
                 No tienes ninguna clase programada próximamente.
               </p>
               <button
                 onClick={() => onNavigate('book')}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white text-indigo-900 font-bold text-xs sm:text-sm hover:bg-indigo-50 shadow-md transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white text-brand-900 font-bold text-xs sm:text-sm hover:bg-brand-50 shadow-md transition-colors"
               >
                 <CalendarPlus className="w-4 h-4" /> Reservar ahora mi siguiente clase
               </button>
@@ -265,7 +265,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                 value={cancelReason}
                 onChange={e => setCancelReason(e.target.value)}
                 placeholder="Ej. Imprevisto de horario laboral..."
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-hidden focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
@@ -275,13 +275,13 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                   setCancellingId(null);
                   setCancelReason('');
                 }}
-                className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+                className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
               >
                 Volver
               </button>
               <button
                 onClick={() => handleCancel(cancellingId)}
-                className="px-5 py-2.5 rounded-lg text-xs font-bold text-white bg-rose-600 hover:bg-rose-700  transition-colors"
+                className="px-4 py-2.5 rounded-lg text-xs font-bold text-white bg-rose-600 hover:bg-rose-700  transition-colors"
               >
                 Confirmar cancelación
               </button>
@@ -296,7 +296,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           <h3 className="font-bold text-base text-slate-900">Tus próximas reservas</h3>
           <button
             onClick={() => onNavigate('my-classes')}
-            className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+            className="text-xs font-bold text-brand-600 hover:text-brand-800 flex items-center gap-1"
           >
             Ver todas ({upcomingBookings.length}) <ChevronRight className="w-4 h-4" />
           </button>
@@ -311,8 +311,8 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
             {upcomingBookings.slice(0, 4).map(booking => (
               <div key={booking.id} className="py-3.5 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs shrink-0">
-                    <Calendar className="w-5 h-5 text-indigo-600" />
+                  <div className="w-10 h-10 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-bold text-xs shrink-0">
+                    <Calendar className="w-5 h-5 text-brand-600" />
                   </div>
                   <div>
                     <h5 className="font-semibold text-xs sm:text-sm text-slate-900">
@@ -329,7 +329,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
                     {booking.status}
                   </span>
                 </div>

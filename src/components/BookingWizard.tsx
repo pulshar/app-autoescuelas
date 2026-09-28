@@ -174,10 +174,10 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-md overflow-hidden max-w-3xl mx-auto">
       {/* Header & Step progress */}
-      <div className="p-5 sm:p-6 bg-gradient-to-r from-slate-50 to-indigo-50/40 border-b border-slate-200">
+      <div className="p-5 sm:p-6 bg-gradient-to-r from-slate-50 to-brand-50/40 border-b border-slate-200">
         <div className="flex items-center justify-between">
           <div>
-            <span className="font-mono text-indigo-600">
+            <span className="font-mono text-brand-600">
               Paso {step} de 4
             </span>
             <h2 className="text-lg sm:text-xl font-bold text-slate-900 mt-0.5">
@@ -203,7 +203,7 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
           {[1, 2, 3, 4].map(s => (
             <div
               key={s}
-              className={`h-1.5 rounded-full transition-all ${s <= step ? 'bg-indigo-600' : 'bg-slate-200'
+              className={`h-1.5 rounded-full transition-all ${s <= step ? 'bg-brand-600' : 'bg-slate-200'
                 }`}
             />
           ))}
@@ -227,12 +227,12 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                 setStep(2);
               }}
               className={`p-4 rounded-lg border-2 cursor-pointer transition-all flex items-center justify-between gap-4 ${selectedTeacherId === ''
-                ? 'border-indigo-600 bg-indigo-50/40 shadow-xs'
+                ? 'border-brand-600 bg-brand-50/40 shadow-xs'
                 : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                 }`}
             >
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold">
+                <div className="w-12 h-12 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold">
                   <Sparkles className="w-6 h-6" />
                 </div>
                 <div>
@@ -242,7 +242,7 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                   </p>
                 </div>
               </div>
-              <ChevronRight className="w-5 h-5 text-indigo-600 shrink-0" />
+              <ChevronRight className="w-5 h-5 text-brand-600 shrink-0" />
             </div>
 
             {/* Teacher Cards */}
@@ -255,7 +255,7 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                     setStep(2);
                   }}
                   className={`p-4 rounded-lg border-2 cursor-pointer transition-all flex flex-col justify-between ${selectedTeacherId === teacher.id
-                    ? 'border-indigo-600 bg-indigo-50/40 shadow-xs'
+                    ? 'border-brand-600 bg-brand-50/40 shadow-xs'
                     : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                     }`}
                 >
@@ -284,7 +284,7 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-indigo-600">
+                  <div className="mt-4 pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-brand-600">
                     <span>Seleccionar profesor</span>
                     <ArrowRight className="w-4 h-4" />
                   </div>
@@ -357,9 +357,9 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                     className={`h-14 rounded-lg p-1 flex flex-col items-center justify-between transition-all relative ${isPast
                       ? 'opacity-30 cursor-not-allowed bg-slate-50 text-slate-400'
                       : isSelected
-                        ? 'bg-indigo-600 text-white font-bold shadow-md shadow-indigo-200'
+                        ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-200'
                         : hasSlots
-                          ? 'bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 text-slate-900'
+                          ? 'bg-white hover:bg-brand-50 border border-slate-200 hover:border-brand-300 text-slate-900'
                           : 'bg-slate-50/80 border border-slate-100 text-slate-400 hover:bg-slate-100'
                       }`}
                   >
@@ -370,7 +370,7 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                         {hasSlots ? (
                           <span
                             className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold truncate max-w-full ${isSelected
-                              ? 'bg-white text-indigo-700'
+                              ? 'bg-white text-brand-700'
                               : 'bg-emerald-100 text-emerald-800'
                               }`}
                           >
@@ -402,16 +402,16 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
         {/* ======================================================== */}
         {step === 3 && (
           <div className="space-y-4">
-            <div className="p-3 bg-indigo-50/60 rounded-lg border border-indigo-100 flex items-center justify-between">
+            <div className="p-3 bg-brand-50/60 rounded-lg border border-brand-100 flex items-center justify-between">
               <div>
-                <span className="text-[11px] font-semibold text-indigo-700 block">Fecha seleccionada</span>
+                <span className="text-[11px] font-semibold text-brand-700 block">Fecha seleccionada</span>
                 <p className="text-xs sm:text-sm font-bold text-slate-900">
                   {formatDate(selectedDate)}
                 </p>
               </div>
               <button
                 onClick={() => setStep(2)}
-                className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 underline"
+                className="text-xs font-semibold text-brand-600 hover:text-brand-800 underline"
               >
                 Cambiar día
               </button>
@@ -446,8 +446,8 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                         className={`p-3 rounded-lg border text-left transition-all relative ${!slot.is_available
                           ? 'bg-slate-50/80 border-slate-200 opacity-60 cursor-not-allowed'
                           : isSelected
-                            ? 'border-indigo-600 bg-indigo-600 text-white shadow-md'
-                            : 'bg-white border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/40 text-slate-900'
+                            ? 'border-brand-600 bg-brand-600 text-white shadow-md'
+                            : 'bg-white border-slate-200 hover:border-brand-400 hover:bg-brand-50/40 text-slate-900'
                           }`}
                       >
                         <div className="flex items-center justify-between">
@@ -461,7 +461,7 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
 
                         <div className="mt-1 text-[11px] truncate">
                           {slot.is_available ? (
-                            <span className={isSelected ? 'text-indigo-100' : 'text-slate-500'}>
+                            <span className={isSelected ? 'text-brand-100' : 'text-slate-500'}>
                               {slot.teacher_name}
                             </span>
                           ) : (
@@ -517,7 +517,7 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
 
                 <div>
                   <span className="text-xs text-slate-500 block">Horario:</span>
-                  <span className="text-sm font-bold text-indigo-700">
+                  <span className="text-sm font-bold text-brand-700">
                     {selectedSlot.start_time} a {selectedSlot.end_time}
                   </span>
                 </div>
@@ -532,7 +532,7 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
                   placeholder="Ej. Quiero practicar aparcamiento en batería o conducción en autovía..."
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-hidden focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
@@ -547,7 +547,7 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
               <button
                 type="button"
                 onClick={() => setStep(3)}
-                className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+                className="px-4 py-3 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
               >
                 Modificar horario
               </button>
@@ -556,7 +556,7 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                 type="button"
                 disabled={bookingLoading}
                 onClick={handleConfirmBooking}
-                className="px-6 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white font-semibold text-xs sm:text-sm transition-all flex items-center gap-2"
+                className="px-5 py-3 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300 text-white font-semibold text-xs sm:text-sm transition-all flex items-center gap-2"
               >
                 {bookingLoading ? (
                   <span>Confirmando reserva...</span>

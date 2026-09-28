@@ -67,9 +67,16 @@ interface GenerateSlotsParams {
 export async function generateSlotsForDate(params: GenerateSlotsParams): Promise<TimeSlot[]> {
   const { teacherId, date, studentId } = params;
   const settings = await getAppSettings();
+  const tz = settings.timezone || 'Europe/Madrid';
   const duration = settings.class_duration_minutes;
   const rest = settings.rest_time_minutes;
   const dayOfWeek = getDayOfWeekFromDate(date);
+
+  // Current date & time in configured timezone to ensure past/ongoing slots are not bookable
+  const now = new Date();
+  const currentDate = now.toLocaleDateString('en-CA', { timeZone: tz }); // "YYYY-MM-DD"
+  const currentTime = now.toLocaleTimeString('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false }); // "HH:mm"
+  const currentMinutes = timeToMinutes(currentTime);
 
   // 1. Get active teachers to inspect
   let teacherQuery = 'SELECT id, name, last_name FROM teachers WHERE is_active = 1';
@@ -190,7 +197,17 @@ export async function generateSlotsForDate(params: GenerateSlotsParams): Promise
           let isAvailable = true;
           let reasonUnavailable: string | undefined = undefined;
 
-          if (isBlocked) {
+          // Check if slot has already started or is in the past
+          const isDateInPast = date < currentDate;
+          const isTimeInPast = date === currentDate && currentSlotStart <= currentMinutes;
+
+          if (isDateInPast) {
+            isAvailable = false;
+            reasonUnavailable = 'Fecha pasada';
+          } else if (isTimeInPast) {
+            isAvailable = false;
+            reasonUnavailable = 'Horario pasado';
+          } else if (isBlocked) {
             isAvailable = false;
             reasonUnavailable = `Bloqueado: ${blockReason}`;
           } else if (isTeacherBooked) {
@@ -243,11 +260,22 @@ export interface CreateBookingParams {
 export async function createBookingAtomic(params: CreateBookingParams) {
   const { studentId, teacherId, date, startTime, notes, creatorUser } = params;
   const settings = await getAppSettings();
+  const tz = settings.timezone || 'Europe/Madrid';
   const duration = settings.class_duration_minutes;
   const slotStartMinutes = timeToMinutes(startTime);
   const slotEndMinutes = slotStartMinutes + duration;
   const endTime = minutesToTime(slotEndMinutes);
   const now = new Date().toISOString();
+
+  // Validate that the slot date and time have not already passed or started
+  const nowObj = new Date();
+  const currentDate = nowObj.toLocaleDateString('en-CA', { timeZone: tz });
+  const currentTime = nowObj.toLocaleTimeString('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false });
+  const currentMinutes = timeToMinutes(currentTime);
+
+  if (date < currentDate || (date === currentDate && slotStartMinutes <= currentMinutes)) {
+    throw new Error('No es posible reservar un horario que ya ha comenzado o finalizado.');
+  }
 
   // PostgreSQL transaction to guarantee ACID isolation and prevent double booking
   await db.exec('BEGIN;');

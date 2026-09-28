@@ -26,9 +26,8 @@ export default function BottomNav({ currentTab, onSelectTab }: BottomNavProps) {
           <>
             <button
               onClick={() => onSelectTab('dashboard')}
-              className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[10px] font-medium transition-colors ${
-                currentTab === 'dashboard' ? 'text-indigo-600 font-bold' : 'text-slate-500'
-              }`}
+              className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[10px] font-medium transition-colors ${currentTab === 'dashboard' ? 'text-brand-600 font-bold' : 'text-slate-500'
+                }`}
             >
               <LayoutDashboard className="w-5 h-5 mb-0.5" />
               <span>Dashboard</span>
@@ -36,9 +35,8 @@ export default function BottomNav({ currentTab, onSelectTab }: BottomNavProps) {
 
             <button
               onClick={() => onSelectTab('bookings')}
-              className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[10px] font-medium transition-colors ${
-                currentTab === 'bookings' ? 'text-indigo-600 font-bold' : 'text-slate-500'
-              }`}
+              className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[10px] font-medium transition-colors ${currentTab === 'bookings' ? 'text-brand-600 font-bold' : 'text-slate-500'
+                }`}
             >
               <CalendarCheck className="w-5 h-5 mb-0.5" />
               <span>Reservas</span>
@@ -46,9 +44,8 @@ export default function BottomNav({ currentTab, onSelectTab }: BottomNavProps) {
 
             <button
               onClick={() => onSelectTab('calendar')}
-              className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[10px] font-medium transition-colors ${
-                currentTab === 'calendar' ? 'text-indigo-600 font-bold' : 'text-slate-500'
-              }`}
+              className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[10px] font-medium transition-colors ${currentTab === 'calendar' ? 'text-brand-600 font-bold' : 'text-slate-500'
+                }`}
             >
               <Calendar className="w-5 h-5 mb-0.5" />
               <span>Calendario</span>
@@ -56,9 +53,8 @@ export default function BottomNav({ currentTab, onSelectTab }: BottomNavProps) {
 
             <button
               onClick={() => onSelectTab('teachers')}
-              className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[10px] font-medium transition-colors ${
-                currentTab === 'teachers' ? 'text-indigo-600 font-bold' : 'text-slate-500'
-              }`}
+              className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[10px] font-medium transition-colors ${currentTab === 'teachers' ? 'text-brand-600 font-bold' : 'text-slate-500'
+                }`}
             >
               <Users className="w-5 h-5 mb-0.5" />
               <span>Profesores</span>
@@ -66,11 +62,10 @@ export default function BottomNav({ currentTab, onSelectTab }: BottomNavProps) {
 
             <button
               onClick={() => onSelectTab('settings')}
-              className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[10px] font-medium transition-colors ${
-                ['settings', 'schedules', 'blocks', 'students', 'audit'].includes(currentTab)
-                  ? 'text-indigo-600 font-bold'
+              className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[10px] font-medium transition-colors ${['settings', 'schedules', 'blocks', 'students', 'audit'].includes(currentTab)
+                  ? 'text-brand-600 font-bold'
                   : 'text-slate-500'
-              }`}
+                }`}
             >
               <Settings className="w-5 h-5 mb-0.5" />
               <span>Ajustes</span>
@@ -80,9 +75,8 @@ export default function BottomNav({ currentTab, onSelectTab }: BottomNavProps) {
           <>
             <button
               onClick={() => onSelectTab('dashboard')}
-              className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[10px] font-medium transition-colors ${
-                currentTab === 'dashboard' ? 'text-indigo-600 font-bold' : 'text-slate-500'
-              }`}
+              className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[10px] font-medium transition-colors ${currentTab === 'dashboard' ? 'text-brand-600 font-bold' : 'text-slate-500'
+                }`}
             >
               <LayoutDashboard className="w-5 h-5 mb-0.5" />
               <span>Inicio</span>
@@ -90,9 +84,8 @@ export default function BottomNav({ currentTab, onSelectTab }: BottomNavProps) {
 
             <button
               onClick={() => onSelectTab('book')}
-              className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[10px] font-medium transition-colors ${
-                currentTab === 'book' ? 'text-indigo-600 font-bold' : 'text-slate-500'
-              }`}
+              className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[10px] font-medium transition-colors ${currentTab === 'book' ? 'text-brand-600 font-bold' : 'text-slate-500'
+                }`}
             >
               <CalendarPlus className="w-5 h-5 mb-0.5" />
               <span>Reservar</span>
@@ -100,9 +93,8 @@ export default function BottomNav({ currentTab, onSelectTab }: BottomNavProps) {
 
             <button
               onClick={() => onSelectTab('my-classes')}
-              className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[10px] font-medium transition-colors ${
-                currentTab === 'my-classes' ? 'text-indigo-600 font-bold' : 'text-slate-500'
-              }`}
+              className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[10px] font-medium transition-colors ${currentTab === 'my-classes' ? 'text-brand-600 font-bold' : 'text-slate-500'
+                }`}
             >
               <CalendarCheck className="w-5 h-5 mb-0.5" />
               <span>Mis Clases</span>
@@ -110,9 +102,8 @@ export default function BottomNav({ currentTab, onSelectTab }: BottomNavProps) {
 
             <button
               onClick={() => onSelectTab('profile')}
-              className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[10px] font-medium transition-colors ${
-                currentTab === 'profile' ? 'text-indigo-600 font-bold' : 'text-slate-500'
-              }`}
+              className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[10px] font-medium transition-colors ${currentTab === 'profile' ? 'text-brand-600 font-bold' : 'text-slate-500'
+                }`}
             >
               <User className="w-5 h-5 mb-0.5" />
               <span>Perfil</span>

@@ -160,7 +160,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
 
         <button
           onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold transition-colors shrink-0"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-semibold transition-colors shrink-0"
         >
           <PlusCircle className="w-4 h-4" /> Nuevo bloqueo
         </button>
@@ -201,7 +201,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
           </p>
           <button
             onClick={handleOpenCreate}
-            className="mt-4 px-5 py-2.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold"
+            className="mt-4 px-4 py-2.5 rounded-lg bg-brand-600 text-white text-xs font-semibold"
           >
             Añadir bloqueo
           </button>
@@ -227,11 +227,11 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                   </button>
                 </div>
 
-                <h4 className="font-extrabold text-base text-slate-900 mt-2">{b.reason}</h4>
+                <h4 className="font-bold text-base text-slate-900 mt-2">{b.reason}</h4>
 
                 <div className="mt-3 space-y-1 text-xs text-slate-600">
                   <div className="flex items-center gap-2 font-semibold text-slate-800">
-                    <Calendar className="w-3.5 h-3.5 text-indigo-600" />
+                    <Calendar className="w-3.5 h-3.5 text-brand-600" />
                     <span>{formatDisplayDate(b.date)}</span>
                   </div>
                   <div className="flex items-center gap-2 text-slate-500">
@@ -302,7 +302,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                     id="fullDay"
                     checked={isFullDay}
                     onChange={e => setIsFullDay(e.target.checked)}
-                    className="rounded-md text-indigo-600"
+                    className="rounded-md text-brand-600"
                   />
                   <label htmlFor="fullDay" className="text-xs font-semibold text-slate-700">
                     Bloquear día completo
@@ -351,14 +351,14 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300"
                 >
                   {saving ? 'Guardando...' : 'Crear bloqueo'}
                 </button>
@@ -387,7 +387,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
             </div>
 
             <div className="p-6 space-y-4">
-              <div className="p-4 rounded-lg bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-950 space-y-1.5">
+              <div className="p-4 rounded-lg bg-brand-50/70 border border-brand-100 text-xs text-brand-950 space-y-1.5">
                 <p>
                   <strong>Motivo:</strong> {deletingBlock.reason}
                 </p>
@@ -422,7 +422,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                   type="button"
                   onClick={handleCloseDelete}
                   disabled={deleteSubmitting}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
@@ -430,7 +430,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                   type="button"
                   onClick={handleConfirmDelete}
                   disabled={deleteSubmitting}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300  transition-colors"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300  transition-colors"
                 >
                   {deleteSubmitting ? 'Desbloqueando...' : 'Desbloquear horario'}
                 </button>

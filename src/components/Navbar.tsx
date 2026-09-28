@@ -135,14 +135,14 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
             className="flex items-center gap-3 cursor-pointer group"
             onClick={() => onSelectTab('dashboard')}
           >
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-indigo-600 to-indigo-700 flex items-center justify-center text-white  shadow-indigo-200 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-brand-600 to-brand-700 flex items-center justify-center text-white  shadow-brand-200 group-hover:scale-105 transition-transform">
               <Car className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-lg sm:text-xl tracking-tight text-slate-900">
                   {currentSchoolName.toLowerCase() === 'autoescuelapro' ? (
-                    <>Autoescuela<span className="text-indigo-600">Pro</span></>
+                    <>Autoescuela<span className="text-brand-600">Pro</span></>
                   ) : (
                     currentSchoolName
                   )}
@@ -152,7 +152,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                     <ShieldCheck className="w-3 h-3" /> Admin
                   </span>
                 ) : role === 'student' ? (
-                  <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-200">
                     Alumno
                   </span>
                 ) : null}
@@ -169,7 +169,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                   <button
                     onClick={() => onSelectTab('dashboard')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'dashboard'
-                      ? 'bg-slate-100 text-indigo-700 font-semibold'
+                      ? 'bg-slate-100 text-brand-700 font-semibold'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
@@ -178,7 +178,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                   <button
                     onClick={() => onSelectTab('bookings')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'bookings'
-                      ? 'bg-slate-100 text-indigo-700 font-semibold'
+                      ? 'bg-slate-100 text-brand-700 font-semibold'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
@@ -187,7 +187,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                   <button
                     onClick={() => onSelectTab('calendar')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'calendar'
-                      ? 'bg-slate-100 text-indigo-700 font-semibold'
+                      ? 'bg-slate-100 text-brand-700 font-semibold'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
@@ -196,7 +196,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                   <button
                     onClick={() => onSelectTab('teachers')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'teachers'
-                      ? 'bg-slate-100 text-indigo-700 font-semibold'
+                      ? 'bg-slate-100 text-brand-700 font-semibold'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
@@ -205,7 +205,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                   <button
                     onClick={() => onSelectTab('schedules')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'schedules'
-                      ? 'bg-slate-100 text-indigo-700 font-semibold'
+                      ? 'bg-slate-100 text-brand-700 font-semibold'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
@@ -214,7 +214,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                   <button
                     onClick={() => onSelectTab('blocks')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'blocks'
-                      ? 'bg-slate-100 text-indigo-700 font-semibold'
+                      ? 'bg-slate-100 text-brand-700 font-semibold'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
@@ -223,7 +223,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                   <button
                     onClick={() => onSelectTab('students')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'students'
-                      ? 'bg-slate-100 text-indigo-700 font-semibold'
+                      ? 'bg-slate-100 text-brand-700 font-semibold'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
@@ -232,7 +232,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                   <button
                     onClick={() => onSelectTab('settings')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'settings'
-                      ? 'bg-slate-100 text-indigo-700 font-semibold'
+                      ? 'bg-slate-100 text-brand-700 font-semibold'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
@@ -244,7 +244,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                   <button
                     onClick={() => onSelectTab('dashboard')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'dashboard'
-                      ? 'bg-indigo-50 text-indigo-700 font-semibold'
+                      ? 'bg-brand-50 text-brand-700 font-semibold'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
@@ -253,7 +253,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                   <button
                     onClick={() => onSelectTab('book')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'book'
-                      ? 'bg-indigo-50 text-indigo-700 font-semibold'
+                      ? 'bg-brand-50 text-brand-700 font-semibold'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
@@ -262,7 +262,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                   <button
                     onClick={() => onSelectTab('my-classes')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'my-classes'
-                      ? 'bg-indigo-50 text-indigo-700 font-semibold'
+                      ? 'bg-brand-50 text-brand-700 font-semibold'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
@@ -271,7 +271,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                   <button
                     onClick={() => onSelectTab('calendar')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'calendar'
-                      ? 'bg-indigo-50 text-indigo-700 font-semibold'
+                      ? 'bg-brand-50 text-brand-700 font-semibold'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                   >
@@ -294,7 +294,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                       setShowNotifications(prev => !prev);
                       setShowProfileMenu(false);
                     }}
-                    className="p-2 rounded-lg text-slate-600 hover:bg-slate-100 relative transition-colors focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20"
+                    className="p-2 rounded-lg text-slate-600 hover:bg-slate-100 relative transition-colors focus:outline-hidden focus:ring-2 focus:ring-brand-500/20"
                     aria-label="Notificaciones"
                     aria-expanded={showNotifications}
                     aria-haspopup="true"
@@ -331,13 +331,13 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                             <div
                               key={n.id}
                               onClick={() => handleMarkRead(n.id)}
-                              className={`p-3.5 hover:bg-slate-50 cursor-pointer transition-colors ${!n.read ? 'bg-indigo-50/40' : ''
+                              className={`p-3.5 hover:bg-slate-50 cursor-pointer transition-colors ${!n.read ? 'bg-brand-50/40' : ''
                                 }`}
                             >
                               <div className="flex items-start justify-between gap-2">
                                 <span className="font-medium text-xs text-slate-800">{n.title}</span>
                                 {!n.read && (
-                                  <span className="w-2 h-2 rounded-full bg-indigo-600 shrink-0 mt-1" />
+                                  <span className="w-2 h-2 rounded-full bg-brand-600 shrink-0 mt-1" />
                                 )}
                               </div>
                               <p className="text-xs text-slate-600 mt-1 leading-relaxed">{replaceDateInText(n.message)}</p>
@@ -365,7 +365,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                       setShowProfileMenu(prev => !prev);
                       setShowNotifications(false);
                     }}
-                    className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 transition-colors focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20"
+                    className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 transition-colors focus:outline-hidden focus:ring-2 focus:ring-brand-500/20"
                     aria-label="Menú de usuario"
                     aria-expanded={showProfileMenu}
                     aria-haspopup="true"
@@ -377,7 +377,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                         className="w-8 h-8 rounded-lg object-cover border border-slate-200"
                       />
                     ) : (
-                      <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs">
+                      <div className="w-8 h-8 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-xs">
                         {user.name.slice(0, 2).toUpperCase()}
                       </div>
                     )}
@@ -430,7 +430,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
               <div className="flex items-center gap-2">
                 <button
                   onClick={onOpenAuth}
-                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white  transition-colors"
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-brand-600 hover:bg-brand-700 text-white  transition-colors"
                 >
                   <LogIn className="w-4 h-4" /> Iniciar sesión
                 </button>

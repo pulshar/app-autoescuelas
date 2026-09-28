@@ -1691,7 +1691,9 @@ async function startServer() {
   app.get('/api/stats', requireAdmin, async (req, res) => {
     try {
       await autoCompletePassedBookings();
-      const todayStr = new Date().toISOString().split('T')[0];
+      const settings = await getAppSettings();
+      const tz = settings.timezone || 'Europe/Madrid';
+      const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: tz });
 
       const todayClasses = (await db.prepare(`
         SELECT COUNT(*) as count FROM bookings

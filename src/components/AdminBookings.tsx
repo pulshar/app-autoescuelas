@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { api } from '../lib/api.ts';
 import { formatDisplayDate } from '../lib/dateUtils.ts';
 import type { Booking, Teacher, User } from '../types.ts';
@@ -26,10 +26,11 @@ interface AdminBookingsProps {
 }
 
 export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps) {
-  const [activeTab, setActiveTab] = useState<'pending_review' | 'upcoming' | 'history'>('pending_review');
+  const [activeTab, setActiveTab] = useState<'pending_review' | 'upcoming' | 'history'>('upcoming');
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [loading, setLoading] = useState(true);
+  const initialTabSet = useRef(false);
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -208,6 +209,16 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
     .filter(b => b.status !== 'Pendiente de revisión' && !isUpcoming(b))
     .sort((a, b) => b.date.localeCompare(a.date) || b.start_time.localeCompare(a.start_time));
 
+  useEffect(() => {
+    if (loading || initialTabSet.current) return;
+
+    if (pendingReviewBookings.length > 0) {
+      setActiveTab('pending_review');
+    }
+
+    initialTabSet.current = true;
+  }, [loading, pendingReviewBookings.length]);
+
   // Common filter function for search, teacher, status, and date
   const applyFilters = (list: Booking[]) => {
     return list.filter(b => {
@@ -254,14 +265,14 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
       case 'Pendiente de revisión':
         return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">Pendiente de revisión</span>;
       case 'Reservada':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Reservada</span>;
+        return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">Reservada</span>;
       case 'Completada':
         return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">Completada</span>;
       case 'Cancelada por alumno':
       case 'Cancelada por administrador':
         return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">{status}</span>;
       case 'No presentado':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">No presentado</span>;
+        return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">No presentado</span>;
       default:
         return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">{status}</span>;
     }
@@ -280,7 +291,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
 
         <button
           onClick={onOpenManualModal}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold  transition-colors shrink-0"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-semibold  transition-colors shrink-0"
         >
           <CalendarPlus className="w-4 h-4" /> Nueva reserva
         </button>
@@ -322,7 +333,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Buscar alumno, email, profesor..."
-              className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+              className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
@@ -389,7 +400,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
                 setFilterDate('');
                 setSearchQuery('');
               }}
-              className="text-indigo-600 hover:text-indigo-800 font-semibold"
+              className="text-brand-600 hover:text-brand-800 font-semibold"
             >
               Limpiar filtros
             </button>
@@ -404,32 +415,32 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
           <button
             onClick={() => handleTabChange('upcoming')}
             className={`pb-3 text-sm font-bold transition-all relative flex items-center gap-2 whitespace-nowrap ${activeTab === 'upcoming'
-              ? 'text-indigo-600'
+              ? 'text-brand-600'
               : 'text-slate-500 hover:text-slate-800'
               }`}
           >
             Próximas clases ({upcomingCount})
             {activeTab === 'upcoming' && (
-              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 rounded-full" />
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-600 rounded-full" />
             )}
           </button>
 
           <button
             onClick={() => handleTabChange('history')}
             className={`pb-3 text-sm font-bold transition-all relative flex items-center gap-2 whitespace-nowrap ${activeTab === 'history'
-              ? 'text-indigo-600'
+              ? 'text-brand-600'
               : 'text-slate-500 hover:text-slate-800'
               }`}
           >
             Histórico ({historyCount})
             {activeTab === 'history' && (
-              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 rounded-full" />
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-600 rounded-full" />
             )}
           </button>
           <button
             onClick={() => handleTabChange('pending_review')}
             className={`pb-3 text-sm font-bold transition-all relative flex items-center gap-2 whitespace-nowrap ${activeTab === 'pending_review'
-              ? 'text-indigo-600'
+              ? 'text-brand-600'
               : 'text-slate-500 hover:text-slate-800'
               }`}
           >
@@ -445,7 +456,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
               {pendingCount}
             </span>
             {activeTab === 'pending_review' && (
-              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 rounded-full" />
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-600 rounded-full" />
             )}
           </button>
         </div>
@@ -535,10 +546,10 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
 
                       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600">
                         <span className="flex items-center gap-1 font-semibold text-slate-800">
-                          <Calendar className="w-3.5 h-3.5 text-indigo-600" /> {formatDisplayDate(b.date)}
+                          <Calendar className="w-3.5 h-3.5 text-brand-600" /> {formatDisplayDate(b.date)}
                         </span>
                         <span className="flex items-center gap-1 font-semibold text-slate-800">
-                          <Clock className="w-3.5 h-3.5 text-indigo-600" /> {b.start_time} - {b.end_time}{' '}
+                          <Clock className="w-3.5 h-3.5 text-brand-600" /> {b.start_time} - {b.end_time}{' '}
                           ({b.duration_minutes} min)
                         </span>
                         <span className="flex items-center gap-1 text-slate-700">
@@ -648,7 +659,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
             </div>
 
             <div className="p-6 space-y-5 animate-fadeIn">
-              <div className="p-4 rounded-lg bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-950 space-y-1.5">
+              <div className="p-4 rounded-lg bg-brand-50/70 border border-brand-100 text-xs text-brand-950 space-y-1.5">
                 <p className="font-bold text-slate-800">
                   {quickActionModal.booking.student_name}
                 </p>
@@ -675,21 +686,21 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
                       ? 'Ej. Maniobras de estacionamiento realizadas correctamente. Buena progresión.'
                       : 'Ej. No acudió al punto de encuentro ni respondió a las llamadas.'
                   }
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-hidden"
                 />
               </div>
               <div className="mt-6 flex items-center justify-end gap-2">
                 <button
                   onClick={() => setQuickActionModal(null)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Volver
                 </button>
                 <button
                   disabled={quickActionLoading}
                   onClick={handleExecuteQuickAction}
-                  className={`px-5 py-2.5 rounded-lg text-xs font-semibold text-white transition-colors ${quickActionModal.type === 'complete'
-                    ? 'bg-emerald-600 hover:bg-emerald-700'
+                  className={`px-4 py-2.5 rounded-lg text-xs font-semibold text-white transition-colors ${quickActionModal.type === 'complete'
+                    ? 'bg-brand-600 hover:bg-brand-700'
                     : 'bg-rose-600 hover:bg-rose-700'
                     }`}
                 >
@@ -722,7 +733,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
             </div>
 
             <div className="p-6 space-y-5 animate-fadeIn">
-              <div className="p-4 rounded-lg bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-950 space-y-1.5">
+              <div className="p-4 rounded-lg bg-brand-50/70 border border-brand-100 text-xs text-brand-950 space-y-1.5">
                 <span className="text-xs block">Alumno / Clase</span>
                 <p className="text-xs font-semibold">
                   {selectedBooking.student_name}  /  {formatDisplayDate(selectedBooking.date)} ({selectedBooking.start_time})
@@ -769,14 +780,14 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
               <div className="mt-6 flex items-center justify-end gap-2">
                 <button
                   onClick={() => setSelectedBooking(null)}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
                 <button
                   disabled={statusLoading}
                   onClick={handleUpdateStatus}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-xs"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 shadow-xs"
                 >
                   {statusLoading ? 'Guardando...' : 'Guardar estado'}
                 </button>
@@ -807,7 +818,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
             </div>
 
             <div className="p-6 space-y-4">
-              <div className="p-4 rounded-lg bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-950 space-y-1.5">
+              <div className="p-4 rounded-lg bg-brand-50/70 border border-brand-100 text-xs text-brand-950 space-y-1.5">
                 <p>
                   <strong>Alumno:</strong> {cancellingBooking.student_name}
                   {cancellingBooking.student_email && ` (${cancellingBooking.student_email})`}
@@ -853,7 +864,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
                   type="button"
                   onClick={handleCloseCancel}
                   disabled={cancelLoading}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Volver
                 </button>
@@ -861,7 +872,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
                   type="button"
                   onClick={handleConfirmCancel}
                   disabled={cancelLoading}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300  transition-colors"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300  transition-colors"
                 >
                   {cancelLoading ? 'Cancelando reserva...' : 'Confirmar cancelación'}
                 </button>

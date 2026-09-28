@@ -170,7 +170,7 @@ export default function AuthModal({
                     value={name}
                     onChange={e => setName(e.target.value)}
                     placeholder="Ej. Carlos Ruiz"
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   />
                 </div>
 
@@ -181,7 +181,7 @@ export default function AuthModal({
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
                     placeholder="Ej. +34 600 000 000"
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   />
                 </div>
               </>
@@ -196,7 +196,7 @@ export default function AuthModal({
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="tu@email.com"
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                 />
               </div>
             )}
@@ -213,7 +213,7 @@ export default function AuthModal({
                         setSuccessMessage(null);
                         setError(null);
                       }}
-                      className="text-[11px] text-indigo-600 hover:text-indigo-800 font-medium"
+                      className="text-[11px] text-brand-600 hover:text-brand-800 font-medium"
                     >
                       ¿Olvidaste tu contraseña?
                     </button>
@@ -225,7 +225,7 @@ export default function AuthModal({
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                 />
               </div>
             )}
@@ -239,7 +239,7 @@ export default function AuthModal({
                     required
                     value={resetToken}
                     onChange={e => setResetToken(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs font-mono"
+                    className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs font-mono"
                   />
                 </div>
                 <div>
@@ -250,7 +250,7 @@ export default function AuthModal({
                     value={newPassword}
                     onChange={e => setNewPassword(e.target.value)}
                     placeholder="Mínimo 6 caracteres"
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   />
                 </div>
               </>
@@ -259,7 +259,7 @@ export default function AuthModal({
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white font-semibold text-xs sm:text-sm  transition-colors flex items-center justify-center gap-2 mt-4"
+              className="w-full py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300 text-white font-semibold text-xs sm:text-sm  transition-colors flex items-center justify-center gap-2 mt-4"
             >
               {loading ? (
                 <span>Procesando...</span>
@@ -333,7 +333,7 @@ export default function AuthModal({
                     setSuccessMessage(null);
                     setError(null);
                   }}
-                  className="text-indigo-600 hover:text-indigo-800 font-semibold"
+                  className="text-brand-600 hover:text-brand-800 font-semibold"
                 >
                   Regístrate como alumno
                 </button>
@@ -348,7 +348,7 @@ export default function AuthModal({
                     setSuccessMessage(null);
                     setError(null);
                   }}
-                  className="text-indigo-600 hover:text-indigo-800 font-semibold"
+                  className="text-brand-600 hover:text-brand-800 font-semibold"
                 >
                   Inicia sesión
                 </button>

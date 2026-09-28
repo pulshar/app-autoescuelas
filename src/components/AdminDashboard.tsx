@@ -76,19 +76,19 @@ export default function AdminDashboard({
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={onOpenCreateBlock}
-            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs sm:text-sm transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs sm:text-sm transition-colors"
           >
             <Ban className="w-4 h-4 text-rose-600" /> Bloquear horario
           </button>
           <button
             onClick={onOpenCreateTeacher}
-            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs sm:text-sm transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs sm:text-sm transition-colors"
           >
             <PlusCircle className="w-4 h-4" /> Nuevo profesor
           </button>
           <button
             onClick={onOpenManualBooking}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm  transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs sm:text-sm  transition-colors"
           >
             <CalendarPlus className="w-4 h-4" /> Nueva reserva
           </button>
@@ -133,7 +133,7 @@ export default function AdminDashboard({
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {/* Metric 1 */}
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between text-indigo-600 mb-2">
+          <div className="flex items-center justify-between text-brand-600 mb-2">
             <span className="font-mono text-slate-500">Clases Hoy</span>
             <Calendar className="w-5 h-5" />
           </div>
@@ -235,7 +235,7 @@ export default function AdminDashboard({
 
           <button
             onClick={() => onNavigate('bookings')}
-            className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+            className="text-xs font-bold text-brand-600 hover:text-brand-800 flex items-center gap-1"
           >
             Ver todas las reservas <ArrowUpRight className="w-4 h-4" />
           </button>
@@ -250,9 +250,9 @@ export default function AdminDashboard({
             {todayBookings.map(b => (
               <div key={b.id} className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-lg bg-indigo-50 text-indigo-700 flex flex-col items-center justify-center font-bold text-xs shrink-0">
-                    <span className="text-[10px] text-slate-500">HORA</span>
-                    <span className="text-xs text-indigo-700 font-extrabold">{b.start_time}</span>
+                  <div className="w-12 h-12 rounded-lg bg-brand-50 text-brand-700 flex flex-col items-center justify-center font-bold text-xs shrink-0">
+                    <span className="text-[10px] font-mono text-slate-500">HORA</span>
+                    <span className="text-xs text-brand-700 font-bold">{b.start_time}</span>
                   </div>
 
                   <div>
@@ -269,12 +269,14 @@ export default function AdminDashboard({
                 <div className="flex items-center gap-2 sm:self-center">
                   <span
                     className={`px-2.5 py-1 rounded-full text-xs font-semibold ${b.status === 'Reservada'
-                      ? 'bg-emerald-100 text-emerald-800'
-                      : b.status.startsWith('Cancelada') || b.status === 'No presentado'
-                        ? 'bg-rose-100 text-rose-800'
-                        : b.status === 'Pendiente de revisión'
-                          ? 'bg-amber-100 text-amber-800'
-                          : 'bg-indigo-100 text-indigo-800'
+                      ? 'bg-blue-100 text-blue-800'
+                      : b.status === 'Completada'
+                        ? 'bg-slate-100 text-slate-800'
+                        : b.status.startsWith('Cancelada') || b.status === 'No presentado'
+                          ? 'bg-rose-100 text-rose-800'
+                          : b.status === 'Pendiente de revisión'
+                            ? 'bg-amber-100 text-amber-800'
+                            : 'bg-slate-100 text-slate-800'
                       }`}
                   >
                     {b.status}

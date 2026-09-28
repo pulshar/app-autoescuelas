@@ -219,7 +219,7 @@ export default function AdminSchedules() {
 
         <button
           onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold transition-colors shrink-0"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-semibold transition-colors shrink-0"
         >
           <PlusCircle className="w-4 h-4" /> Crear nueva agenda
         </button>
@@ -260,7 +260,7 @@ export default function AdminSchedules() {
           </p>
           <button
             onClick={handleOpenCreate}
-            className="mt-4 px-5 py-2.5 rounded-lg bg-indigo-600 text-white text-xs font-bold"
+            className="mt-4 px-4 py-2.5 rounded-lg bg-brand-600 text-white text-xs font-bold"
           >
             Crear Agenda
           </button>
@@ -318,7 +318,7 @@ export default function AdminSchedules() {
                     <div
                       key={day.id}
                       className={`p-2.5 rounded-lg border text-center ${isConfigured
-                        ? 'bg-indigo-50/40 border-indigo-200'
+                        ? 'bg-brand-50/40 border-brand-200'
                         : 'bg-slate-50/50 border-slate-100 text-slate-400'
                         }`}
                     >
@@ -330,7 +330,7 @@ export default function AdminSchedules() {
                           {intervals.map((inv, idx) => (
                             <span
                               key={idx}
-                              className="inline-block text-[10px] font-bold bg-white text-indigo-700 px-1.5 py-0.5 rounded-md border border-indigo-100 shadow-2xs"
+                              className="inline-block text-[10px] font-bold bg-white text-brand-700 px-1.5 py-0.5 rounded-md border border-brand-100 shadow-2xs"
                             >
                               {inv.start_time}-{inv.end_time}
                             </span>
@@ -359,7 +359,7 @@ export default function AdminSchedules() {
           <div className="bg-white rounded-xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[92vh] flex flex-col cursor-default">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <h3 className="font-bold text-base text-slate-900">
-                {editingSchedule ? 'Editar Agenda' : 'Crear Nueva Agenda'}
+                {editingSchedule ? 'Editar agenda' : 'Crear nueva agenda'}
               </h3>
               <button onClick={() => setModalOpen(false)} className="text-slate-400 hover:text-slate-600">
                 <X className="w-5 h-5" />
@@ -411,7 +411,7 @@ export default function AdminSchedules() {
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <label className="block text-xs font-semibold text-slate-700">Fecha de Fin</label>
-                    <label className="text-[11px] text-indigo-600 flex items-center gap-1 font-semibold">
+                    <label className="text-[11px] text-brand-600 flex items-center gap-1 font-semibold">
                       <input
                         type="checkbox"
                         checked={isIndefinite}
@@ -494,7 +494,7 @@ export default function AdminSchedules() {
                         <button
                           type="button"
                           onClick={() => handleAddInterval(day.id)}
-                          className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[11px] font-bold shrink-0 transition-colors"
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 text-[11px] font-bold shrink-0 transition-colors"
                         >
                           <Plus className="w-3 h-3" /> Turno
                         </button>
@@ -510,7 +510,7 @@ export default function AdminSchedules() {
                   id="scheduleActive"
                   checked={isActive}
                   onChange={e => setIsActive(e.target.checked)}
-                  className="rounded-md border-slate-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4"
+                  className="rounded-md border-slate-300 text-brand-600 focus:ring-brand-500 w-4 h-4"
                 />
                 <label htmlFor="scheduleActive" className="text-xs font-semibold text-slate-700">
                   Agenda activa para la generación de slots
@@ -521,14 +521,14 @@ export default function AdminSchedules() {
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300"
                 >
                   {saving ? 'Guardando...' : 'Guardar agenda'}
                 </button>
@@ -557,7 +557,7 @@ export default function AdminSchedules() {
             </div>
 
             <div className="p-6 space-y-4">
-              <div className="p-4 rounded-lg bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-950 space-y-1.5">
+              <div className="p-4 rounded-lg bg-brand-50/70 border border-brand-100 text-xs text-brand-950 space-y-1.5">
                 <p>
                   <strong>Agenda:</strong> {deletingSchedule.name}
                 </p>
@@ -593,7 +593,7 @@ export default function AdminSchedules() {
                   type="button"
                   onClick={handleCloseDelete}
                   disabled={deleteSubmitting}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
@@ -601,7 +601,7 @@ export default function AdminSchedules() {
                   type="button"
                   onClick={handleConfirmDelete}
                   disabled={deleteSubmitting}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300 transition-colors"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300 transition-colors"
                 >
                   {deleteSubmitting ? 'Eliminando...' : 'Eliminar agenda'}
                 </button>

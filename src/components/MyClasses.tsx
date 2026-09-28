@@ -125,7 +125,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
         );
       case 'Reservada':
         return (
-          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
             Reservada
           </span>
         );
@@ -144,7 +144,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
         );
       case 'No presentado':
         return (
-          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
             No presentado
           </span>
         );
@@ -170,7 +170,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
 
         <button
           onClick={onNavigateToBook}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold  transition-colors shrink-0"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-semibold  transition-colors shrink-0"
         >
           <CalendarPlus className="w-4 h-4" /> Reservar clase
         </button>
@@ -195,26 +195,26 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
         <button
           onClick={() => setActiveTab('upcoming')}
           className={`pb-3 text-sm font-bold transition-all relative ${activeTab === 'upcoming'
-            ? 'text-indigo-600'
+            ? 'text-brand-600'
             : 'text-slate-500 hover:text-slate-800'
             }`}
         >
           Próximas clases ({upcomingClasses.length})
           {activeTab === 'upcoming' && (
-            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 rounded-full" />
+            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-600 rounded-full" />
           )}
         </button>
 
         <button
           onClick={() => setActiveTab('history')}
           className={`pb-3 text-sm font-bold transition-all relative ${activeTab === 'history'
-            ? 'text-indigo-600'
+            ? 'text-brand-600'
             : 'text-slate-500 hover:text-slate-800'
             }`}
         >
           Histórico ({historyClasses.length})
           {activeTab === 'history' && (
-            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 rounded-full" />
+            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-600 rounded-full" />
           )}
         </button>
       </div>
@@ -238,7 +238,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
           {activeTab === 'upcoming' && (
             <button
               onClick={onNavigateToBook}
-              className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition-colors"
+              className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 text-white text-xs font-bold hover:bg-brand-700 transition-colors"
             >
               <CalendarPlus className="w-4 h-4" /> Reservar ahora
             </button>
@@ -258,15 +258,15 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs shrink-0">
-                        <Calendar className="w-5 h-5 text-indigo-600" />
+                      <div className="w-12 h-12 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center font-bold text-xs shrink-0">
+                        <Calendar className="w-5 h-5 text-brand-600" />
                       </div>
                       <div>
                         <h4 className="font-bold text-sm text-slate-900">
                           {formatDate(booking.date)}
                         </h4>
                         <div className="flex items-center gap-1.5 text-xs text-slate-600 mt-1">
-                          <Clock className="w-3.5 h-3.5 text-indigo-600" />
+                          <Clock className="w-3.5 h-3.5 text-brand-600" />
                           <span className="font-semibold text-slate-800">
                             {booking.start_time} - {booking.end_time}
                           </span>
@@ -363,7 +363,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
                   value={cancelReason}
                   onChange={e => setCancelReason(e.target.value)}
                   placeholder="Ej. Imprevisto personal..."
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-hidden focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
@@ -374,7 +374,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
                     setCancellingBooking(null);
                     setCancelReason('');
                   }}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
                 >
                   Volver
                 </button>
@@ -382,7 +382,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
                   type="button"
                   disabled={cancelLoading}
                   onClick={handleExecuteCancel}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700  transition-colors"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700  transition-colors"
                 >
                   {cancelLoading ? 'Cancelando...' : 'Confirmar cancelación'}
                 </button>

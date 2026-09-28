@@ -361,7 +361,7 @@ export default function AdminSettings() {
               <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
                 Configuración del administrador
               </h2>
-              <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+              <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-200">
                 <Sliders className="w-3 h-3" /> Parámetros
               </span>
             </div>
@@ -376,7 +376,7 @@ export default function AdminSettings() {
               type="button"
               onClick={() => handleSave()}
               disabled={saving || loading}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white font-semibold text-xs sm:text-sm transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300 text-white font-semibold text-xs sm:text-sm transition-all"
             >
               <Save className="w-4 h-4" />
               <span>{saving ? 'Guardando...' : 'Guardar cambios'}</span>
@@ -390,7 +390,7 @@ export default function AdminSettings() {
             type="button"
             onClick={() => setActiveSubTab('reminders')}
             className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all ${activeSubTab === 'reminders'
-              ? 'bg-indigo-600 text-white  shadow-indigo-200'
+              ? 'bg-brand-600 text-white  shadow-brand-200'
               : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
               }`}
           >
@@ -410,7 +410,7 @@ export default function AdminSettings() {
             type="button"
             onClick={() => setActiveSubTab('general')}
             className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all ${activeSubTab === 'general'
-              ? 'bg-indigo-600 text-white  shadow-indigo-200'
+              ? 'bg-brand-600 text-white  shadow-brand-200'
               : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
               }`}
           >
@@ -474,7 +474,7 @@ export default function AdminSettings() {
                     </h3>
                     {resendStatus?.configured ? (
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
                           <Check className="w-3 h-3" /> Configurado
                         </span>
                         {resendStatus.isSandbox && (
@@ -504,13 +504,13 @@ export default function AdminSettings() {
                     onChange={(e) => setTestRecipient(e.target.value)}
                     placeholder="tucorreo@gmail.com"
                     title="Dirección donde se enviará el correo de prueba"
-                    className="w-full sm:w-60 px-3 py-2 rounded-lg border border-slate-300 text-xs font-medium text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-2xs"
+                    className="w-full sm:w-60 px-3 py-2 rounded-lg border border-slate-300 text-xs font-medium text-slate-800 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 shadow-2xs"
                   />
                   {resendStatus?.isSandbox && resendStatus.authorizedTestEmail && testRecipient !== resendStatus.authorizedTestEmail && (
                     <button
                       type="button"
                       onClick={() => setTestRecipient(resendStatus.authorizedTestEmail!)}
-                      className="text-[10px] text-indigo-600 hover:text-indigo-800 underline font-semibold block mt-1"
+                      className="text-[10px] text-brand-600 hover:text-brand-800 underline font-semibold block mt-1"
                     >
                       Usar dirección autorizada ({resendStatus.authorizedTestEmail})
                     </button>
@@ -520,7 +520,7 @@ export default function AdminSettings() {
                   type="button"
                   onClick={handleSendTestEmail}
                   disabled={testingEmail || !testRecipient.trim()}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white text-xs font-semibold shadow-xs transition-all shrink-0 self-start"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white text-xs font-semibold shadow-xs transition-all shrink-0 self-start"
                 >
                   <Send className={`w-3.5 h-3.5 ${testingEmail ? 'animate-pulse' : ''}`} />
                   <span>{testingEmail ? 'Enviando...' : 'Enviar prueba'}</span>
@@ -570,13 +570,13 @@ export default function AdminSettings() {
 
               {resendStatus?.isSandbox && (
                 <div className="pt-2 border-t border-slate-200/60 text-slate-600 text-[11px] leading-relaxed">
-                  ℹ️ <strong>Modo Sandbox (Pruebas) de Resend:</strong> Al usar <code>onboarding@resend.dev</code>, la política de Resend entrega los correos a tu dirección registrada (<strong>{resendStatus.authorizedTestEmail || 'alvaroq.dev@gmail.com'}</strong>). El sistema maneja esto de forma automática para que puedas probar el diseño sin fallos. Para enviar directamente a cualquier dirección externa de alumnos, verifica tu dominio en <a href="https://resend.com/domains" target="_blank" rel="noopener noreferrer" className="text-indigo-600 font-bold underline inline-flex items-center gap-0.5">resend.com/domains <ExternalLink className="w-2.5 h-2.5" /></a> y configura la variable <code className="bg-white px-1 py-0.5 rounded border font-mono">RESEND_FROM_EMAIL</code>.
+                  ℹ️ <strong>Modo Sandbox (Pruebas) de Resend:</strong> Al usar <code>onboarding@resend.dev</code>, la política de Resend entrega los correos a tu dirección registrada (<strong>{resendStatus.authorizedTestEmail || 'alvaroq.dev@gmail.com'}</strong>). El sistema maneja esto de forma automática para que puedas probar el diseño sin fallos. Para enviar directamente a cualquier dirección externa de alumnos, verifica tu dominio en <a href="https://resend.com/domains" target="_blank" rel="noopener noreferrer" className="text-brand-600 font-bold underline inline-flex items-center gap-0.5">resend.com/domains <ExternalLink className="w-2.5 h-2.5" /></a> y configura la variable <code className="bg-white px-1 py-0.5 rounded border font-mono">RESEND_FROM_EMAIL</code>.
                 </div>
               )}
 
               {!resendStatus?.configured && (
                 <div className="pt-2 border-t border-slate-200/60 text-slate-600 text-[11px] leading-relaxed">
-                  💡 <strong>¿Cómo activar el envío real?</strong> Accede al menú de <em>Settings &gt; Secrets / Variables de Entorno</em> en AI Studio y define <code className="bg-white px-1.5 py-0.5 rounded border font-mono">RESEND_API_KEY</code> con tu clave de <a href="https://resend.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-indigo-600 font-bold underline inline-flex items-center gap-0.5">resend.com <ExternalLink className="w-2.5 h-2.5" /></a>. Mientras tanto, el sistema generará los avisos en la aplicación web sin interrumpir tu operativa.
+                  💡 <strong>¿Cómo activar el envío real?</strong> Accede al menú de <em>Settings &gt; Secrets / Variables de Entorno</em> en AI Studio y define <code className="bg-white px-1.5 py-0.5 rounded border font-mono">RESEND_API_KEY</code> con tu clave de <a href="https://resend.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-brand-600 font-bold underline inline-flex items-center gap-0.5">resend.com <ExternalLink className="w-2.5 h-2.5" /></a>. Mientras tanto, el sistema generará los avisos en la aplicación web sin interrumpir tu operativa.
                 </div>
               )}
             </div>
@@ -612,7 +612,7 @@ export default function AdminSettings() {
                   onChange={e => setReminderEnabled(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-14 h-7 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-indigo-600"></div>
+                <div className="w-14 h-7 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-brand-600"></div>
                 <span className="ml-2 text-xs sm:text-sm font-semibold text-slate-800">
                   {reminderEnabled ? 'Activo' : 'Desactivado'}
                 </span>
@@ -629,13 +629,13 @@ export default function AdminSettings() {
                   type="button"
                   onClick={() => setReminderChannel('both')}
                   className={`p-3.5 rounded-lg border text-left flex items-start gap-3 transition-all ${reminderChannel === 'both'
-                    ? 'border-indigo-600 bg-indigo-50/60 ring-2 ring-indigo-600/20'
+                    ? 'border-brand-600 bg-brand-50/60 ring-2 ring-brand-600/20'
                     : 'border-slate-200 hover:border-slate-300 bg-white'
                     }`}
                 >
                   <div
                     className={`p-2 rounded-xl shrink-0 ${reminderChannel === 'both'
-                      ? 'bg-indigo-600 text-white'
+                      ? 'bg-brand-600 text-white'
                       : 'bg-slate-100 text-slate-600'
                       }`}
                   >
@@ -644,7 +644,7 @@ export default function AdminSettings() {
                   <div>
                     <div className="font-semibold text-xs sm:text-sm text-slate-900 flex items-center gap-1.5">
                       App + Correo
-                      <span className="px-1.5 py-0.2 rounded text-[10px] bg-indigo-100 text-indigo-700 font-semibold">
+                      <span className="px-1.5 py-0.2 rounded text-[10px] bg-brand-100 text-brand-700 font-semibold">
                         Recomendado
                       </span>
                     </div>
@@ -658,13 +658,13 @@ export default function AdminSettings() {
                   type="button"
                   onClick={() => setReminderChannel('app')}
                   className={`p-3.5 rounded-lg border text-left flex items-start gap-3 transition-all ${reminderChannel === 'app'
-                    ? 'border-indigo-600 bg-indigo-50/60 ring-2 ring-indigo-600/20'
+                    ? 'border-brand-600 bg-brand-50/60 ring-2 ring-brand-600/20'
                     : 'border-slate-200 hover:border-slate-300 bg-white'
                     }`}
                 >
                   <div
                     className={`p-2 rounded-xl shrink-0 ${reminderChannel === 'app'
-                      ? 'bg-indigo-600 text-white'
+                      ? 'bg-brand-600 text-white'
                       : 'bg-slate-100 text-slate-600'
                       }`}
                   >
@@ -682,13 +682,13 @@ export default function AdminSettings() {
                   type="button"
                   onClick={() => setReminderChannel('email')}
                   className={`p-3.5 rounded-lg border text-left flex items-start gap-3 transition-all ${reminderChannel === 'email'
-                    ? 'border-indigo-600 bg-indigo-50/60 ring-2 ring-indigo-600/20'
+                    ? 'border-brand-600 bg-brand-50/60 ring-2 ring-brand-600/20'
                     : 'border-slate-200 hover:border-slate-300 bg-white'
                     }`}
                 >
                   <div
                     className={`p-2 rounded-xl shrink-0 ${reminderChannel === 'email'
-                      ? 'bg-indigo-600 text-white'
+                      ? 'bg-brand-600 text-white'
                       : 'bg-slate-100 text-slate-600'
                       }`}
                   >
@@ -708,7 +708,7 @@ export default function AdminSettings() {
           {/* Card 2: Advance Time Configuration (Tiempo de Antelación) */}
           <div className="bg-white rounded-xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">
                 <Clock className="w-5 h-5" />
               </div>
               <div>
@@ -732,12 +732,12 @@ export default function AdminSettings() {
                       type="button"
                       onClick={() => setReminderHoursBefore(preset.hours)}
                       className={`p-3 rounded-lg border text-center transition-all relative ${isSelected
-                        ? 'border-indigo-600 bg-indigo-50/80 ring-2 ring-indigo-600/20 text-indigo-900'
+                        ? 'border-brand-600 bg-brand-50/80 ring-2 ring-brand-600/20 text-brand-900'
                         : 'border-slate-200 hover:border-slate-300 bg-slate-50/50 text-slate-700'
                         }`}
                     >
                       {preset.recommended && (
-                        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[9px] font-semibold uppercase tracking-wider bg-indigo-600 text-white shadow-xs">
+                        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[9px] font-semibold uppercase tracking-wider bg-brand-600 text-white shadow-xs">
                           Popular
                         </span>
                       )}
@@ -762,14 +762,14 @@ export default function AdminSettings() {
                     max={168}
                     value={reminderHoursBefore}
                     onChange={e => setReminderHoursBefore(Math.max(1, Number(e.target.value)))}
-                    className="w-28 px-3.5 py-2 rounded-lg border border-slate-200 text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-28 px-3.5 py-2 rounded-lg border border-slate-200 text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   />
                   <span className="text-xs font-semibold text-slate-500">horas antes del inicio</span>
                 </div>
               </div>
 
               <div className="bg-slate-50 px-4 py-3 rounded-lg border border-slate-200/80 text-xs text-slate-600 flex items-center gap-2">
-                <Info className="w-4 h-4 text-indigo-600 shrink-0" />
+                <Info className="w-4 h-4 text-brand-600 shrink-0" />
                 <span>
                   Disparo programado: <strong>{getHumanDuration(reminderHoursBefore)}</strong>
                 </span>
@@ -781,7 +781,7 @@ export default function AdminSettings() {
           <div className="bg-white rounded-xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">
                   <Tag className="w-5 h-5" />
                 </div>
                 <div>
@@ -808,12 +808,12 @@ export default function AdminSettings() {
             <div className="bg-slate-50/80 p-4 rounded-lg border border-slate-200/70 space-y-2.5">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                  <Sparkles className="w-3.5 h-3.5 text-brand-600" />
                   Variables disponibles (Haz clic para insertar en el texto):
                 </span>
                 <span className="text-[11px] text-slate-400">
                   Campo activo:{' '}
-                  <strong className="text-indigo-600">
+                  <strong className="text-brand-600">
                     {lastFocusedField === 'title' ? 'Título' : 'Mensaje'}
                   </strong>
                 </span>
@@ -826,7 +826,7 @@ export default function AdminSettings() {
                     type="button"
                     onClick={() => handleInsertTag(v.tag)}
                     title={`Insertar ${v.tag} (ejemplo: ${v.desc})`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-mono bg-white text-indigo-700 border border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 shadow-2xs transition-all"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-mono bg-white text-brand-700 border border-brand-200 hover:bg-brand-50 hover:border-brand-300 shadow-2xs transition-all"
                   >
                     <span>{v.tag}</span>
                     <span className="text-[10px] font-sans font-normal text-slate-400">({v.label})</span>
@@ -852,7 +852,7 @@ export default function AdminSettings() {
                 onFocus={() => setLastFocusedField('title')}
                 onChange={e => setReminderTitleTemplate(e.target.value)}
                 placeholder="Ej: Recordatorio: Clase práctica - {fecha} a las {hora}"
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
               />
             </div>
 
@@ -873,7 +873,7 @@ export default function AdminSettings() {
                 onFocus={() => setLastFocusedField('message')}
                 onChange={e => setReminderMessageTemplate(e.target.value)}
                 placeholder="Escribe el mensaje que recibirá el alumno..."
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 leading-relaxed focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-y"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 leading-relaxed focus:ring-2 focus:ring-brand-500 focus:border-brand-500 resize-y"
               />
             </div>
 
@@ -885,7 +885,7 @@ export default function AdminSettings() {
                   id="includeLocation"
                   checked={reminderIncludeLocation}
                   onChange={e => setReminderIncludeLocation(e.target.checked)}
-                  className="rounded-md border-slate-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4"
+                  className="rounded-md border-slate-300 text-brand-600 focus:ring-brand-500 w-4 h-4"
                 />
                 <label htmlFor="includeLocation" className="text-xs sm:text-sm font-semibold text-slate-800 cursor-pointer">
                   Incluir punto de encuentro o dirección de salida en el recordatorio
@@ -901,7 +901,7 @@ export default function AdminSettings() {
                       value={reminderLocationText}
                       onChange={e => setReminderLocationText(e.target.value)}
                       placeholder="Dirección o punto de encuentro..."
-                      className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                     />
                   </div>
                   <span className="text-[11px] text-slate-400 mt-1 block">
@@ -916,7 +916,7 @@ export default function AdminSettings() {
           <div className="bg-slate-900 text-white rounded-xl p-6 sm:p-7 shadow-lg space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <Mail className="w-5 h-5 text-rose-400" />
+                <Mail className="w-5 h-5 text-white-400" />
                 <h4 className="font-bold text-sm sm:text-base tracking-wide">
                   Vista previa en tiempo real
                 </h4>
@@ -951,7 +951,7 @@ export default function AdminSettings() {
               <div className="bg-slate-100 text-slate-900 rounded-lg p-3 sm:p-6 shadow-inner">
                 <div className="max-w-md mx-auto bg-white rounded-lg border border-slate-200 shadow-md overflow-hidden text-left">
                   {/* Brand Header */}
-                  <div className="bg-[#da1249] p-5 text-white">
+                  <div className="bg-brand-600 p-5 text-white">
                     <span className="inline-block bg-white/20 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-1.5">
                       {currentSchoolName}
                     </span>
@@ -977,7 +977,7 @@ export default function AdminSettings() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-slate-400">Hora:</span>
-                        <span className="font-extrabold text-[#da1249]">10:00 (45 min)</span>
+                        <span className="font-bold text-brand-600">10:00 (45 min)</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-slate-400">Profesor:</span>
@@ -992,7 +992,7 @@ export default function AdminSettings() {
                     </div>
 
                     <div className="pt-2 text-center">
-                      <span className="inline-block bg-[#da1249] text-white font-bold text-xs px-5 py-2.5 rounded-lg shadow-xs">
+                      <span className="inline-block bg-brand-600 text-white font-bold text-xs px-4 py-2.5 rounded-lg shadow-xs">
                         Ver mis clases en la plataforma
                       </span>
                     </div>
@@ -1012,10 +1012,10 @@ export default function AdminSettings() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="font-extrabold text-xs sm:text-sm text-slate-900">
+                      <span className="font-bold text-xs sm:text-sm text-slate-900">
                         {previewTitle}
                       </span>
-                      <span className="text-[10px] font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full shrink-0">
+                      <span className="text-[10px] font-semibold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full shrink-0">
                         Ahora
                       </span>
                     </div>
@@ -1039,7 +1039,7 @@ export default function AdminSettings() {
           {/* Card 5: Testing, Manual Execution & History */}
           <div className="bg-white rounded-xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
             <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
-              <Play className="w-5 h-5 text-indigo-600" /> Pruebas y acciones del sistema
+              <Play className="w-5 h-5 text-brand-600" /> Pruebas y acciones del sistema
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1048,9 +1048,9 @@ export default function AdminSettings() {
                 type="button"
                 onClick={handleSendTest}
                 disabled={testingReminder}
-                className="p-4 rounded-lg border border-indigo-200 bg-indigo-50/50 hover:bg-indigo-50 text-left transition-all group flex items-start gap-3"
+                className="p-4 rounded-lg border border-brand-200 bg-brand-50/50 hover:bg-brand-50 text-left transition-all group flex items-start gap-3"
               >
-                <div className="p-2.5 rounded-xl bg-indigo-600 text-white group-hover:scale-105 transition-transform shrink-0">
+                <div className="p-2.5 rounded-xl bg-brand-600 text-white group-hover:scale-105 transition-transform shrink-0">
                   <Send className="w-4 h-4" />
                 </div>
                 <div>
@@ -1100,7 +1100,7 @@ export default function AdminSettings() {
                   type="button"
                   onClick={fetchLogs}
                   disabled={loadingLogs}
-                  className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+                  className="text-xs font-semibold text-brand-600 hover:text-brand-700 flex items-center gap-1"
                 >
                   <RefreshCw className={`w-3 h-3 ${loadingLogs ? 'animate-spin' : ''}`} />
                   <span>Actualizar</span>
@@ -1149,10 +1149,10 @@ export default function AdminSettings() {
           {/* Identidad y Nombre de la Autoescuela */}
           <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+              <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
                 Nombre comercial de la autoescuela
               </h3>
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-brand-50 text-brand-700 border border-brand-200">
                 Marca pública
               </span>
             </div>
@@ -1168,24 +1168,24 @@ export default function AdminSettings() {
                   value={schoolName}
                   onChange={e => setSchoolName(e.target.value)}
                   placeholder="Ej. Autoescuela San Cristóbal, AutoescuelaPro..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-bold text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-bold text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-brand-500"
                 />
               </div>
               <p className="text-[11px] text-slate-500 mt-2 leading-relaxed">
-                Este nombre sustituye al término <code className="bg-slate-100 text-indigo-600 px-1.5 py-0.5 rounded font-mono font-bold text-[11px]">AutoescuelaPro</code> en toda la aplicación: en el logotipo de la barra de navegación superior, en los emails de bienvenida a nuevos alumnos, en los recordatorios automáticos (Resend) y en la etiqueta variable <code className="bg-slate-100 text-indigo-600 px-1.5 py-0.5 rounded font-mono font-bold text-[11px]">{'{autoescuela}'}</code>.
+                Este nombre sustituye al término <code className="bg-slate-100 text-brand-600 px-1.5 py-0.5 rounded font-mono font-bold text-[11px]">AutoescuelaPro</code> en toda la aplicación: en el logotipo de la barra de navegación superior, en los emails de bienvenida a nuevos alumnos, en los recordatorios automáticos (Resend) y en la etiqueta variable <code className="bg-slate-100 text-brand-600 px-1.5 py-0.5 rounded font-mono font-bold text-[11px]">{'{autoescuela}'}</code>.
               </p>
             </div>
 
             {/* Live brand preview badge */}
             <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white shrink-0">
                 <Car className="w-4 h-4" />
               </div>
               <div>
                 <span className="text-[10px] text-slate-400 font-mono block">
                   Vista previa en la barra superior
                 </span>
-                <span className="text-sm font-extrabold text-slate-900">
+                <span className="text-sm font-bold text-slate-900">
                   {currentSchoolName}
                 </span>
               </div>
@@ -1194,7 +1194,7 @@ export default function AdminSettings() {
           {/* Duración y Descansos */}
           <div className="bg-white rounded-xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
             <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-indigo-600" /> Duración y descansos de clases
+              <Clock className="w-5 h-5 text-brand-600" /> Duración y descansos de clases
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1205,7 +1205,7 @@ export default function AdminSettings() {
                 <select
                   value={classDuration}
                   onChange={e => setClassDuration(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-semibold bg-white"
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-semibold bg-white"
                 >
                   <option value={30}>30 minutos</option>
                   <option value={45}>45 minutos (Estándar DGT)</option>
@@ -1225,7 +1225,7 @@ export default function AdminSettings() {
                 <select
                   value={restTime}
                   onChange={e => setRestTime(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-semibold bg-white"
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-semibold bg-white"
                 >
                   <option value={0}>0 minutos (Clases continuas)</option>
                   <option value={5}>5 minutos</option>
@@ -1257,7 +1257,7 @@ export default function AdminSettings() {
                   required
                   value={minCancellationHours}
                   onChange={e => setMinCancellationHours(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-semibold"
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-semibold"
                 />
               </div>
               <span className="text-[11px] text-slate-400 mt-1.5 block leading-relaxed">
@@ -1270,7 +1270,7 @@ export default function AdminSettings() {
           {/* Timezone */}
           <div className="bg-white rounded-xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
             <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-indigo-600" /> Zona horaria operativa
+              <Calendar className="w-5 h-5 text-brand-600" /> Zona horaria operativa
             </h3>
 
             <div className="max-w-xs">
@@ -1280,7 +1280,7 @@ export default function AdminSettings() {
               <select
                 value={timezone}
                 onChange={e => setTimezone(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-semibold bg-white"
+                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-semibold bg-white"
               >
                 <option value="Europe/Madrid">Europe/Madrid (Península y Baleares)</option>
                 <option value="Atlantic/Canary">Atlantic/Canary (Islas Canarias)</option>
@@ -1299,7 +1299,7 @@ export default function AdminSettings() {
           type="button"
           onClick={() => handleSave()}
           disabled={saving || loading}
-          className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white font-semibold text-xs sm:text-sm transition-all"
+          className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300 text-white font-semibold text-xs sm:text-sm transition-all"
         >
           <Save className="w-4 h-4" />
           <span>{saving ? 'Guardando configuración...' : 'Guardar cambios'}</span>

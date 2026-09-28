@@ -288,7 +288,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
         <div>
           <div className="flex items-center gap-2.5">
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Alumnos registrados</h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-100">
               {students.length} alumnos
             </span>
           </div>
@@ -306,14 +306,14 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Buscar por nombre o email..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
           {/* New Student Button */}
           <button
             onClick={handleOpenModal}
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm  transition-colors shrink-0"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs sm:text-sm  transition-colors shrink-0"
           >
             <UserPlus className="w-4 h-4" />
             <span>Dar de alta alumno</span>
@@ -373,7 +373,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                     <div
                       className={`w-12 h-12 rounded-lg flex items-center justify-center font-bold text-base shrink-0 shadow-2xs ${isInactive
                         ? 'bg-slate-200 text-slate-500'
-                        : 'bg-indigo-100 text-indigo-700'
+                        : 'bg-brand-100 text-brand-700'
                         }`}
                     >
                       {s.name.slice(0, 2).toUpperCase()}
@@ -406,28 +406,28 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   <div className="flex flex-wrap items-center justify-between sm:justify-end gap-3 sm:gap-5 pt-2 lg:pt-0 border-t border-slate-100 lg:border-t-0">
                     <div className="flex items-center gap-3 sm:gap-5">
                       <div className="text-center min-w-[45px]">
-                        <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                        <span className="text-[10px] font-mono text-slate-400 block">
                           Activas
                         </span>
-                        <span className="text-xs sm:text-sm font-extrabold text-indigo-700">
+                        <span className="text-xs sm:text-sm font-bold text-brand-700">
                           {s.active_classes || 0}
                         </span>
                       </div>
 
                       <div className="text-center min-w-[45px]">
-                        <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                        <span className="text-[10px] font-mono text-slate-400 block">
                           Completadas
                         </span>
-                        <span className="text-xs sm:text-sm font-extrabold text-emerald-700">
+                        <span className="text-xs sm:text-sm font-bold text-emerald-700">
                           {s.completed_classes || 0}
                         </span>
                       </div>
 
                       <div className="text-center min-w-[45px]">
-                        <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                        <span className="text-[10px] font-mono text-slate-400 block">
                           Total
                         </span>
-                        <span className="text-xs sm:text-sm font-extrabold text-slate-900">
+                        <span className="text-xs sm:text-sm font-bold text-slate-900">
                           {s.total_bookings || 0}
                         </span>
                       </div>
@@ -441,7 +441,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                         title="Reenviar correo de bienvenida con instrucciones de acceso"
                         className="inline-flex items-center gap-1.5 p-1.5 xl:px-3 rounded-full border border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-semibold transition-colors disabled:opacity-50"
                       >
-                        <Mail className="w-3.5 h-3.5 text-indigo-600" />
+                        <Mail className="w-3.5 h-3.5 text-brand-600" />
                         <span className="hidden xl:inline">
                           {resendingId === s.id ? 'Enviando...' : 'Reenviar'}
                         </span>
@@ -454,18 +454,18 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                         title={isInactive ? 'Alumno dado de baja' : 'Asignar clase práctica'}
                         className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${isInactive
                           ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                          : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700'
+                          : 'bg-brand-50 hover:bg-brand-100 text-brand-700'
                           }`}
                       >
                         <CalendarPlus className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline">Asignar Clase</span>
+                        <span className="hidden sm:inline">Asignar clase</span>
                       </button>
 
                       {/* Edit button */}
                       <button
                         onClick={() => handleOpenEdit(s)}
                         title="Editar alumno"
-                        className="p-1.5 rounded-full text-slate-600 hover:text-indigo-600 hover:bg-slate-100 transition-colors"
+                        className="p-1.5 rounded-full text-slate-600 hover:text-brand-600 hover:bg-slate-100 transition-colors"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
@@ -530,7 +530,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                       </span>
                       <button
                         onClick={handleCopyCredentials}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors"
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 transition-colors"
                       >
                         {copied ? (
                           <>
@@ -555,7 +555,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                       </p>
                       <p className="flex items-center gap-2">
                         <strong className="text-slate-900">Contraseña inicial:</strong>
-                        <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600">
+                        <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-brand-600">
                           {successData.initialPassword}
                         </span>
                       </p>
@@ -586,7 +586,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                         handleCloseModal();
                         onSelectStudentForBooking(sid);
                       }}
-                      className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs  transition-colors flex items-center justify-center gap-1.5"
+                      className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs  transition-colors flex items-center justify-center gap-1.5"
                     >
                       <CalendarPlus className="w-4 h-4" />
                       <span>Asignar Primera Clase</span>
@@ -614,7 +614,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                       value={name}
                       onChange={e => setName(e.target.value)}
                       placeholder="Ej. Sofía Martínez Ruiz"
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-brand-500"
                     />
                   </div>
 
@@ -629,7 +629,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                       value={email}
                       onChange={e => setEmail(e.target.value)}
                       placeholder="Ej. sofia.martinez@gmail.com"
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-brand-500"
                     />
                   </div>
 
@@ -643,7 +643,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                       value={phone}
                       onChange={e => setPhone(e.target.value)}
                       placeholder="Ej. +34 612 345 678"
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-brand-500"
                     />
                   </div>
 
@@ -656,7 +656,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                       <button
                         type="button"
                         onClick={() => setPassword(generateRandomPassword())}
-                        className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                        className="text-[11px] font-semibold text-brand-600 hover:text-brand-800 flex items-center gap-1"
                       >
                         <RefreshCw className="w-3 h-3" />
                         <span>Generar otra</span>
@@ -669,7 +669,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                         required
                         value={password}
                         onChange={e => setPassword(e.target.value)}
-                        className="w-full pl-3.5 pr-10 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-semibold focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                        className="w-full pl-3.5 pr-10 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-semibold focus:outline-hidden focus:ring-2 focus:ring-brand-500"
                       />
                       <button
                         type="button"
@@ -682,11 +682,11 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   </div>
 
                   {/* Informational Callout Box */}
-                  <div className="p-3.5 rounded-lg bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-950 space-y-2">
+                  <div className="p-3.5 rounded-lg bg-brand-50/70 border border-brand-100 text-xs text-brand-950 space-y-2">
                     <div className="flex items-start gap-2">
-                      <Info className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+                      <Info className="w-4 h-4 text-brand-600 shrink-0 mt-0.5" />
                       <div className="space-y-1">
-                        <p className="font-bold text-indigo-900">
+                        <p className="font-bold text-brand-900">
                           Notificación de alta por correo electrónico:
                         </p>
                         <div className="space-y-1 text-slate-600">
@@ -704,14 +704,14 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                       type="button"
                       onClick={handleCloseModal}
                       disabled={submitting}
-                      className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                      className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                     >
                       Cancelar
                     </button>
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300"
+                      className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300"
                     >
                       {submitting ? 'Dando de alta y enviando correo...' : 'Dar de alta y enviar acceso'}
                     </button>
@@ -760,7 +760,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   required
                   value={editName}
                   onChange={e => setEditName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
@@ -774,7 +774,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   required
                   value={editEmail}
                   onChange={e => setEditEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
@@ -788,7 +788,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   value={editPhone}
                   onChange={e => setEditPhone(e.target.value)}
                   placeholder="+34 600 000 000"
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
@@ -803,7 +803,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                     value={editPassword}
                     onChange={e => setEditPassword(e.target.value)}
                     placeholder="Dejar en blanco para no modificar"
-                    className="w-full pl-3.5 pr-10 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                    className="w-full pl-3.5 pr-10 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500"
                   />
                   <button
                     type="button"
@@ -825,7 +825,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                     type="checkbox"
                     checked={editIsActive}
                     onChange={e => setEditIsActive(e.target.checked)}
-                    className="mt-0.5 rounded-md border-slate-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4"
+                    className="mt-0.5 rounded-md border-slate-300 text-brand-600 focus:ring-brand-500 w-4 h-4"
                   />
                   <div>
                     <span className="text-xs font-bold text-slate-800 block">
@@ -844,14 +844,14 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   type="button"
                   onClick={handleCloseEdit}
                   disabled={editSubmitting}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={editSubmitting}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300"
                 >
                   {editSubmitting ? 'Guardando...' : 'Guardar cambios'}
                 </button>
@@ -882,7 +882,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
             </div>
 
             <div className="p-6 space-y-4">
-              <div className="p-4 rounded-lg bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-950 space-y-1.5">
+              <div className="p-4 rounded-lg bg-brand-50/70 border border-brand-100 text-xs text-brand-950 space-y-1.5">
                 <p>
                   <strong>Alumno:</strong> {deletingStudent.name}
                 </p>
@@ -926,7 +926,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   type="button"
                   onClick={handleCloseDelete}
                   disabled={deleteSubmitting}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
@@ -934,7 +934,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   type="button"
                   onClick={handleConfirmDelete}
                   disabled={deleteSubmitting}
-                  className={`px-5 py-2.5 rounded-lg text-xs font-bold text-white  transition-colors ${(deletingStudent.total_bookings || 0) > 0
+                  className={`px-4 py-2.5 rounded-lg text-xs font-bold text-white  transition-colors ${(deletingStudent.total_bookings || 0) > 0
                     ? 'bg-amber-600 hover:bg-amber-700 disabled:bg-amber-300'
                     : 'bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300'
                     }`}

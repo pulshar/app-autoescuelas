@@ -72,16 +72,16 @@ export default function ProfileView() {
       {/* Header */}
       <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex items-center justify-between">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Mi Perfil</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Mi perfil</h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             Gestiona tus datos personales de contacto y credenciales de acceso.
           </p>
         </div>
 
         <span
-          className={`px-3 py-1 rounded-full text-xs font-extrabold ${role === 'admin'
+          className={`px-3 py-1 rounded-full text-xs font-bold ${role === 'admin'
             ? 'bg-amber-50 text-amber-700 border border-amber-200'
-            : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+            : 'bg-brand-50 text-brand-700 border border-brand-200'
             }`}
         >
           {role === 'admin' ? 'Administrador' : 'Alumno'}
@@ -115,12 +115,12 @@ export default function ProfileView() {
                 className="w-16 h-16 rounded-lg object-cover border border-slate-200"
               />
             ) : (
-              <div className="w-16 h-16 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xl">
+              <div className="w-16 h-16 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-xl">
                 {name.slice(0, 2).toUpperCase()}
               </div>
             )}
             <div>
-              <h4 className="font-extrabold text-base text-slate-900">{name}</h4>
+              <h4 className="font-bold text-base text-slate-900">{name}</h4>
               <p className="text-xs text-slate-500">{user?.email}</p>
             </div>
           </div>
@@ -134,7 +134,7 @@ export default function ProfileView() {
               required
               value={name}
               onChange={e => setName(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
@@ -146,7 +146,7 @@ export default function ProfileView() {
               type="email"
               disabled
               value={user?.email || ''}
-              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium bg-slate-100 text-slate-500 cursor-not-allowed"
+              className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium bg-slate-100 text-slate-500 cursor-not-allowed"
             />
           </div>
 
@@ -159,7 +159,7 @@ export default function ProfileView() {
               value={phone}
               onChange={e => setPhone(e.target.value)}
               placeholder="+34 600 000 000"
-              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
@@ -172,7 +172,7 @@ export default function ProfileView() {
               value={avatarUrl}
               onChange={e => setAvatarUrl(e.target.value)}
               placeholder="https://..."
-              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
@@ -180,10 +180,10 @@ export default function ProfileView() {
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs sm:text-sm transition-colors"
             >
               <Save className="w-4 h-4" />
-              <span>{saving ? 'Guardando...' : 'Guardar Cambios'}</span>
+              <span>{saving ? 'Guardando...' : 'Guardar cambios'}</span>
             </button>
           </div>
         </form>
@@ -193,8 +193,8 @@ export default function ProfileView() {
       <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
-              <KeyRound className="w-5 h-5 text-indigo-600" /> Seguridad de la Cuenta
+            <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
+              <KeyRound className="w-5 h-5 text-brand-600" /> Seguridad de la cuenta
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
               Actualiza tu contraseña de acceso a la autoescuela.
@@ -206,7 +206,7 @@ export default function ProfileView() {
               onClick={() => setShowPasswordChange(true)}
               className="px-3.5 py-2 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
             >
-              Cambiar Contraseña
+              Cambiar contraseña
             </button>
           )}
         </div>
@@ -222,7 +222,7 @@ export default function ProfileView() {
           <form onSubmit={handlePasswordChange} className="pt-2 space-y-3">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Nueva Contraseña
+                Nueva contraseña
               </label>
               <input
                 type="password"
@@ -230,7 +230,7 @@ export default function ProfileView() {
                 value={newPassword}
                 onChange={e => setNewPassword(e.target.value)}
                 placeholder="Mínimo 6 caracteres"
-                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
@@ -238,15 +238,15 @@ export default function ProfileView() {
               <button
                 type="button"
                 onClick={() => setShowPasswordChange(false)}
-                className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="px-5 py-2.5 rounded-lg text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-xs"
+                className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 shadow-xs"
               >
-                Actualizar Contraseña
+                Actualizar contraseña
               </button>
             </div>
           </form>

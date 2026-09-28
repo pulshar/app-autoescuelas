@@ -207,6 +207,7 @@ export async function sendClassReminderEmail({
   schoolName?: string;
 }): Promise<EmailResult> {
   const brandName = schoolName || 'AutoescuelaPro';
+  const brandColor = '#19887f';
   const match = date.match(/^(\d{4})-(\d{2})-(\d{2})/);
   const displayDate = match ? `${match[3]}/${match[2]}/${match[1]}` : date;
   const subject = customTitle || `Recordatorio: Clase práctica el ${displayDate} a las ${time}`;
@@ -229,7 +230,7 @@ export async function sendClassReminderEmail({
           
           <!-- Header Banner -->
           <tr>
-            <td style="background-color: #da1249; padding: 28px 32px; text-align: left;">
+            <td style="background-color: ${brandColor}; padding: 28px 32px; text-align: left;">
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td>
@@ -270,7 +271,7 @@ export async function sendClassReminderEmail({
                   <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">
                      Hora de inicio:
                   </td>
-                  <td style="padding: 6px 0; font-size: 14px; color: #da1249; font-weight: 800;">
+                  <td style="padding: 6px 0; font-size: 14px; color: ${brandColor}; font-weight: 800;">
                     ${time} (${durationMinutes} min)
                   </td>
                 </tr>
@@ -307,7 +308,7 @@ export async function sendClassReminderEmail({
               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
                 <tr>
                   <td align="center">
-                    <a href="${appUrl}" target="_blank" style="display: inline-block; background-color: #da1249; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 12px; box-shadow: 0 2px 6px rgba(218, 18, 73, 0.25);">
+                    <a href="${appUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 12px; box-shadow: 0 2px 6px rgba(218, 18, 73, 0.25);">
                       Ver mis clases en la plataforma
                     </a>
                   </td>

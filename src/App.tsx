@@ -68,7 +68,7 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans selection:bg-indigo-500 selection:text-white pb-16 md:pb-6">
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans selection:bg-brand-500 selection:text-white pb-16 md:pb-6">
       {/* Top Navigation */}
       <Navbar
         currentTab={currentTab}
@@ -82,19 +82,19 @@ function AppContent() {
           /* Unauthenticated Landing & Quick Access */
           <div className="space-y-12 py-6">
             {/* Hero Card */}
-            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-900 via-slate-900 to-indigo-950 text-white p-8 sm:p-12 shadow-2xl">
-              <div className="absolute top-0 right-0 -mr-16 -mt-16 w-96 h-96 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-brand-900 via-slate-900 to-brand-950 text-white p-8 sm:p-12 shadow-2xl">
+              <div className="absolute top-0 right-0 -mr-16 -mt-16 w-96 h-96 bg-brand-500/15 rounded-full blur-3xl pointer-events-none" />
 
               <div className="relative z-10 max-w-2xl">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/25 text-indigo-300 border border-indigo-400/30 mb-4">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand-500/25 text-brand-300 border border-brand-400/30 mb-4">
                   <Sparkles className="w-3.5 h-3.5" /> Autoescuela Online 24/7
                 </span>
 
                 <h1 className="text-3xl sm:text-5xl font-bold tracking-tight leading-tight">
-                  Reserva tus clases de conducir <span className="text-indigo-400">online</span> en segundos.
+                  Reserva tus clases de conducir <span className="text-brand-400">online</span> en segundos.
                 </h1>
 
-                <p className="text-sm sm:text-base text-indigo-100/90 mt-4 leading-relaxed">
+                <p className="text-sm sm:text-base text-brand-100/90 mt-4 leading-relaxed">
                   Elige a tu profesor de prácticas, consulta los horarios disponibles en tiempo real,
                   reserva desde tu móvil y recibe confirmación instantánea sin llamadas ni esperas.
                 </p>
@@ -102,7 +102,7 @@ function AppContent() {
                 <div className="flex flex-wrap items-center gap-3.5 mt-8">
                   <button
                     onClick={() => handleOpenAuth('register')}
-                    className="px-6 py-3.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm sm:text-base transition-all flex items-center gap-2"
+                    className="px-6 py-3.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white font-semibold text-sm sm:text-base transition-all flex items-center gap-2"
                   >
                     <span>Empezar ahora</span>
                     <ArrowRight className="w-4 h-4" />
@@ -121,10 +121,10 @@ function AppContent() {
             {/* Quick Demo Switcher (Instant Evaluation for Test Users) */}
             <div className="bg-white rounded-xl p-6 sm:p-8 border border-slate-200 shadow-xs">
               <div className="text-center max-w-lg mx-auto mb-6">
-                <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">
+                <span className="text-xs font-mono text-brand-600">
                   Acceso Inmediato
                 </span>
-                <h3 className="text-xl font-extrabold text-slate-900 mt-1">
+                <h3 className="text-xl font-bold text-slate-900 mt-1">
                   Prueba la aplicación con un solo clic
                 </h3>
                 <p className="text-xs text-slate-500 mt-1">
@@ -135,21 +135,21 @@ function AppContent() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto">
                 <button
                   onClick={() => login('alvaroq@gmail.com', 'alumno05')}
-                  className="p-5 rounded-lg border-2 border-indigo-200 hover:border-indigo-600 bg-indigo-50/40 hover:bg-indigo-50 text-left transition-all group"
+                  className="p-5 rounded-lg border-2 border-brand-200 hover:border-brand-600 bg-brand-50/40 hover:bg-brand-50 text-left transition-all group"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold">
+                    <span className="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold">
                       <UserCheck className="w-5 h-5" />
                     </span>
-                    <span className="text-xs font-bold text-indigo-700 group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
+                    <span className="text-xs font-bold text-brand-700 group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
                       Entrar <ArrowRight className="w-3.5 h-3.5" />
                     </span>
                   </div>
-                  <h4 className="font-extrabold text-base text-slate-900">Acceso Alumno</h4>
+                  <h4 className="font-bold text-base text-slate-900">Acceso Alumno</h4>
                   <p className="text-xs text-slate-500 mt-1">
                     Álvaro Quevedo (alvaroq@gmail.com)
                   </p>
-                  <span className="inline-block text-[11px] text-indigo-700 font-medium mt-2 bg-white px-2 py-0.5 rounded-md border border-indigo-100">
+                  <span className="inline-block text-[11px] text-brand-700 font-medium mt-2 bg-white px-2 py-0.5 rounded-md border border-brand-100">
                     Reserva online de clases prácticas
                   </span>
                 </button>
@@ -166,7 +166,7 @@ function AppContent() {
                       Entrar <ArrowRight className="w-3.5 h-3.5" />
                     </span>
                   </div>
-                  <h4 className="font-extrabold text-base text-slate-900">Acceso Administrador</h4>
+                  <h4 className="font-bold text-base text-slate-900">Acceso Administrador</h4>
                   <p className="text-xs text-slate-500 mt-1">
                     Dirección (alvaroq.dev@gmail.com)
                   </p>
@@ -180,7 +180,7 @@ function AppContent() {
             {/* Feature Highlights Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs">
-                <div className="w-12 h-12 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center mb-4">
+                <div className="w-12 h-12 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center mb-4">
                   <Clock className="w-6 h-6" />
                 </div>
                 <h4 className="font-bold text-base text-slate-900">Horarios en tiempo real</h4>
@@ -190,7 +190,7 @@ function AppContent() {
               </div>
 
               <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs">
-                <div className="w-12 h-12 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center mb-4">
+                <div className="w-12 h-12 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center mb-4">
                   <Car className="w-6 h-6" />
                 </div>
                 <h4 className="font-bold text-base text-slate-900">Profesores titulares</h4>
@@ -200,7 +200,7 @@ function AppContent() {
               </div>
 
               <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs">
-                <div className="w-12 h-12 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center mb-4">
+                <div className="w-12 h-12 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center mb-4">
                   <CalendarCheck className="w-6 h-6" />
                 </div>
                 <h4 className="font-bold text-base text-slate-900">Cancelaciones claras</h4>

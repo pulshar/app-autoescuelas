@@ -183,7 +183,7 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
 
         <button
           onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold transition-colors shrink-0"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-semibold transition-colors shrink-0"
         >
           <PlusCircle className="w-4 h-4" /> Nuevo profesor
         </button>
@@ -219,7 +219,7 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
           </p>
           <button
             onClick={handleOpenCreate}
-            className="mt-4 px-5 py-2.5 rounded-lg bg-indigo-600 text-white text-xs font-bold"
+            className="mt-4 px-4 py-2.5 rounded-lg bg-brand-600 text-white text-xs font-bold"
           >
             Añadir Profesor
           </button>
@@ -242,7 +242,7 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
                         className="w-14 h-14 rounded-lg object-cover border border-slate-200"
                       />
                     ) : (
-                      <div className="w-14 h-14 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-base">
+                      <div className="w-14 h-14 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-base">
                         {t.name[0]}
                         {t.last_name[0]}
                       </div>
@@ -300,7 +300,7 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleOpenEdit(t)}
-                    className="p-1.5 rounded-full text-slate-600 hover:text-indigo-600 hover:bg-slate-100 transition-colors"
+                    className="p-1.5 rounded-full text-slate-600 hover:text-brand-600 hover:bg-slate-100 transition-colors"
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
@@ -346,7 +346,7 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
                     value={name}
                     onChange={e => setName(e.target.value)}
                     placeholder="Ej. Juan"
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs sm:text-sm focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
                 <div>
@@ -357,7 +357,7 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
                     value={lastName}
                     onChange={e => setLastName(e.target.value)}
                     placeholder="Ej. García Moreno"
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs sm:text-sm focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
               </div>
@@ -369,7 +369,7 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="profesor@autoescuela.es"
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs sm:text-sm focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
@@ -380,7 +380,7 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
                   value={phone}
                   onChange={e => setPhone(e.target.value)}
                   placeholder="+34 600 000 000"
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs sm:text-sm focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
@@ -391,7 +391,7 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
                   value={photoUrl}
                   onChange={e => setPhotoUrl(e.target.value)}
                   placeholder="https://..."
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs sm:text-sm focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
@@ -412,7 +412,7 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
                   id="teacherActive"
                   checked={isActive}
                   onChange={e => setIsActive(e.target.checked)}
-                  className="rounded-md border-slate-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4"
+                  className="rounded-md border-slate-300 text-brand-600 focus:ring-brand-500 w-4 h-4"
                 />
                 <label htmlFor="teacherActive" className="text-xs font-semibold text-slate-700">
                   Profesor activo para reservas
@@ -423,14 +423,14 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300"
                 >
                   {saving ? 'Guardando...' : 'Guardar profesor'}
                 </button>
@@ -459,7 +459,7 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
             </div>
 
             <div className="p-6 space-y-4">
-              <div className="p-4 rounded-lg bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-950 space-y-1.5">
+              <div className="p-4 rounded-lg bg-brand-50/70 border border-brand-100 text-xs text-brand-950 space-y-1.5">
                 <p>
                   <strong>Profesor:</strong> {deletingTeacher.name} {deletingTeacher.last_name || ''}
                 </p>
@@ -494,7 +494,7 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
                   type="button"
                   onClick={handleCloseDelete}
                   disabled={deleteSubmitting}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
                 </button>
@@ -502,7 +502,7 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
                   type="button"
                   onClick={handleConfirmDelete}
                   disabled={deleteSubmitting}
-                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300  transition-colors"
+                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300  transition-colors"
                 >
                   {deleteSubmitting ? 'Procesando...' : 'Confirmar baja / eliminación'}
                 </button>

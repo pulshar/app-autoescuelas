@@ -7,21 +7,17 @@
 
   --container-7xl: 1440px;
 
-  --color-brand: #DA1249;
-  --color-brand-hover: #c20f40;
-  --color-brand-active: #aa0d39;
-
-  --color-brand-50: #fff1f4;
-  --color-brand-100: #ffe0e7;
-  --color-brand-200: #ffc1ce;
-  --color-brand-300: #ff91a9;
-  --color-brand-400: #f96b89;
-  --color-brand-500: #e33a68;
-  --color-brand-600: #da1249;
-  --color-brand-700: #c20f40;
-  --color-brand-800: #aa0d39;
-  --color-brand-900: #8e0b31;
-  --color-brand-950: #5c071f;
+  --color-brand-50: #eefbf9;
+  --color-brand-100: #d5f5f0;
+  --color-brand-200: #afeae2;
+  --color-brand-300: #79d8ce;
+  --color-brand-400: #4bc1b5;
+  --color-brand-500: #2aa69a;
+  --color-brand-600: #19887f;
+  --color-brand-700: #166d67;
+  --color-brand-800: #155752;
+  --color-brand-900: #144943;
+  --color-brand-950: #092c29;
 }
 
 @layer base {
@@ -47,6 +43,6 @@
   }
 
   input[type="checkbox"] {
-    accent-color: var(--color-brand);
+    accent-color: var(--color-brand-600);
   }
 }

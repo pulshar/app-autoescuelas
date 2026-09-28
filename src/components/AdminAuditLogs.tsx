@@ -56,7 +56,7 @@ export default function AdminAuditLogs() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Buscar en el registro..."
-            className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-brand-500"
           />
         </div>
       </div>
@@ -77,7 +77,7 @@ export default function AdminAuditLogs() {
               <div key={log.id} className="p-4 sm:p-5 hover:bg-slate-50/70 transition-colors">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                    <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-brand-50 text-brand-700 border border-brand-200">
                       {log.action}
                     </span>
                     <span className="text-xs font-semibold text-slate-900">

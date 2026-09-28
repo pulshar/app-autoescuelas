@@ -150,7 +150,7 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
 
             <button
               onClick={onNavigateToBook}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold  transition-colors shrink-0"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-semibold  transition-colors shrink-0"
             >
               <CalendarPlus className="w-4 h-4" /> Reservar clase
             </button>
@@ -164,7 +164,7 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
         <div className="lg:col-span-2 bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
           {/* Month Navigation */}
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-extrabold text-base sm:text-lg text-slate-900">
+            <h3 className="font-bold text-base sm:text-lg text-slate-900">
               {new Date(currentYear, currentMonth - 1, 1)
                 .toLocaleDateString('es-ES', {
                   month: 'long',
@@ -218,16 +218,16 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
                   key={dateStr}
                   onClick={() => setSelectedDate(dateStr)}
                   className={`h-20 rounded-lg p-1.5 text-left flex flex-col justify-between border transition-all ${isSelected
-                    ? 'border-indigo-600 bg-indigo-50/50 shadow-xs'
+                    ? 'border-brand-600 bg-brand-50/50 shadow-xs'
                     : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50/50'
                     }`}
                 >
                   <div className="flex items-center justify-between">
                     <span
                       className={`text-xs font-bold rounded-lg px-1.5 py-0.5 ${isToday
-                        ? 'bg-indigo-600 text-white'
+                        ? 'bg-brand-600 text-white'
                         : isSelected
-                          ? 'text-indigo-700'
+                          ? 'text-brand-700'
                           : 'text-slate-700'
                         }`}
                     >
@@ -238,7 +238,7 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
                   {/* Badges / indicators */}
                   <div className="space-y-0.5 w-full">
                     {dayBookings.length > 0 && (
-                      <span className="block truncate text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-indigo-100 text-indigo-800">
+                      <span className="block truncate text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-brand-100 text-brand-800">
                         {dayBookings.length} {dayBookings.length === 1 ? 'clase' : 'clases'}
                       </span>
                     )}
@@ -258,10 +258,10 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
         {/* SELECTED DAY DETAIL PANEL (1 Col on lg) */}
         <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col h-full">
           <div className="border-b border-slate-100 pb-3">
-            <span className="text-[11px] font-bold text-indigo-600 uppercase tracking-wider block">
-              Detalle del Día
+            <span className="text-[11px] font-mono text-brand-600 block">
+              Detalle del día
             </span>
-            <h4 className="font-extrabold text-base text-slate-900 mt-0.5">
+            <h4 className="font-bold text-base text-slate-900 mt-0.5">
               {formatDate(selectedDate)}
             </h4>
           </div>
@@ -297,16 +297,18 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
                 >
                   <div className="flex items-center justify-between text-xs mb-1.5">
                     <span className="font-bold text-slate-900 flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-indigo-600" /> {b.start_time} - {b.end_time}
+                      <Clock className="w-3.5 h-3.5 text-brand-600" /> {b.start_time} - {b.end_time}
                     </span>
                     <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${b.status === 'Reservada'
-                        ? 'bg-emerald-100 text-emerald-800'
-                        : b.status.startsWith('Cancelada') || b.status === 'No presentado'
-                          ? 'bg-rose-100 text-rose-800'
-                          : b.status === 'Pendiente de revisión'
-                            ? 'bg-amber-100 text-amber-800'
-                            : 'bg-indigo-100 text-indigo-800'
+                      className={`px-2.5 py-1 rounded-full text-xs font-semibold ${b.status === 'Reservada'
+                        ? 'bg-blue-100 text-blue-800'
+                        : b.status === 'Completada'
+                          ? 'bg-slate-200 text-slate-800'
+                          : b.status.startsWith('Cancelada') || b.status === 'No presentado'
+                            ? 'bg-rose-100 text-rose-800'
+                            : b.status === 'Pendiente de revisión'
+                              ? 'bg-amber-100 text-amber-800'
+                              : 'bg-slate-100 text-slate-800'
                         }`}
                     >
                       {b.status}
