@@ -13,6 +13,7 @@ import {
   X,
   LogIn,
   KeyRound,
+  Settings,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -229,15 +230,6 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                   >
                     Alumnos
                   </button>
-                  <button
-                    onClick={() => onSelectTab('settings')}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentTab === 'settings'
-                      ? 'bg-slate-100 text-brand-700 font-semibold'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                      }`}
-                  >
-                    Configuración
-                  </button>
                 </>
               ) : (
                 <>
@@ -404,7 +396,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                         <UserIcon className="w-4 h-4 text-slate-400" /> Mi Perfil
                       </button>
                       {role === 'admin' && (
-                        <button
+                        <><button
                           onClick={() => {
                             onSelectTab('audit');
                             setShowProfileMenu(false);
@@ -413,6 +405,16 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                         >
                           <CheckCheck className="w-4 h-4 text-slate-400" /> Registro de Auditoría
                         </button>
+                          <button
+                            onClick={() => {
+                              onSelectTab('settings')
+                              setShowProfileMenu(false);
+                            }}
+                            className="w-full text-left px-5 py-3.5 border-t border-slate-200 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2"
+                          >
+                            <Settings className="w-4 h-4 text-slate-400" /> Configuración
+                          </button>
+                        </>
                       )}
                       <button
                         onClick={() => {
