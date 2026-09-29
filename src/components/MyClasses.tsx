@@ -1,8 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '../context/AuthContext.tsx';
-import { api } from '../lib/api.ts';
+import { useStudentBookings } from '../hooks/useStudentBookings.ts';
 import { formatDisplayDate } from '../lib/dateUtils.ts';
-import type { Booking, AppSettings } from '../types.ts';
+import { Button } from './common/Button.tsx';
+import { StatusBadge } from './common/StatusBadge.tsx';
+import { Modal } from './common/Modal.tsx';
+import type { Booking } from '../types.ts';
 import {
   Calendar,
   Clock,
@@ -11,8 +14,6 @@ import {
   AlertCircle,
   CheckCircle2,
   CalendarPlus,
-  ArrowRight,
-  X,
   Info,
 } from 'lucide-react';
 
@@ -23,9 +24,14 @@ interface MyClassesProps {
 export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'upcoming' | 'history'>('upcoming');
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [settings, setSettings] = useState<AppSettings | null>(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    upcomingBookings,
+    historyBookings,
+    settings,
+    loading,
+    cancelBooking,
+    canCancel,
+  } = useStudentBookings(user?.id);
 
   // Cancellation modal state
   const [cancellingBooking, setCancellingBooking] = useState<Booking | null>(null);
@@ -34,55 +40,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const fetchBookings = async () => {
-    try {
-      setLoading(true);
-      const [bRes, sRes] = await Promise.all([
-        api.getBookings({ student_id: user?.id }),
-        api.getSettings(),
-      ]);
-      setBookings(bRes.bookings);
-      setSettings(sRes.settings);
-    } catch (err: any) {
-      console.error('Error fetching classes:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchBookings();
-  }, [user]);
-
-  const now = new Date();
-  const todayStr = now.toISOString().split('T')[0];
-  const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-  const isUpcomingClass = (b: Booking) => {
-    if (b.status !== 'Reservada') return false;
-    if (b.date < todayStr) return false;
-    if (b.date === todayStr && b.end_time <= currentTime) return false;
-    return true;
-  };
-
-  const upcomingClasses = bookings.filter(isUpcomingClass);
-  const historyClasses = bookings.filter(b => !isUpcomingClass(b));
-
-  const displayedList = activeTab === 'upcoming' ? upcomingClasses : historyClasses;
-
-  // Check cancellation eligibility
-  const canCancel = (booking: Booking): { allowed: boolean; hoursRemaining: number } => {
-    if (!settings) return { allowed: true, hoursRemaining: 99 };
-    const [year, month, day] = booking.date.split('-').map(Number);
-    const [hour, min] = booking.start_time.split(':').map(Number);
-    const bookingDate = new Date(year, month - 1, day, hour, min);
-    const now = new Date();
-    const diffHours = (bookingDate.getTime() - now.getTime()) / (1000 * 3600);
-    return {
-      allowed: diffHours >= settings.min_cancellation_hours,
-      hoursRemaining: Math.max(0, Math.round(diffHours)),
-    };
-  };
+  const displayedList = activeTab === 'upcoming' ? upcomingBookings : historyBookings;
 
   const handleExecuteCancel = async () => {
     if (!cancellingBooking) return;
@@ -91,11 +49,10 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
     setSuccessMessage(null);
 
     try {
-      const res = await api.cancelBooking(cancellingBooking.id, cancelReason);
+      const res = await cancelBooking(cancellingBooking.id, cancelReason);
       setSuccessMessage(res.message);
       setCancellingBooking(null);
       setCancelReason('');
-      fetchBookings();
     } catch (err: any) {
       setErrorMessage(err.message || 'Error al cancelar la clase.');
     } finally {
@@ -115,50 +72,8 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
     return formatted.charAt(0).toUpperCase() + formatted.slice(1);
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'Pendiente de revisión':
-        return (
-          <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
-            Pendiente de validación
-          </span>
-        );
-      case 'Reservada':
-        return (
-          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-            Reservada
-          </span>
-        );
-      case 'Completada':
-        return (
-          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-            Completada
-          </span>
-        );
-      case 'Cancelada por alumno':
-      case 'Cancelada por administrador':
-        return (
-          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
-            {status}
-          </span>
-        );
-      case 'No presentado':
-        return (
-          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
-            No presentado
-          </span>
-        );
-      default:
-        return (
-          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-            {status}
-          </span>
-        );
-    }
-  };
-
   return (
-    <div className="space-y-6 pb-12">
+    <div className="space-y-6 pb-12" data-testid="my-classes-page">
       {/* Header & Tabs */}
       <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -168,12 +83,14 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
           </p>
         </div>
 
-        <button
+        <Button
           onClick={onNavigateToBook}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-semibold  transition-colors shrink-0"
+          data-testid="my-classes-book-btn"
+          leftIcon={<CalendarPlus className="w-4 h-4" />}
+          className="shrink-0"
         >
-          <CalendarPlus className="w-4 h-4" /> Reservar clase
-        </button>
+          Reservar clase
+        </Button>
       </div>
 
       {successMessage && (
@@ -194,12 +111,12 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
       <div className="flex border-b border-slate-200 gap-6">
         <button
           onClick={() => setActiveTab('upcoming')}
-          className={`pb-3 text-sm font-bold transition-all relative ${activeTab === 'upcoming'
-            ? 'text-brand-600'
-            : 'text-slate-500 hover:text-slate-800'
-            }`}
+          data-testid="my-classes-upcoming-tab"
+          className={`pb-3 text-sm font-bold transition-all relative ${
+            activeTab === 'upcoming' ? 'text-brand-600' : 'text-slate-500 hover:text-slate-800'
+          }`}
         >
-          Próximas clases ({upcomingClasses.length})
+          Próximas clases ({upcomingBookings.length})
           {activeTab === 'upcoming' && (
             <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-600 rounded-full" />
           )}
@@ -207,12 +124,12 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
 
         <button
           onClick={() => setActiveTab('history')}
-          className={`pb-3 text-sm font-bold transition-all relative ${activeTab === 'history'
-            ? 'text-brand-600'
-            : 'text-slate-500 hover:text-slate-800'
-            }`}
+          data-testid="my-classes-history-tab"
+          className={`pb-3 text-sm font-bold transition-all relative ${
+            activeTab === 'history' ? 'text-brand-600' : 'text-slate-500 hover:text-slate-800'
+          }`}
         >
-          Histórico ({historyClasses.length})
+          Histórico ({historyBookings.length})
           {activeTab === 'history' && (
             <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-600 rounded-full" />
           )}
@@ -236,23 +153,27 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
               : 'Aquí aparecerán las clases que vayas completando o cancelando.'}
           </p>
           {activeTab === 'upcoming' && (
-            <button
+            <Button
               onClick={onNavigateToBook}
-              className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700 transition-colors"
+              data-testid="my-classes-empty-book-btn"
+              leftIcon={<CalendarPlus className="w-4 h-4" />}
+              size="sm"
+              className="mt-5"
             >
-              <CalendarPlus className="w-4 h-4" /> Reservar ahora
-            </button>
+              Reservar ahora
+            </Button>
           )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {displayedList.map(booking => {
-            const { allowed, hoursRemaining } = canCancel(booking);
+          {displayedList.map((booking: Booking) => {
+            const { allowed } = canCancel(booking);
             const isCancellable = activeTab === 'upcoming' && !booking.status.startsWith('Cancelada');
 
             return (
               <div
                 key={booking.id}
+                data-testid={`booking-card-${booking.id}`}
                 className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between"
               >
                 <div>
@@ -275,7 +196,9 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
                       </div>
                     </div>
 
-                    <div>{getStatusBadge(booking.status)}</div>
+                    <div>
+                      <StatusBadge status={booking.status} />
+                    </div>
                   </div>
 
                   {/* Teacher & Notes */}
@@ -301,6 +224,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
                     {allowed ? (
                       <button
                         onClick={() => setCancellingBooking(booking)}
+                        data-testid={`cancel-btn-${booking.id}`}
                         className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 transition-colors"
                       >
                         <Ban className="w-4 h-4" /> Cancelar
@@ -323,74 +247,61 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
       )}
 
       {/* Cancellation Modal */}
-      {cancellingBooking && (
-        <div
-          onClick={e => {
-            if (e.target === e.currentTarget) {
-              setCancellingBooking(null);
-              setCancelReason('');
-            }
-          }}
-          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
-        >
-          <div className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
-            <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-              <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
-                <span>Cancelar reserva de clase</span>
-              </h3>
-              <button onClick={() => {
-                setCancellingBooking(null);
-                setCancelReason('');
-              }} className="text-slate-400 hover:text-slate-600">
-                <X className="w-5 h-5" />
-              </button>
+      <Modal
+        isOpen={Boolean(cancellingBooking)}
+        onClose={() => {
+          setCancellingBooking(null);
+          setCancelReason('');
+        }}
+        title="Cancelar reserva de clase"
+        testId="myclasses-cancel-modal"
+      >
+        {cancellingBooking && (
+          <div className="space-y-4">
+            <p className="text-xs text-slate-500 leading-relaxed">
+              ¿Confirmas la cancelación de la clase del{' '}
+              <strong>{formatDisplayDate(cancellingBooking.date)}</strong> a las{' '}
+              <strong>{cancellingBooking.start_time}</strong> con el profesor{' '}
+              <strong>{cancellingBooking.teacher_name}</strong>?
+            </p>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                Motivo de cancelación (opcional)
+              </label>
+              <textarea
+                rows={2}
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder="Ej. Imprevisto personal..."
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-hidden focus:ring-2 focus:ring-brand-500"
+              />
             </div>
 
-            <div className="p-6 space-y-4">
-              <p className="text-xs text-slate-500 leading-relaxed">
-                ¿Confirmas la cancelación de la clase del{' '}
-                <strong>{formatDisplayDate(cancellingBooking.date)}</strong> a las{' '}
-                <strong>{cancellingBooking.start_time}</strong> con el profesor{' '}
-                <strong>{cancellingBooking.teacher_name}</strong>?
-              </p>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Motivo de cancelación (opcional)
-                </label>
-                <textarea
-                  rows={2}
-                  value={cancelReason}
-                  onChange={e => setCancelReason(e.target.value)}
-                  placeholder="Ej. Imprevisto personal..."
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-hidden focus:ring-2 focus:ring-brand-500"
-                />
-              </div>
-
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCancellingBooking(null);
-                    setCancelReason('');
-                  }}
-                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
-                >
-                  Volver
-                </button>
-                <button
-                  type="button"
-                  disabled={cancelLoading}
-                  onClick={handleExecuteCancel}
-                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700  transition-colors"
-                >
-                  {cancelLoading ? 'Cancelando...' : 'Confirmar cancelación'}
-                </button>
-              </div>
+            <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setCancellingBooking(null);
+                  setCancelReason('');
+                }}
+              >
+                Volver
+              </Button>
+              <Button
+                variant="danger"
+                size="sm"
+                isLoading={cancelLoading}
+                onClick={handleExecuteCancel}
+                data-testid="myclasses-confirm-cancel-btn"
+              >
+                Confirmar cancelación
+              </Button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
     </div>
   );
 }

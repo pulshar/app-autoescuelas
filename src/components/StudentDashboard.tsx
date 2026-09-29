@@ -1,19 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '../context/AuthContext.tsx';
-import { api } from '../lib/api.ts';
-import type { Booking, AppSettings } from '../types.ts';
+import { useStudentBookings } from '../hooks/useStudentBookings.ts';
+import { Button } from './common/Button.tsx';
+import { StatusBadge } from './common/StatusBadge.tsx';
+import { Modal } from './common/Modal.tsx';
+import type { Booking } from '../types.ts';
 import {
   Calendar,
   Clock,
   User,
-  ArrowRight,
   AlertCircle,
   CheckCircle2,
   CalendarPlus,
   Car,
   ChevronRight,
   Ban,
-  Phone,
   Compass,
 } from 'lucide-react';
 
@@ -23,75 +24,36 @@ interface StudentDashboardProps {
 
 export default function StudentDashboard({ onNavigate }: StudentDashboardProps) {
   const { user } = useAuth();
-  const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
-  const [settings, setSettings] = useState<AppSettings | null>(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    upcomingBookings,
+    settings,
+    loading,
+    refresh,
+    cancelBooking,
+    canCancel,
+  } = useStudentBookings(user?.id);
+
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [cancelReason, setCancelReason] = useState('');
   const [cancelError, setCancelError] = useState<string | null>(null);
   const [cancelSuccess, setCancelSuccess] = useState<string | null>(null);
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const [bookingsRes, settingsRes] = await Promise.all([
-        api.getBookings({ student_id: user?.id, status: 'Reservada' }),
-        api.getSettings(),
-      ]);
-
-      // Filter upcoming bookings
-      const now = new Date();
-      const todayStr = now.toISOString().split('T')[0];
-      const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-      const upcoming = bookingsRes.bookings
-        .filter(b => {
-          if (b.status !== 'Reservada') return false;
-          if (b.date < todayStr) return false;
-          if (b.date === todayStr && b.end_time <= currentTime) return false;
-          return true;
-        })
-        .sort((a, b) => (a.date === b.date ? a.start_time.localeCompare(b.start_time) : a.date.localeCompare(b.date)));
-
-      setUpcomingBookings(upcoming);
-      setSettings(settingsRes.settings);
-    } catch (err: any) {
-      console.error('Error fetching dashboard data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [user]);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   const nextBooking = upcomingBookings[0] || null;
-
-  // Check if student can cancel next booking based on settings.min_cancellation_hours
-  const canCancelBooking = (booking: Booking): { allowed: boolean; hoursRemaining: number } => {
-    if (!settings) return { allowed: true, hoursRemaining: 99 };
-    const [year, month, day] = booking.date.split('-').map(Number);
-    const [hour, min] = booking.start_time.split(':').map(Number);
-    const bookingDate = new Date(year, month - 1, day, hour, min);
-    const now = new Date();
-    const diffHours = (bookingDate.getTime() - now.getTime()) / (1000 * 3600);
-    return {
-      allowed: diffHours >= settings.min_cancellation_hours,
-      hoursRemaining: Math.max(0, Math.round(diffHours)),
-    };
-  };
 
   const handleCancel = async (bookingId: string) => {
     setCancelError(null);
     setCancelSuccess(null);
+    setIsCancelling(true);
     try {
-      const res = await api.cancelBooking(bookingId, cancelReason);
+      const res = await cancelBooking(bookingId, cancelReason);
       setCancelSuccess(res.message);
       setCancellingId(null);
       setCancelReason('');
-      fetchData();
     } catch (err: any) {
       setCancelError(err.message || 'No se pudo cancelar la reserva.');
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -107,9 +69,8 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
     return formatted.charAt(0).toUpperCase() + formatted.slice(1);
   };
 
-
   return (
-    <div className="space-y-6 pb-12">
+    <div className="space-y-6 pb-12" data-testid="student-dashboard">
       {/* Welcome Greeting Banner */}
       <div className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -122,13 +83,14 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           </p>
         </div>
 
-        <button
+        <Button
           onClick={() => onNavigate('book')}
-          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition-all shrink-0"
+          data-testid="student-dashboard-book-btn"
+          leftIcon={<CalendarPlus className="w-5 h-5" />}
+          className="shrink-0"
         >
-          <CalendarPlus className="w-5 h-5" />
-          <span>Reservar nueva clase</span>
-        </button>
+          Reservar nueva clase
+        </Button>
       </div>
 
       {cancelSuccess && (
@@ -145,9 +107,8 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
         </div>
       )}
 
-      {/* SECTION 25: PROMINENT "PRÓXIMA CLASE" CARD */}
+      {/* PROMINENT "PRÓXIMA CLASE" CARD */}
       <div className="bg-gradient-to-br from-brand-900 via-slate-900 to-brand-950 text-white rounded-xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
-        {/* Subtle background decoration */}
         <div className="absolute top-0 right-0 -mr-8 -mt-8 w-64 h-64 bg-brand-500/10 rounded-full blur-2xl pointer-events-none" />
         <div className="absolute bottom-0 right-1/4 w-32 h-32 bg-brand-400/10 rounded-full blur-xl pointer-events-none" />
 
@@ -209,12 +170,13 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
 
                 {/* Cancel check */}
                 {(() => {
-                  const { allowed, hoursRemaining } = canCancelBooking(nextBooking);
+                  const { allowed } = canCancel(nextBooking);
                   return (
                     <div className="flex items-center gap-3">
                       {allowed ? (
                         <button
                           onClick={() => setCancellingId(nextBooking.id)}
+                          data-testid="student-dashboard-cancel-class-btn"
                           className="px-3.5 py-2 rounded-lg text-xs font-semibold text-rose-300 hover:text-white hover:bg-rose-500/20 border border-rose-400/30 transition-colors"
                         >
                           Cancelar esta clase
@@ -236,6 +198,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
               </p>
               <button
                 onClick={() => onNavigate('book')}
+                data-testid="student-dashboard-empty-book-btn"
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white text-brand-900 font-semibold text-xs sm:text-sm hover:bg-brand-50 shadow-md transition-colors"
               >
                 <CalendarPlus className="w-4 h-4" /> Reservar ahora mi siguiente clase
@@ -246,56 +209,66 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
       </div>
 
       {/* Cancellation Confirmation Modal */}
-      {cancellingId && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
-            <h4 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <Ban className="w-5 h-5 text-rose-500" /> Cancelar reserva
-            </h4>
-            <p className="text-xs text-slate-500 mt-2 leading-relaxed">
-              ¿Estás seguro de que deseas cancelar esta clase? El slot volverá a quedar disponible para otros alumnos.
-            </p>
+      <Modal
+        isOpen={Boolean(cancellingId)}
+        onClose={() => {
+          setCancellingId(null);
+          setCancelReason('');
+        }}
+        title={
+          <span className="flex items-center gap-2">
+            <Ban className="w-5 h-5 text-rose-500" /> Cancelar reserva
+          </span>
+        }
+        testId="cancel-booking-modal"
+      >
+        <p className="text-xs text-slate-500 leading-relaxed">
+          ¿Estás seguro de que deseas cancelar esta clase? El slot volverá a quedar disponible para otros alumnos.
+        </p>
 
-            <div className="mt-4">
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Motivo de la cancelación (opcional)
-              </label>
-              <textarea
-                rows={2}
-                value={cancelReason}
-                onChange={e => setCancelReason(e.target.value)}
-                placeholder="Ej. Imprevisto de horario laboral..."
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-hidden focus:ring-2 focus:ring-brand-500"
-              />
-            </div>
-
-            <div className="mt-6 flex items-center justify-end gap-2">
-              <button
-                onClick={() => {
-                  setCancellingId(null);
-                  setCancelReason('');
-                }}
-                className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
-              >
-                Volver
-              </button>
-              <button
-                onClick={() => handleCancel(cancellingId)}
-                className="px-4 py-2.5 rounded-lg text-xs font-bold text-white bg-rose-600 hover:bg-rose-700  transition-colors"
-              >
-                Confirmar cancelación
-              </button>
-            </div>
-          </div>
+        <div className="mt-4">
+          <label className="block text-xs font-semibold text-slate-700 mb-1">
+            Motivo de la cancelación (opcional)
+          </label>
+          <textarea
+            rows={2}
+            value={cancelReason}
+            onChange={(e) => setCancelReason(e.target.value)}
+            placeholder="Ej. Imprevisto de horario laboral..."
+            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-hidden focus:ring-2 focus:ring-brand-500"
+          />
         </div>
-      )}
 
-      {/* SECTION 25: RESUMEN DE PRÓXIMAS RESERVAS */}
+        <div className="mt-6 flex items-center justify-end gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setCancellingId(null);
+              setCancelReason('');
+            }}
+          >
+            Volver
+          </Button>
+          <Button
+            variant="danger"
+            size="sm"
+            isLoading={isCancelling}
+            onClick={() => cancellingId && handleCancel(cancellingId)}
+            data-testid="confirm-cancel-btn"
+          >
+            Confirmar cancelación
+          </Button>
+        </div>
+      </Modal>
+
+      {/* RESUMEN DE PRÓXIMAS RESERVAS */}
       <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-bold text-base text-slate-900">Tus próximas reservas</h3>
           <button
             onClick={() => onNavigate('my-classes')}
+            data-testid="student-dashboard-view-all-classes-btn"
             className="text-xs font-bold text-brand-600 hover:text-brand-800 flex items-center gap-1"
           >
             Ver todas ({upcomingBookings.length}) <ChevronRight className="w-4 h-4" />
@@ -308,7 +281,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
-            {upcomingBookings.slice(0, 4).map(booking => (
+            {upcomingBookings.slice(0, 4).map((booking: Booking) => (
               <div key={booking.id} className="py-3.5 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-bold text-xs shrink-0">
@@ -329,9 +302,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                    {booking.status}
-                  </span>
+                  <StatusBadge status={booking.status} />
                 </div>
               </div>
             ))}

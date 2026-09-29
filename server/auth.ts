@@ -7,6 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
   throw new Error('JWT_SECRET debe estar definido en las variables de entorno.');
 }
+const SECRET: string = JWT_SECRET;
 
 export interface AuthPayload {
   id: string;
@@ -25,7 +26,7 @@ export function createToken(payload: AuthPayload, expiresInHours = 72): string {
   const data = JSON.stringify({ ...payload, exp: expiresAt });
   const b64Data = Buffer.from(data).toString('base64url');
   const signature = crypto
-    .createHmac('sha256', JWT_SECRET)
+    .createHmac('sha256', SECRET)
     .update(b64Data)
     .digest('base64url');
   return `${b64Data}.${signature}`;
@@ -37,7 +38,7 @@ export function verifyToken(token: string): AuthPayload | null {
     if (parts.length !== 2) return null;
     const [b64Data, signature] = parts;
     const expectedSignature = crypto
-      .createHmac('sha256', JWT_SECRET)
+      .createHmac('sha256', SECRET)
       .update(b64Data)
       .digest('base64url');
 
