@@ -310,7 +310,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div>
                   <StatusBadge status={booking.status} />
                 </div>
               </div>

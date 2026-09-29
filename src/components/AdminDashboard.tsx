@@ -16,6 +16,7 @@ import {
   ArrowUpRight,
 } from 'lucide-react';
 import { Button } from './common/Button.tsx';
+import { StatusBadge } from './common/StatusBadge.tsx';
 
 interface AdminDashboardProps {
   onNavigate: (tab: string) => void;
@@ -272,20 +273,7 @@ export default function AdminDashboard({
                 </div>
 
                 <div className="flex items-center gap-2 sm:self-center">
-                  <span
-                    className={`px-2.5 py-1 rounded-full text-xs font-semibold ${b.status === 'Reservada'
-                      ? 'bg-blue-100 text-blue-800'
-                      : b.status === 'Completada'
-                        ? 'bg-slate-100 text-slate-800'
-                        : b.status.startsWith('Cancelada') || b.status === 'No presentado'
-                          ? 'bg-rose-100 text-rose-800'
-                          : b.status === 'Pendiente de revisión'
-                            ? 'bg-amber-100 text-amber-800'
-                            : 'bg-slate-100 text-slate-800'
-                      }`}
-                  >
-                    {b.status}
-                  </span>
+                  <StatusBadge status={b.status} />
                 </div>
               </div>
             ))}

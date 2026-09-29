@@ -21,6 +21,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { Button } from './common/Button.tsx';
+import { StatusBadge } from './common/StatusBadge.tsx';
 
 interface AdminBookingsProps {
   onOpenManualModal: () => void;
@@ -259,24 +260,6 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
   const handleTabChange = (tab: 'pending_review' | 'upcoming' | 'history') => {
     setActiveTab(tab);
     setFilterStatus('');
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'Pendiente de revisión':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">Pendiente de revisión</span>;
-      case 'Reservada':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">Reservada</span>;
-      case 'Completada':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">Completada</span>;
-      case 'Cancelada por alumno':
-      case 'Cancelada por administrador':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">{status}</span>;
-      case 'No presentado':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">No presentado</span>;
-      default:
-        return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">{status}</span>;
-    }
   };
 
   return (
@@ -540,7 +523,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
                         <span className="font-bold text-sm text-slate-900">
                           {b.student_name}
                         </span>
-                        {getStatusBadge(b.status)}
+                        <StatusBadge status={b.status} />
                         <span className="text-[11px] text-slate-400">ID: {b.id.slice(0, 8)}</span>
                       </div>
 

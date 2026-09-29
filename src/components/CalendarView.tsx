@@ -14,6 +14,7 @@ import {
   CalendarPlus,
 } from 'lucide-react';
 import { Button } from './common/Button.tsx';
+import { StatusBadge } from './common/StatusBadge.tsx';
 
 interface CalendarViewProps {
   onNavigateToBook?: () => void;
@@ -300,20 +301,7 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
                     <span className="font-bold text-slate-900 flex items-center gap-1">
                       <Clock className="w-3.5 h-3.5 text-brand-600" /> {b.start_time} - {b.end_time}
                     </span>
-                    <span
-                      className={`px-2.5 py-1 rounded-full text-xs font-semibold ${b.status === 'Reservada'
-                        ? 'bg-blue-100 text-blue-800'
-                        : b.status === 'Completada'
-                          ? 'bg-slate-200 text-slate-800'
-                          : b.status.startsWith('Cancelada') || b.status === 'No presentado'
-                            ? 'bg-rose-100 text-rose-800'
-                            : b.status === 'Pendiente de revisión'
-                              ? 'bg-amber-100 text-amber-800'
-                              : 'bg-slate-100 text-slate-800'
-                        }`}
-                    >
-                      {b.status}
-                    </span>
+                    <StatusBadge status={b.status} />
                   </div>
 
                   <div className="text-xs text-slate-600 space-y-0.5">
