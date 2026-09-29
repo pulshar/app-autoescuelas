@@ -21,6 +21,8 @@ import {
   sendEmail,
   sendClassReminderEmail,
   sendStudentWelcomeEmail,
+  sendBookingCreatedEmails,
+  sendBookingCancelledEmails,
   isResendConfigured,
   getSenderEmail,
   isSandboxDomain,
@@ -1056,6 +1058,27 @@ async function startServer() {
         },
       });
 
+      const settings = await getAppSettings();
+
+      // Enviar notificaciones por correo de forma asíncrona tanto al alumno como al profesor
+      sendBookingCreatedEmails({
+        bookingId: booking.id,
+        studentName: booking.student_name,
+        studentEmail: booking.student_email,
+        studentPhone: booking.student_phone,
+        teacherName: booking.teacher_name,
+        teacherEmail: booking.teacher_email,
+        date: booking.date,
+        startTime: booking.start_time,
+        endTime: booking.end_time,
+        durationMinutes: booking.duration_minutes,
+        notes: booking.notes,
+        schoolName: settings.school_name,
+        appUrl: process.env.APP_URL,
+      }).catch(emailErr => {
+        console.warn('[Email Warning] Error al enviar correos de confirmación de reserva:', emailErr?.message || emailErr);
+      });
+
       res.status(201).json({ booking, message: '¡Clase reservada con éxito!' });
     } catch (err: any) {
       console.error('Booking creation error:', err);
@@ -1073,7 +1096,7 @@ async function startServer() {
 
       const booking = (await db.prepare(`
         SELECT b.*, u.name as student_name, u.email as student_email,
-               t.name as teacher_name, t.last_name as teacher_last_name
+               t.name as teacher_name, t.last_name as teacher_last_name, t.email as teacher_email
         FROM bookings b
         JOIN users u ON b.student_id = u.id
         JOIN teachers t ON b.teacher_id = t.id
@@ -1147,6 +1170,25 @@ async function startServer() {
         now
       );
 
+      // Enviar notificaciones por correo de cancelación a alumno y profesor
+      sendBookingCancelledEmails({
+        bookingId: id,
+        studentName: booking.student_name,
+        studentEmail: booking.student_email,
+        teacherName: `${booking.teacher_name} ${booking.teacher_last_name}`,
+        teacherEmail: booking.teacher_email,
+        date: booking.date,
+        startTime: booking.start_time,
+        endTime: booking.end_time,
+        durationMinutes: booking.duration_minutes,
+        cancelReason: reason || undefined,
+        cancelledBy: `${req.user!.name} (${isAdmin ? 'Administrador' : 'Alumno'})`,
+        schoolName: settings.school_name,
+        appUrl: process.env.APP_URL,
+      }).catch(emailErr => {
+        console.warn('[Email Warning] Error al enviar correos de cancelación de reserva:', emailErr?.message || emailErr);
+      });
+
       res.json({ message: 'Reserva cancelada correctamente. El slot ha quedado disponible nuevamente.' });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
@@ -1170,7 +1212,14 @@ async function startServer() {
         return;
       }
 
-      const booking = (await db.prepare('SELECT student_id, date, start_time, end_time FROM bookings WHERE id = ?').get(id)) as any;
+      const booking = (await db.prepare(`
+        SELECT b.*, u.name as student_name, u.email as student_email,
+               t.name as teacher_name, t.last_name as teacher_last_name, t.email as teacher_email
+        FROM bookings b
+        JOIN users u ON b.student_id = u.id
+        JOIN teachers t ON b.teacher_id = t.id
+        WHERE b.id = ?
+      `).get(id)) as any;
       if (!booking) {
         res.status(404).json({ error: 'Reserva no encontrada.' });
         return;
@@ -1222,6 +1271,28 @@ async function startServer() {
           `Tu clase del ${formatToDisplayDate(booking.date)} a las ${booking.start_time} ahora figura como '${status}'.`,
           now
         );
+
+        // Si el estado cambia a cancelada, emitir los correos de cancelación a alumno y profesor
+        if (status.startsWith('Cancelada')) {
+          const settings = await getAppSettings();
+          sendBookingCancelledEmails({
+            bookingId: id,
+            studentName: booking.student_name,
+            studentEmail: booking.student_email,
+            teacherName: `${booking.teacher_name} ${booking.teacher_last_name}`,
+            teacherEmail: booking.teacher_email,
+            date: booking.date,
+            startTime: booking.start_time,
+            endTime: booking.end_time,
+            durationMinutes: booking.duration_minutes,
+            cancelReason: notes || undefined,
+            cancelledBy: `${req.user!.name} (Administrador)`,
+            schoolName: settings.school_name,
+            appUrl: process.env.APP_URL,
+          }).catch(emailErr => {
+            console.warn('[Email Warning] Error al enviar correos de cancelación de reserva:', emailErr?.message || emailErr);
+          });
+        }
       }
 
       res.json({ message: `Estado actualizado a ${status}.` });

@@ -499,3 +499,466 @@ export async function sendStudentWelcomeEmail({
     text,
   });
 }
+
+export interface BookingEmailNotificationParams {
+  bookingId: string;
+  studentName: string;
+  studentEmail?: string;
+  studentPhone?: string;
+  teacherName: string;
+  teacherEmail?: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  durationMinutes: number;
+  notes?: string;
+  cancelReason?: string;
+  cancelledBy?: string;
+  schoolName?: string;
+  appUrl?: string;
+}
+
+/**
+ * Notifies both student and teacher when a class is booked.
+ */
+export async function sendBookingCreatedEmails(params: BookingEmailNotificationParams): Promise<{
+  studentResult?: EmailResult;
+  teacherResult?: EmailResult;
+}> {
+  const {
+    studentName,
+    studentEmail,
+    studentPhone,
+    teacherName,
+    teacherEmail,
+    date,
+    startTime,
+    endTime,
+    durationMinutes,
+    notes,
+    schoolName,
+    appUrl,
+  } = params;
+
+  const brandName = schoolName || 'AutoescuelaPro';
+  const brandColor = '#19887f';
+  const match = date.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  const displayDate = match ? `${match[3]}/${match[2]}/${match[1]}` : date;
+  const baseUrl = (appUrl || process.env.APP_URL || '').replace(/\/$/, '');
+
+  let studentResult: EmailResult | undefined;
+  let teacherResult: EmailResult | undefined;
+
+  // 1. Email to Student
+  if (studentEmail && studentEmail.trim() !== '') {
+    const studentSubject = `¡Confirmación de Reserva! Clase práctica el ${displayDate} a las ${startTime} - ${brandName}`;
+    const studentHtml = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${studentSubject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 16px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
+          <tr>
+            <td style="background-color: ${brandColor}; padding: 28px 32px; text-align: left;">
+              <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 8px;">
+                ${brandName}
+              </span>
+              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 800; line-height: 1.3;">
+                ¡Tu clase ha sido reservada con éxito!
+              </h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 32px;">
+              <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; color: #334155;">
+                Hola <strong>${studentName}</strong>,
+              </p>
+              <p style="margin: 0 0 24px 0; font-size: 14px; line-height: 1.6; color: #475569;">
+                Tu reserva para tu próxima clase práctica de conducir ha quedado confirmada en el sistema.
+              </p>
+
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f1f5f9; border-radius: 14px; padding: 20px; margin-bottom: 24px;">
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600; width: 38%;">Fecha:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 700;">${displayDate}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Horario:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: ${brandColor}; font-weight: 800;">${startTime} - ${endTime} (${durationMinutes} min)</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Profesor asignado:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 700;">${teacherName}</td>
+                </tr>
+                ${notes ? `
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Notas:</td>
+                  <td style="padding: 6px 0; font-size: 13px; color: #0f172a;">${notes}</td>
+                </tr>` : ''}
+              </table>
+
+              ${baseUrl ? `
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+                <tr>
+                  <td align="center">
+                    <a href="${baseUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 12px;">
+                      Gestionar mis clases
+                    </a>
+                  </td>
+                </tr>
+              </table>` : ''}
+
+              <div style="border-top: 1px solid #e2e8f0; padding-top: 16px; font-size: 12px; color: #94a3b8; line-height: 1.5;">
+                Recuerda llevar tu documentación original a la clase. Si necesitas cancelar, hazlo con la antelación mínima requerida desde tu área de alumno.
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8fafc; padding: 16px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8;">
+              ${brandName} • Notificación automática de reserva.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+    `;
+
+    const studentText = `${studentSubject}\n\nHola ${studentName},\nTu clase ha sido confirmada:\n- Fecha: ${displayDate}\n- Horario: ${startTime} - ${endTime} (${durationMinutes} min)\n- Profesor: ${teacherName}\n${notes ? `- Notas: ${notes}\n` : ''}`;
+
+    studentResult = await sendEmail({
+      to: studentEmail,
+      subject: studentSubject,
+      html: studentHtml,
+      text: studentText,
+    });
+  }
+
+  // 2. Email to Teacher
+  if (teacherEmail && teacherEmail.trim() !== '') {
+    const teacherSubject = `Nueva clase reservada: ${studentName} - ${displayDate} a las ${startTime}`;
+    const teacherHtml = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${teacherSubject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 16px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
+          <tr>
+            <td style="background-color: #0f172a; padding: 28px 32px; text-align: left;">
+              <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.15); color: #38bdf8; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 8px;">
+                ${brandName} • Notificación de Profesor
+              </span>
+              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 800; line-height: 1.3;">
+                Nueva clase asignada en tu agenda
+              </h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 32px;">
+              <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; color: #334155;">
+                Hola <strong>${teacherName}</strong>,
+              </p>
+              <p style="margin: 0 0 24px 0; font-size: 14px; line-height: 1.6; color: #475569;">
+                Un alumno ha reservado un turno en tu horario disponible. A continuación tienes los datos de la práctica:
+              </p>
+
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; margin-bottom: 24px;">
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600; width: 38%;">Alumno:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 700;">${studentName}</td>
+                </tr>
+                ${studentPhone ? `
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Teléfono alumno:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 600;">${studentPhone}</td>
+                </tr>` : ''}
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Fecha:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 700;">${displayDate}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Horario:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #0369a1; font-weight: 800;">${startTime} - ${endTime} (${durationMinutes} min)</td>
+                </tr>
+                ${notes ? `
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Observaciones:</td>
+                  <td style="padding: 6px 0; font-size: 13px; color: #0f172a;">${notes}</td>
+                </tr>` : ''}
+              </table>
+
+              ${baseUrl ? `
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;">
+                <tr>
+                  <td align="center">
+                    <a href="${baseUrl}" target="_blank" style="display: inline-block; background-color: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 12px;">
+                      Abrir calendario de clases
+                    </a>
+                  </td>
+                </tr>
+              </table>` : ''}
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8fafc; padding: 16px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8;">
+              ${brandName} • Notificación interna para profesores.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+    `;
+
+    const teacherText = `${teacherSubject}\n\nHola ${teacherName},\nSe ha registrado una nueva clase en tu agenda:\n- Alumno: ${studentName}${studentPhone ? ` (${studentPhone})` : ''}\n- Fecha: ${displayDate}\n- Horario: ${startTime} - ${endTime}\n${notes ? `- Observaciones: ${notes}\n` : ''}`;
+
+    teacherResult = await sendEmail({
+      to: teacherEmail,
+      subject: teacherSubject,
+      html: teacherHtml,
+      text: teacherText,
+    });
+  }
+
+  return { studentResult, teacherResult };
+}
+
+/**
+ * Notifies both student and teacher when a class is cancelled.
+ */
+export async function sendBookingCancelledEmails(params: BookingEmailNotificationParams): Promise<{
+  studentResult?: EmailResult;
+  teacherResult?: EmailResult;
+}> {
+  const {
+    studentName,
+    studentEmail,
+    teacherName,
+    teacherEmail,
+    date,
+    startTime,
+    endTime,
+    cancelReason,
+    cancelledBy,
+    schoolName,
+    appUrl,
+  } = params;
+
+  const brandName = schoolName || 'AutoescuelaPro';
+  const match = date.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  const displayDate = match ? `${match[3]}/${match[2]}/${match[1]}` : date;
+  const baseUrl = (appUrl || process.env.APP_URL || '').replace(/\/$/, '');
+
+  let studentResult: EmailResult | undefined;
+  let teacherResult: EmailResult | undefined;
+
+  // 1. Email to Student
+  if (studentEmail && studentEmail.trim() !== '') {
+    const studentSubject = `Clase cancelada: ${displayDate} a las ${startTime} - ${brandName}`;
+    const studentHtml = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${studentSubject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 16px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
+          <tr>
+            <td style="background-color: #e11d48; padding: 28px 32px; text-align: left;">
+              <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 8px;">
+                ${brandName}
+              </span>
+              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 800; line-height: 1.3;">
+                Aviso de cancelación de clase
+              </h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 32px;">
+              <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; color: #334155;">
+                Hola <strong>${studentName}</strong>,
+              </p>
+              <p style="margin: 0 0 24px 0; font-size: 14px; line-height: 1.6; color: #475569;">
+                Te confirmamos que la clase práctica programada ha sido <strong>cancelada</strong> y el horario ha quedado liberado.
+              </p>
+
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fff1f2; border: 1px solid #fecdd3; border-radius: 14px; padding: 20px; margin-bottom: 24px;">
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #9f1239; font-weight: 600; width: 38%;">Fecha:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #881337; font-weight: 700;">${displayDate}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #9f1239; font-weight: 600;">Horario:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #881337; font-weight: 700;">${startTime} - ${endTime}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #9f1239; font-weight: 600;">Profesor:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #881337; font-weight: 700;">${teacherName}</td>
+                </tr>
+                ${cancelledBy ? `
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #9f1239; font-weight: 600;">Cancelada por:</td>
+                  <td style="padding: 6px 0; font-size: 13px; color: #881337;">${cancelledBy}</td>
+                </tr>` : ''}
+                ${cancelReason ? `
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #9f1239; font-weight: 600;">Motivo:</td>
+                  <td style="padding: 6px 0; font-size: 13px; color: #881337; font-style: italic;">${cancelReason}</td>
+                </tr>` : ''}
+              </table>
+
+              ${baseUrl ? `
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+                <tr>
+                  <td align="center">
+                    <a href="${baseUrl}" target="_blank" style="display: inline-block; background-color: #19887f; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 12px;">
+                      Reservar otra fecha
+                    </a>
+                  </td>
+                </tr>
+              </table>` : ''}
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8fafc; padding: 16px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8;">
+              ${brandName} • Notificación de cancelación de clase.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+    `;
+
+    const studentText = `${studentSubject}\n\nHola ${studentName},\nTu clase del ${displayDate} a las ${startTime} con ${teacherName} ha sido cancelada.\n${cancelReason ? `Motivo: ${cancelReason}\n` : ''}`;
+
+    studentResult = await sendEmail({
+      to: studentEmail,
+      subject: studentSubject,
+      html: studentHtml,
+      text: studentText,
+    });
+  }
+
+  // 2. Email to Teacher
+  if (teacherEmail && teacherEmail.trim() !== '') {
+    const teacherSubject = `Clase cancelada en tu agenda: ${studentName} - ${displayDate} a las ${startTime}`;
+    const teacherHtml = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${teacherSubject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 16px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
+          <tr>
+            <td style="background-color: #475569; padding: 28px 32px; text-align: left;">
+              <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 8px;">
+                ${brandName} • Notificación de Profesor
+              </span>
+              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 800; line-height: 1.3;">
+                Clase cancelada en tu turno
+              </h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 32px;">
+              <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; color: #334155;">
+                Hola <strong>${teacherName}</strong>,
+              </p>
+              <p style="margin: 0 0 24px 0; font-size: 14px; line-height: 1.6; color: #475569;">
+                Te informamos que la siguiente clase ha sido <strong>cancelada</strong> y dicho hueco vuelve a estar disponible para reservas:
+              </p>
+
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; margin-bottom: 24px;">
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600; width: 38%;">Alumno:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 700;">${studentName}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Fecha:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 700;">${displayDate}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Horario:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #e11d48; font-weight: 700;">${startTime} - ${endTime}</td>
+                </tr>
+                ${cancelledBy ? `
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Cancelada por:</td>
+                  <td style="padding: 6px 0; font-size: 13px; color: #0f172a;">${cancelledBy}</td>
+                </tr>` : ''}
+                ${cancelReason ? `
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Motivo:</td>
+                  <td style="padding: 6px 0; font-size: 13px; color: #0f172a; font-style: italic;">${cancelReason}</td>
+                </tr>` : ''}
+              </table>
+
+              ${baseUrl ? `
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;">
+                <tr>
+                  <td align="center">
+                    <a href="${baseUrl}" target="_blank" style="display: inline-block; background-color: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 12px;">
+                      Ver agenda actualizada
+                    </a>
+                  </td>
+                </tr>
+              </table>` : ''}
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8fafc; padding: 16px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8;">
+              ${brandName} • Notificación interna para profesores.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+    `;
+
+    const teacherText = `${teacherSubject}\n\nHola ${teacherName},\nLa clase del ${displayDate} a las ${startTime} con el alumno ${studentName} ha sido cancelada.\n${cancelReason ? `Motivo: ${cancelReason}\n` : ''}`;
+
+    teacherResult = await sendEmail({
+      to: teacherEmail,
+      subject: teacherSubject,
+      html: teacherHtml,
+      text: teacherText,
+    });
+  }
+
+  return { studentResult, teacherResult };
+}

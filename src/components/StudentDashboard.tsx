@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Ban,
   Compass,
+  X,
 } from 'lucide-react';
 
 interface StudentDashboardProps {
@@ -94,16 +95,26 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
       </div>
 
       {cancelSuccess && (
-        <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm flex items-center gap-2">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-          <span>{cancelSuccess}</span>
+        <div className="p-3.5 rounded-lg text-xs sm:text-sm flex items-center justify-between gap-2 transition-all bg-emerald-50 border border-emerald-200 text-emerald-800">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+            <span>{cancelSuccess}</span>
+          </div>
+          <button onClick={() => setCancelSuccess(null)} className="text-slate-400 hover:text-slate-600 p-1">
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
 
       {cancelError && (
-        <div className="p-4 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm flex items-center gap-2">
-          <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
-          <span>{cancelError}</span>
+        <div className="p-3.5 rounded-lg text-xs sm:text-sm flex items-center justify-between gap-2 transition-all bg-rose-50 border border-rose-200 text-rose-800">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+            <span>{cancelError}</span>
+          </div>
+          <button onClick={() => setCancelError(null)} className="text-slate-400 hover:text-slate-600 p-1">
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
 
@@ -137,7 +148,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                     {formatDate(nextBooking.date)}
                   </h3>
                   <div className="flex items-center gap-3 mt-3">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/10 text-white font-bold text-sm sm:text-base backdrop-blur-xs border border-white/10">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-white/10 text-white font-bold text-sm sm:text-base backdrop-blur-xs border border-white/10">
                       <Clock className="w-4 h-4 text-brand-300" />
                       <span>{nextBooking.start_time} - {nextBooking.end_time}</span>
                     </div>
@@ -217,11 +228,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           setCancellingId(null);
           setCancelReason('');
         }}
-        title={
-          <span className="flex items-center gap-2">
-            <Ban className="w-5 h-5 text-rose-500" /> Cancelar reserva
-          </span>
-        }
+        title="Cancelar reserva de clase"
         testId="cancel-booking-modal"
       >
         <p className="text-xs text-slate-500 leading-relaxed">
@@ -244,7 +251,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
         <div className="mt-6 flex items-center justify-end gap-2">
           <Button
             variant="ghost"
-            size="sm"
+            size="modal"
             onClick={() => {
               setCancellingId(null);
               setCancelReason('');
@@ -254,7 +261,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           </Button>
           <Button
             variant="danger"
-            size="sm"
+            size="modal"
             isLoading={isCancelling}
             onClick={() => cancellingId && handleCancel(cancellingId)}
             data-testid="confirm-cancel-btn"

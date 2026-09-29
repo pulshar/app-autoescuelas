@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   CalendarPlus,
   Info,
+  X,
 } from 'lucide-react';
 
 interface MyClassesProps {
@@ -94,16 +95,26 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
       </div>
 
       {successMessage && (
-        <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm flex items-center gap-2">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-          <span>{successMessage}</span>
+        <div className="p-3.5 rounded-lg text-xs sm:text-sm flex items-center justify-between gap-2 transition-all bg-emerald-50 border border-emerald-200 text-emerald-800">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+            <span>{successMessage}</span>
+          </div>
+          <button onClick={() => setSuccessMessage(null)} className="text-slate-400 hover:text-slate-600 p-1">
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
 
       {errorMessage && (
-        <div className="p-4 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm flex items-center gap-2">
-          <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
-          <span>{errorMessage}</span>
+        <div className="p-3.5 rounded-lg text-xs sm:text-sm flex items-center justify-between gap-2 transition-all bg-rose-50 border border-rose-200 text-rose-800">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+            <span>{errorMessage}</span>
+          </div>
+          <button onClick={() => setErrorMessage(null)} className="text-slate-400 hover:text-slate-600 p-1">
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
 
@@ -112,9 +123,8 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
         <button
           onClick={() => setActiveTab('upcoming')}
           data-testid="my-classes-upcoming-tab"
-          className={`pb-3 text-sm font-bold transition-all relative ${
-            activeTab === 'upcoming' ? 'text-brand-600' : 'text-slate-500 hover:text-slate-800'
-          }`}
+          className={`pb-3 text-sm font-bold transition-all relative ${activeTab === 'upcoming' ? 'text-brand-600' : 'text-slate-500 hover:text-slate-800'
+            }`}
         >
           Próximas clases ({upcomingBookings.length})
           {activeTab === 'upcoming' && (
@@ -125,9 +135,8 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
         <button
           onClick={() => setActiveTab('history')}
           data-testid="my-classes-history-tab"
-          className={`pb-3 text-sm font-bold transition-all relative ${
-            activeTab === 'history' ? 'text-brand-600' : 'text-slate-500 hover:text-slate-800'
-          }`}
+          className={`pb-3 text-sm font-bold transition-all relative ${activeTab === 'history' ? 'text-brand-600' : 'text-slate-500 hover:text-slate-800'
+            }`}
         >
           Histórico ({historyBookings.length})
           {activeTab === 'history' && (
@@ -281,7 +290,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
             <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
               <Button
                 variant="ghost"
-                size="sm"
+                size="modal"
                 onClick={() => {
                   setCancellingBooking(null);
                   setCancelReason('');
@@ -291,7 +300,7 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
               </Button>
               <Button
                 variant="danger"
-                size="sm"
+                size="modal"
                 isLoading={cancelLoading}
                 onClick={handleExecuteCancel}
                 data-testid="myclasses-confirm-cancel-btn"

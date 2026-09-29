@@ -288,7 +288,7 @@ export async function createBookingAtomic(params: CreateBookingParams) {
     }
 
     // 2. Verify teacher exists and is active
-    const teacher = (await db.prepare('SELECT id, name, last_name, is_active FROM teachers WHERE id = ?').get(teacherId)) as any;
+    const teacher = (await db.prepare('SELECT id, name, last_name, email, phone, is_active FROM teachers WHERE id = ?').get(teacherId)) as any;
     if (!teacher) {
       throw new Error('El profesor especificado no existe.');
     }
@@ -437,8 +437,12 @@ export async function createBookingAtomic(params: CreateBookingParams) {
       id: bookingId,
       student_id: studentId,
       student_name: student.name,
+      student_email: student.email,
+      student_phone: student.phone,
       teacher_id: teacherId,
       teacher_name: `${teacher.name} ${teacher.last_name}`,
+      teacher_email: teacher.email,
+      teacher_phone: teacher.phone,
       date,
       start_time: startTime,
       end_time: endTime,
