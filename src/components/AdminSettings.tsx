@@ -29,6 +29,7 @@ import {
   ShieldCheck,
   AlertTriangle,
 } from 'lucide-react';
+import { Button } from './common/Button.tsx';
 
 const DEFAULT_TITLE_TEMPLATE = 'Recordatorio: Clase práctica - {fecha} a las {hora}';
 const DEFAULT_MESSAGE_TEMPLATE =
@@ -372,15 +373,14 @@ export default function AdminSettings() {
 
           {/* Master quick save */}
           <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
+            <Button
               onClick={() => handleSave()}
               disabled={saving || loading}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300 text-white font-semibold text-xs sm:text-sm transition-all"
+              leftIcon={<Save className="w-4 h-4" />}
+              className="shrink-0"
             >
-              <Save className="w-4 h-4" />
               <span>{saving ? 'Guardando...' : 'Guardar cambios'}</span>
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -389,9 +389,9 @@ export default function AdminSettings() {
           <button
             type="button"
             onClick={() => setActiveSubTab('reminders')}
-            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all ${activeSubTab === 'reminders'
-              ? 'bg-brand-600 text-white  shadow-brand-200'
-              : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${activeSubTab === 'reminders'
+              ? 'bg-brand-600 text-white shadow-brand-200'
+              : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200'
               }`}
           >
             <Bell className="w-4 h-4" />
@@ -399,7 +399,7 @@ export default function AdminSettings() {
             {reminderEnabled ? (
               <span
                 className={`w-2 h-2 rounded-full ${activeSubTab === 'reminders' ? 'bg-emerald-300' : 'bg-emerald-500'
-                  } animate-pulse`}
+                  }`}
               />
             ) : (
               <span className="w-2 h-2 rounded-full bg-slate-400" />
@@ -409,9 +409,9 @@ export default function AdminSettings() {
           <button
             type="button"
             onClick={() => setActiveSubTab('general')}
-            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all ${activeSubTab === 'general'
-              ? 'bg-brand-600 text-white  shadow-brand-200'
-              : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${activeSubTab === 'general'
+              ? 'bg-brand-600 text-white shadow-brand-200'
+              : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200'
               }`}
           >
             <Clock className="w-4 h-4" />
@@ -1295,15 +1295,14 @@ export default function AdminSettings() {
         <span className="text-xs text-slate-400">
           Los cambios surtirán efecto de inmediato en todas las reservas futuras y recordatorios.
         </span>
-        <button
-          type="button"
+        <Button
           onClick={() => handleSave()}
           disabled={saving || loading}
-          className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300 text-white font-semibold text-xs sm:text-sm transition-all"
+          leftIcon={<Save className="w-4 h-4" />}
+          className="shrink-0"
         >
-          <Save className="w-4 h-4" />
           <span>{saving ? 'Guardando configuración...' : 'Guardar cambios'}</span>
-        </button>
+        </Button>
       </div>
     </div>
   );

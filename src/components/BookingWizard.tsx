@@ -14,6 +14,7 @@ import {
   ArrowRight,
   ShieldCheck,
 } from 'lucide-react';
+import { Button } from './common/Button.tsx';
 
 interface BookingWizardProps {
   onSuccess: () => void;
@@ -544,29 +545,27 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
             </div>
 
             <div className="flex items-center justify-end gap-3 pt-2">
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="modal"
                 onClick={() => setStep(3)}
-                className="px-4 py-3 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
               >
                 Modificar horario
-              </button>
-
-              <button
-                type="button"
+              </Button>
+              <Button
+                size="modal"
                 disabled={bookingLoading}
                 onClick={handleConfirmBooking}
-                className="px-5 py-3 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300 text-white font-semibold text-xs sm:text-sm transition-all flex items-center gap-2"
               >
                 {bookingLoading ? (
                   <span>Confirmando reserva...</span>
                 ) : (
                   <>
-                    <CheckCircle2 className="w-5 h-5" />
+                    <CheckCircle2 className="w-4 h-4" />
                     <span>Confirmar reserva</span>
                   </>
                 )}
-              </button>
+              </Button>
             </div>
           </div>
         )}

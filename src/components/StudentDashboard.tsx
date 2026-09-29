@@ -86,7 +86,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
         <Button
           onClick={() => onNavigate('book')}
           data-testid="student-dashboard-book-btn"
-          leftIcon={<CalendarPlus className="w-5 h-5" />}
+          leftIcon={<CalendarPlus className="w-4 h-4" />}
           className="shrink-0"
         >
           Reservar nueva clase
@@ -196,13 +196,15 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
               <p className="text-brand-200 text-sm mb-4">
                 No tienes ninguna clase programada próximamente.
               </p>
-              <button
+              <Button
                 onClick={() => onNavigate('book')}
                 data-testid="student-dashboard-empty-book-btn"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white text-brand-900 font-semibold text-xs sm:text-sm hover:bg-brand-50 shadow-md transition-colors"
+                leftIcon={<CalendarPlus className="w-4 h-4" />}
+                className="shrink-0"
+                variant='secondary'
               >
-                <CalendarPlus className="w-4 h-4" /> Reservar ahora mi siguiente clase
-              </button>
+                Reservar ahora mi siguiente clase
+              </Button>
             </div>
           )}
         </div>

@@ -15,6 +15,7 @@ import {
   KeyRound,
   Settings,
 } from 'lucide-react';
+import { Button } from './common/Button.tsx';
 
 interface NavbarProps {
   currentTab: string;
@@ -431,12 +432,14 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
               </>
             ) : (
               <div className="flex items-center gap-2">
-                <button
+                <Button
                   onClick={onOpenAuth}
-                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-brand-600 hover:bg-brand-700 text-white  transition-colors"
+                  leftIcon={<LogIn className="w-4 h-4" />}
+                  className="shrink-0"
                 >
-                  <LogIn className="w-4 h-4" /> Iniciar sesión
-                </button>
+                  Iniciar sesión
+                </Button>
+
               </div>
             )}
           </div>

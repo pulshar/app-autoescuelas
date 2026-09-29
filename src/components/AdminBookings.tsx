@@ -20,6 +20,7 @@ import {
   UserX,
   ShieldCheck,
 } from 'lucide-react';
+import { Button } from './common/Button.tsx';
 
 interface AdminBookingsProps {
   onOpenManualModal: () => void;
@@ -288,13 +289,13 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
             Administra, modifica el estado o cancela reservas de clases prácticas.
           </p>
         </div>
-
-        <button
+        <Button
           onClick={onOpenManualModal}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-semibold  transition-colors shrink-0"
+          leftIcon={<CalendarPlus className="w-4 h-4" />}
+          className="shrink-0"
         >
-          <CalendarPlus className="w-4 h-4" /> Nueva reserva
-        </button>
+          Nueva reserva
+        </Button>
       </div>
 
       {actionMessage && (
@@ -688,27 +689,25 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-hidden"
                 />
               </div>
-              <div className="mt-6 flex items-center justify-end gap-2">
-                <button
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <Button
+                  variant="ghost"
+                  size="modal"
                   onClick={() => setQuickActionModal(null)}
-                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Volver
-                </button>
-                <button
+                </Button>
+                <Button
+                  size="modal"
                   disabled={quickActionLoading}
                   onClick={handleExecuteQuickAction}
-                  className={`px-4 py-2.5 rounded-lg text-xs font-semibold text-white transition-colors ${quickActionModal.type === 'complete'
-                    ? 'bg-brand-600 hover:bg-brand-700'
-                    : 'bg-rose-600 hover:bg-rose-700'
-                    }`}
                 >
                   {quickActionLoading
                     ? 'Guardando...'
                     : quickActionModal.type === 'complete'
                       ? 'Confirmar como completada'
                       : 'Confirmar ausencia'}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -776,20 +775,21 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
                   className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs"
                 />
               </div>
-              <div className="mt-6 flex items-center justify-end gap-2">
-                <button
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <Button
+                  variant="ghost"
+                  size="modal"
                   onClick={() => setSelectedBooking(null)}
-                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
-                  Cancelar
-                </button>
-                <button
+                  Volver
+                </Button>
+                <Button
+                  size="modal"
                   disabled={statusLoading}
                   onClick={handleUpdateStatus}
-                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 shadow-xs"
                 >
                   {statusLoading ? 'Guardando...' : 'Guardar estado'}
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -858,23 +858,23 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
               </div>
 
               {/* Actions */}
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button
-                  type="button"
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <Button
+                  variant="ghost"
+                  size="modal"
                   onClick={handleCloseCancel}
                   disabled={cancelLoading}
-                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Volver
-                </button>
-                <button
-                  type="button"
+                </Button>
+                <Button
+                  size="modal"
+                  variant="danger"
                   onClick={handleConfirmCancel}
                   disabled={cancelLoading}
-                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300  transition-colors"
                 >
                   {cancelLoading ? 'Cancelando reserva...' : 'Confirmar cancelación'}
-                </button>
+                </Button>
               </div>
             </div>
           </div>

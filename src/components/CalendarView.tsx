@@ -13,6 +13,7 @@ import {
   Ban,
   CalendarPlus,
 } from 'lucide-react';
+import { Button } from './common/Button.tsx';
 
 interface CalendarViewProps {
   onNavigateToBook?: () => void;
@@ -147,14 +148,14 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
           )}
 
           {!isAdmin && onNavigateToBook && (
-
-            <button
+            <Button
               onClick={onNavigateToBook}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-semibold  transition-colors shrink-0"
+              data-testid="my-classes-book-btn"
+              leftIcon={<CalendarPlus className="w-4 h-4" />}
+              className="shrink-0"
             >
-              <CalendarPlus className="w-4 h-4" /> Reservar clase
-            </button>
-
+              Reservar clase
+            </Button>
           )}
         </div>
       </div>

@@ -15,6 +15,7 @@ import {
   AlertTriangle,
   ShieldCheck,
 } from 'lucide-react';
+import { Button } from './common/Button.tsx';
 
 interface AdminBlocksProps {
   initialOpenCreate?: boolean;
@@ -157,13 +158,13 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
             Gestiona días festivos, vacaciones, bajas médicas o exámenes prácticos donde no se impartirán clases.
           </p>
         </div>
-
-        <button
+        <Button
           onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-semibold transition-colors shrink-0"
+          leftIcon={<PlusCircle className="w-4 h-4" />}
+          className="shrink-0"
         >
-          <PlusCircle className="w-4 h-4" /> Nuevo bloqueo
-        </button>
+          Nuevo bloqueo
+        </Button>
       </div>
 
       {feedback && (
@@ -199,12 +200,13 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
           <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
             Puedes bloquear días festivos o franjas horarias específicas para evitar que los alumnos reserven en esos momentos.
           </p>
-          <button
+          <Button
             onClick={handleOpenCreate}
-            className="mt-4 px-4 py-2.5 rounded-lg bg-brand-600 text-white text-xs font-semibold"
+            size="modal"
+            className="shrink-0 mt-4"
           >
             Añadir bloqueo
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -346,22 +348,20 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                   className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs"
                 />
               </div>
-
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button
-                  type="button"
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <Button
+                  variant="ghost"
+                  size="modal"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
-                </button>
-                <button
-                  type="submit"
+                </Button>
+                <Button
+                  size="modal"
                   disabled={saving}
-                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300"
                 >
                   {saving ? 'Guardando...' : 'Crear bloqueo'}
-                </button>
+                </Button>
               </div>
             </form>
           </div>
@@ -417,23 +417,23 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
               </div>
 
               {/* Actions */}
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button
-                  type="button"
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <Button
+                  variant="ghost"
+                  size="modal"
                   onClick={handleCloseDelete}
                   disabled={deleteSubmitting}
-                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancelar
-                </button>
-                <button
-                  type="button"
+                </Button>
+                <Button
+                  size="modal"
+                  variant="danger"
                   onClick={handleConfirmDelete}
                   disabled={deleteSubmitting}
-                  className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300  transition-colors"
                 >
                   {deleteSubmitting ? 'Desbloqueando...' : 'Desbloquear horario'}
-                </button>
+                </Button>
               </div>
             </div>
           </div>

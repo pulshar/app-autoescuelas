@@ -11,6 +11,7 @@ import {
   AlertCircle,
   CheckCircle2,
 } from 'lucide-react';
+import { Button } from './common/Button.tsx';
 
 interface ManualBookingModalProps {
   isOpen: boolean;
@@ -120,7 +121,7 @@ export default function ManualBookingModal({ isOpen, onClose, onSuccess }: Manua
     >
       <div className="bg-white rounded-xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col cursor-default">
         {/* Header */}
-        <div className="px-6 py-4 bg-gradient-to-r from-slate-50 to-brand-50/40 border-b border-slate-200 flex items-center justify-between">
+        <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center">
               <CalendarPlus className="w-4 h-4" />
@@ -247,22 +248,21 @@ export default function ManualBookingModal({ isOpen, onClose, onSuccess }: Manua
               className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs"
             />
           </div>
-
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-            <button
-              type="button"
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <Button
+              variant="ghost"
+              size="modal"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
             >
               Cancelar
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
+              size="modal"
               disabled={submitting || !selectedSlot}
-              className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300  transition-colors"
             >
               {submitting ? 'Creando...' : 'Crear reserva'}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

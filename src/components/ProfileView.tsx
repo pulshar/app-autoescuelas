@@ -10,7 +10,9 @@ import {
   CheckCircle2,
   AlertCircle,
   KeyRound,
+  X,
 } from 'lucide-react';
+import { Button } from './common/Button.tsx';
 
 export default function ProfileView() {
   const { user, role, updateProfile } = useAuth();
@@ -90,17 +92,22 @@ export default function ProfileView() {
 
       {feedback && (
         <div
-          className={`p-4 rounded-lg text-xs sm:text-sm flex items-center gap-2 ${feedback.type === 'success'
+          className={`p-3.5 rounded-lg text-xs sm:text-sm flex items-center justify-between gap-2 transition-all ${feedback.type === 'success'
             ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
             : 'bg-rose-50 border border-rose-200 text-rose-800'
             }`}
         >
-          {feedback.type === 'success' ? (
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-          ) : (
-            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
-          )}
-          <span>{feedback.message}</span>
+          <div className="flex items-center gap-2">
+            {feedback.type === 'success' ? (
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            ) : (
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            )}
+            <span>{feedback.message}</span>
+          </div>
+          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-slate-600 p-1">
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
 
@@ -178,14 +185,14 @@ export default function ProfileView() {
           </div>
 
           <div className="pt-2 flex justify-end">
-            <button
+            <Button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs sm:text-sm transition-colors"
+              leftIcon={<Save className="w-4 h-4" />}
+              className="shrink-0"
             >
-              <Save className="w-4 h-4" />
               <span>{saving ? 'Guardando...' : 'Guardar cambios'}</span>
-            </button>
+            </Button>
           </div>
         </form>
       </div>
@@ -203,12 +210,14 @@ export default function ProfileView() {
           </div>
 
           {!showPasswordChange && (
-            <button
+            <Button
               onClick={() => setShowPasswordChange(true)}
-              className="px-3.5 py-2 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+              className="shrink-0"
+              variant="outline"
+              size='sm'
             >
               Cambiar contraseña
-            </button>
+            </Button>
           )}
         </div>
 
@@ -235,20 +244,20 @@ export default function ProfileView() {
               />
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-1">
-              <button
-                type="button"
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <Button
+                variant="ghost"
+                size="modal"
                 onClick={() => setShowPasswordChange(false)}
-                className="px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
-                className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 shadow-xs"
+                size="modal"
               >
                 Actualizar contraseña
-              </button>
+              </Button>
             </div>
           </form>
         )}

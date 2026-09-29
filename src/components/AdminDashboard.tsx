@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   ArrowUpRight,
 } from 'lucide-react';
+import { Button } from './common/Button.tsx';
 
 interface AdminDashboardProps {
   onNavigate: (tab: string) => void;
@@ -74,25 +75,29 @@ export default function AdminDashboard({
 
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center gap-2.5">
-          <button
+          <Button
+            variant="secondary"
             onClick={onOpenCreateBlock}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs sm:text-sm transition-colors"
+            leftIcon={<Ban className="w-4 h-4 text-rose-600" />}
+            className="shrink-0"
           >
-            <Ban className="w-4 h-4 text-rose-600" /> Bloquear horario
-          </button>
-          <button
+            Bloquear horario
+          </Button>
+          <Button
+            variant="secondary"
             onClick={onOpenCreateTeacher}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs sm:text-sm transition-colors"
+            leftIcon={<PlusCircle className="w-4 h-4" />}
+            className="shrink-0"
           >
-            <PlusCircle className="w-4 h-4" /> Nuevo profesor
-          </button>
-          <button
+            Nuevo profesor
+          </Button>
+          <Button
             onClick={onOpenManualBooking}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs sm:text-sm  transition-colors"
+            leftIcon={<CalendarPlus className="w-4 h-4" />}
+            className="shrink-0"
           >
-            <CalendarPlus className="w-4 h-4" /> Nueva reserva
-          </button>
-
+            Nueva reserva
+          </Button>
         </div>
       </div>
 
