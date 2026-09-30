@@ -222,22 +222,22 @@ export async function sendClassReminderEmail({
   <title>${subject}</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 16px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 8px;">
     <tr>
       <td align="center">
         <!-- Main Card -->
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 560px; background-color: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
           
           <!-- Header Banner -->
           <tr>
-            <td style="background-color: ${brandColor}; padding: 28px 32px; text-align: left;">
+            <td style="background-color: ${brandColor}; padding: 32px 32px; text-align: left;">
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td>
-                    <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 8px;">
+                    <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
                       ${brandName}
                     </span>
-                    <h1 style="margin: 0; color: #ffffff; font-size: 20px; font-weight: 800; line-height: 1.3;">
+                    <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; line-height: 1.3;">
                       Recordatorio de tu próxima clase práctica
                     </h1>
                   </td>
@@ -258,12 +258,12 @@ export async function sendClassReminderEmail({
               </p>
 
               <!-- Class Details Box -->
-              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f1f5f9; border-radius: 14px; padding: 20px; margin-bottom: 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; margin-bottom: 24px;">
                 <tr>
                   <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600; width: 38%;">
                     Fecha:
                   </td>
-                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 700;">
+                  <td style="padding: 6px 0; font-size: 14px; color: ${brandColor}; font-weight: 600;">
                     ${displayDate}
                   </td>
                 </tr>
@@ -271,7 +271,7 @@ export async function sendClassReminderEmail({
                   <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">
                      Hora de inicio:
                   </td>
-                  <td style="padding: 6px 0; font-size: 14px; color: ${brandColor}; font-weight: 800;">
+                  <td style="padding: 6px 0; font-size: 14px; color: ${brandColor}; font-weight: 600;">
                     ${time} (${durationMinutes} min)
                   </td>
                 </tr>
@@ -279,7 +279,7 @@ export async function sendClassReminderEmail({
                   <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">
                     Profesor:
                   </td>
-                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 700;">
+                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 600;">
                     ${teacherName}
                   </td>
                 </tr>
@@ -308,7 +308,7 @@ export async function sendClassReminderEmail({
               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
                 <tr>
                   <td align="center">
-                    <a href="${appUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 12px; box-shadow: 0 2px 6px rgba(218, 18, 73, 0.25);">
+                    <a href="${appUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px;">
                       Ver mis clases en la plataforma
                     </a>
                   </td>
@@ -318,16 +318,17 @@ export async function sendClassReminderEmail({
       : ''
     }
 
-              <div style="border-top: 1px solid #e2e8f0; padding-top: 16px; font-size: 12px; color: #94a3b8; line-height: 1.5;">
-                Si necesitas modificar o cancelar tu reserva, recuerda hacerlo con la antelación mínima permitida a través de la web o contactando con secretaría.
+              <div style="margin:0; border-top: 1px solid #e2e8f0; padding-top: 16px; font-size: 12px; color: #94a3b8; line-height: 1.5;">
+                Si necesitas modificar o cancelar tu reserva, recuerda hacerlo con la antelación mínima permitida a través de la web o contactando con la autoescuela.
               </div>
             </td>
           </tr>
 
           <!-- Footer -->
-          <tr>
-            <td style="background-color: #f8fafc; padding: 16px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8;">
-              Este es un aviso automático generado por ${brandName}. No respondas directamente a este correo.
+           <tr>
+            <td style="background-color: #f8fafc; padding: 20px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8; line-height: 1.5;">
+              Notificación generada automáticamente por ${brandName}.<br>
+              Por favor, no respondas a este correo.
             </td>
           </tr>
 
@@ -379,11 +380,11 @@ export async function sendStudentWelcomeEmail({
   <title>${subject}</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 16px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 8px;">
     <tr>
       <td align="center">
         <!-- Main Card -->
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
           
           <!-- Header Banner -->
           <tr>
@@ -394,7 +395,7 @@ export async function sendStudentWelcomeEmail({
                     <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
                       ${brandName}
                     </span>
-                    <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 800; line-height: 1.3;">
+                    <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; line-height: 1.3;">
                       ¡Bienvenido/a a la Autoescuela!
                     </h1>
                   </td>
@@ -406,7 +407,7 @@ export async function sendStudentWelcomeEmail({
           <!-- Body Content -->
           <tr>
             <td style="padding: 32px;">
-              <p style="margin: 0 0 16px 0; font-size: 16px; line-height: 1.6; color: #1e293b;">
+              <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; color: #1e293b;">
                 Hola <strong>${studentName}</strong>,
               </p>
               
@@ -415,10 +416,10 @@ export async function sendStudentWelcomeEmail({
               </p>
 
               <!-- Credentials Box -->
-              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; margin-bottom: 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; margin-bottom: 12px;">
                 <tr>
-                  <td style="padding-bottom: 12px; font-size: 12px; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em;" colspan="2">
-                    🔑 Tus datos de acceso inicial:
+                  <td style="padding-bottom: 12px; margin: 0 0 8px 0; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;" colspan="2">
+                   Tus datos de acceso inicial:
                   </td>
                 </tr>
                 <tr>
@@ -444,31 +445,31 @@ export async function sendStudentWelcomeEmail({
     }
               </table>
 
+              <!-- Security Advice Box -->
+              <div style="background-color: #fffbeb; border: 1px solid #fde896; border-radius: 10px; padding: 14px 16px;">
+                <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #92400e;">
+                 <strong>Importante:</strong> Te recomendamos cambiar tu contraseña temporal la primera vez que accedas al sistema. Podrás hacerlo en la sección <em>"Mi perfil"</em> del menú superior.
+                </p>
+              </div>
+
               <!-- CTA Button -->
-              <table width="100%" cellpadding="0" cellspacing="0" style="margin: 28px 0 24px 0;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin: 28px 0 32px 0;">
                 <tr>
                   <td align="center">
-                    <a href="${loginUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; padding: 14px 34px; border-radius: 14px; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);">
+                    <a href="${loginUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px;">
                       Acceder a la Plataforma
                     </a>
                   </td>
                 </tr>
               </table>
 
-              <!-- Security Advice Box -->
-              <div style="background-color: #fffbeb; border: 1px solid #fef3c7; border-left: 4px solid #f59e0b; border-radius: 10px; padding: 14px 16px; margin-bottom: 24px;">
-                <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #92400e;">
-                  <strong>Importante:</strong> Te recomendamos cambiar tu contraseña temporal la primera vez que accedas al sistema. Podrás hacerlo en unos segundos entrando en la sección <strong>"Mi perfil"</strong> del menú superior.
-                </p>
-              </div>
-
               <!-- Google Login Tip -->
-              <div style="background-color: #f1f5f9; border-radius: 10px; padding: 12px 16px; margin-bottom: 24px; font-size: 12px; color: #475569; line-height: 1.5;">
-                💡 <em>Consejo: Si tu correo electrónico (<strong style="color: #1e293b;">${to}</strong>) está asociado a una cuenta de Google, también puedes iniciar sesión cómodamente pulsando en el botón <strong>"Continuar con Google"</strong> sin necesidad de recordar contraseñas.</em>
+              <div style="background-color: #f1f5f9; border-radius: 10px; padding: 12px 16px; margin-bottom: 24px; font-size: 13px; color: #475569; line-height: 1.5;">
+                💡 <em>Si tu correo electrónico (<strong style="color: #1e293b;">${to}</strong>) está asociado a una cuenta de Google, también puedes iniciar sesión cómodamente pulsando en el botón <strong>"Continuar con Google"</strong> sin necesidad de recordar contraseñas.</em>
               </div>
 
-              <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #64748b;">
-                Si tienes cualquier duda con tus prácticas, puedes ponerte en contacto con secretaría o consultar directamente en la sede de la autoescuela.
+              <p style="margin:0; border-top: 1px solid #e2e8f0; padding-top: 16px; font-size: 12px; color: #94a3b8; line-height: 1.5;">
+                Si tienes cualquier duda con tus prácticas, contacta con tu autoescuela.
               </p>
             </td>
           </tr>
@@ -476,8 +477,8 @@ export async function sendStudentWelcomeEmail({
           <!-- Footer -->
           <tr>
             <td style="background-color: #f8fafc; padding: 20px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8; line-height: 1.5;">
-              Este es un correo automático generado por ${brandName} para la activación de tu cuenta de alumno.<br>
-              Por favor, no respondas directamente a este mensaje.
+              Notificación generada automáticamente por ${brandName} para la activación de tu cuenta de alumno.<br>
+              Por favor, no respondas a este correo.
             </td>
           </tr>
 
@@ -561,17 +562,17 @@ export async function sendBookingCreatedEmails(params: BookingEmailNotificationP
   <title>${studentSubject}</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 16px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 8px;">
     <tr>
       <td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
           <tr>
-            <td style="background-color: ${brandColor}; padding: 28px 32px; text-align: left;">
-              <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 8px;">
+            <td style="background-color: ${brandColor}; padding: 32px 32px; text-align: left;">
+              <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
                 ${brandName}
               </span>
-              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 800; line-height: 1.3;">
-                ¡Tu clase ha sido reservada con éxito!
+              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; line-height: 1.3;">
+                Tu clase ha sido reservada con éxito
               </h1>
             </td>
           </tr>
@@ -584,18 +585,18 @@ export async function sendBookingCreatedEmails(params: BookingEmailNotificationP
                 Tu reserva para tu próxima clase práctica de conducir ha quedado confirmada en el sistema.
               </p>
 
-              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f1f5f9; border-radius: 14px; padding: 20px; margin-bottom: 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; margin-bottom: 24px;">
                 <tr>
                   <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600; width: 38%;">Fecha:</td>
-                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 700;">${displayDate}</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: ${brandColor}; font-weight: 600;">${displayDate}</td>
                 </tr>
                 <tr>
                   <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Horario:</td>
-                  <td style="padding: 6px 0; font-size: 14px; color: ${brandColor}; font-weight: 800;">${startTime} - ${endTime} (${durationMinutes} min)</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: ${brandColor}; font-weight: 600;">${startTime} - ${endTime} (${durationMinutes} min)</td>
                 </tr>
                 <tr>
-                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Profesor asignado:</td>
-                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 700;">${teacherName}</td>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Profesor:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 600;">${teacherName}</td>
                 </tr>
                 ${notes ? `
                 <tr>
@@ -605,10 +606,10 @@ export async function sendBookingCreatedEmails(params: BookingEmailNotificationP
               </table>
 
               ${baseUrl ? `
-              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
                 <tr>
                   <td align="center">
-                    <a href="${baseUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 12px;">
+                    <a href="${baseUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px;">
                       Gestionar mis clases
                     </a>
                   </td>
@@ -622,7 +623,8 @@ export async function sendBookingCreatedEmails(params: BookingEmailNotificationP
           </tr>
           <tr>
             <td style="background-color: #f8fafc; padding: 16px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8;">
-              ${brandName} • Notificación automática de reserva.
+              Notificación generada automáticamente por ${brandName}.<br>
+              Por favor, no respondas a este correo.
             </td>
           </tr>
         </table>
@@ -655,16 +657,16 @@ export async function sendBookingCreatedEmails(params: BookingEmailNotificationP
   <title>${teacherSubject}</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 16px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 8px;">
     <tr>
       <td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
           <tr>
-            <td style="background-color: #0f172a; padding: 28px 32px; text-align: left;">
-              <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.15); color: #38bdf8; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 8px;">
-                ${brandName} • Notificación de Profesor
+            <td style="background-color: ${brandColor}; padding: 32px 32px; text-align: left;">
+              <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
+                ${brandName}
               </span>
-              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 800; line-height: 1.3;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; line-height: 1.3;">
                 Nueva clase asignada en tu agenda
               </h1>
             </td>
@@ -675,27 +677,27 @@ export async function sendBookingCreatedEmails(params: BookingEmailNotificationP
                 Hola <strong>${teacherName}</strong>,
               </p>
               <p style="margin: 0 0 24px 0; font-size: 14px; line-height: 1.6; color: #475569;">
-                Un alumno ha reservado un turno en tu horario disponible. A continuación tienes los datos de la práctica:
+                Un alumno ha reservado un turno en tu horario disponible. A continuación te mostramos los datos de la práctica:
               </p>
 
-              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; margin-bottom: 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; margin-bottom: 24px;">
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Fecha:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: ${brandColor}; font-weight: 600;">${displayDate}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Horario:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: ${brandColor}; font-weight: 600;">${startTime} - ${endTime} (${durationMinutes} min)</td>
+                </tr>
                 <tr>
                   <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600; width: 38%;">Alumno:</td>
-                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 700;">${studentName}</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 600;">${studentName}</td>
                 </tr>
                 ${studentPhone ? `
                 <tr>
                   <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Teléfono alumno:</td>
                   <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 600;">${studentPhone}</td>
                 </tr>` : ''}
-                <tr>
-                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Fecha:</td>
-                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 700;">${displayDate}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Horario:</td>
-                  <td style="padding: 6px 0; font-size: 14px; color: #0369a1; font-weight: 800;">${startTime} - ${endTime} (${durationMinutes} min)</td>
-                </tr>
                 ${notes ? `
                 <tr>
                   <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Observaciones:</td>
@@ -704,11 +706,11 @@ export async function sendBookingCreatedEmails(params: BookingEmailNotificationP
               </table>
 
               ${baseUrl ? `
-              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;">
+               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
                 <tr>
                   <td align="center">
-                    <a href="${baseUrl}" target="_blank" style="display: inline-block; background-color: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 12px;">
-                      Abrir calendario de clases
+                    <a href="${baseUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px;">
+                      Ver mis clases en la plataforma
                     </a>
                   </td>
                 </tr>
@@ -717,7 +719,8 @@ export async function sendBookingCreatedEmails(params: BookingEmailNotificationP
           </tr>
           <tr>
             <td style="background-color: #f8fafc; padding: 16px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8;">
-              ${brandName} • Notificación interna para profesores.
+              Notificación generada automáticamente por ${brandName}.<br>
+              Por favor, no respondas a este correo.
             </td>
           </tr>
         </table>
@@ -763,6 +766,7 @@ export async function sendBookingCancelledEmails(params: BookingEmailNotificatio
   } = params;
 
   const brandName = schoolName || 'AutoescuelaPro';
+  const brandColor = '#19887f';
   const match = date.match(/^(\d{4})-(\d{2})-(\d{2})/);
   const displayDate = match ? `${match[3]}/${match[2]}/${match[1]}` : date;
   const baseUrl = (appUrl || process.env.APP_URL || '').replace(/\/$/, '');
@@ -782,16 +786,16 @@ export async function sendBookingCancelledEmails(params: BookingEmailNotificatio
   <title>${studentSubject}</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 16px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 8px;">
     <tr>
       <td align="center">
         <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
           <tr>
-            <td style="background-color: #e11d48; padding: 28px 32px; text-align: left;">
-              <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 8px;">
+            <td style="background-color: #475569; padding: 32px 32px; text-align: left;">
+              <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
                 ${brandName}
               </span>
-              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 800; line-height: 1.3;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; line-height: 1.3;">
                 Aviso de cancelación de clase
               </h1>
             </td>
@@ -804,38 +808,37 @@ export async function sendBookingCancelledEmails(params: BookingEmailNotificatio
               <p style="margin: 0 0 24px 0; font-size: 14px; line-height: 1.6; color: #475569;">
                 Te confirmamos que la clase práctica programada ha sido <strong>cancelada</strong> y el horario ha quedado liberado.
               </p>
-
-              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fff1f2; border: 1px solid #fecdd3; border-radius: 14px; padding: 20px; margin-bottom: 24px;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; margin-bottom: 24px;">
                 <tr>
-                  <td style="padding: 6px 0; font-size: 13px; color: #9f1239; font-weight: 600; width: 38%;">Fecha:</td>
-                  <td style="padding: 6px 0; font-size: 14px; color: #881337; font-weight: 700;">${displayDate}</td>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Fecha:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #e11d48; font-weight: 600;">${displayDate}</td>
                 </tr>
                 <tr>
-                  <td style="padding: 6px 0; font-size: 13px; color: #9f1239; font-weight: 600;">Horario:</td>
-                  <td style="padding: 6px 0; font-size: 14px; color: #881337; font-weight: 700;">${startTime} - ${endTime}</td>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Horario:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #e11d48; font-weight: 600;">${startTime} - ${endTime}</td>
                 </tr>
                 <tr>
-                  <td style="padding: 6px 0; font-size: 13px; color: #9f1239; font-weight: 600;">Profesor:</td>
-                  <td style="padding: 6px 0; font-size: 14px; color: #881337; font-weight: 700;">${teacherName}</td>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600; width: 38%;">Profesor:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 600;">${teacherName}</td>
                 </tr>
                 ${cancelledBy ? `
                 <tr>
-                  <td style="padding: 6px 0; font-size: 13px; color: #9f1239; font-weight: 600;">Cancelada por:</td>
-                  <td style="padding: 6px 0; font-size: 13px; color: #881337;">${cancelledBy}</td>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Cancelada por:</td>
+                  <td style="padding: 6px 0; font-size: 13px; color: #0f172a;">${cancelledBy}</td>
                 </tr>` : ''}
                 ${cancelReason ? `
                 <tr>
-                  <td style="padding: 6px 0; font-size: 13px; color: #9f1239; font-weight: 600;">Motivo:</td>
-                  <td style="padding: 6px 0; font-size: 13px; color: #881337; font-style: italic;">${cancelReason}</td>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Motivo:</td>
+                  <td style="padding: 6px 0; font-size: 13px; color: #0f172a; font-style: italic;">${cancelReason}</td>
                 </tr>` : ''}
               </table>
-
+             
               ${baseUrl ? `
-              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
                 <tr>
                   <td align="center">
-                    <a href="${baseUrl}" target="_blank" style="display: inline-block; background-color: #19887f; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 12px;">
-                      Reservar otra fecha
+                    <a href="${baseUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px;">
+                       Reservar otra fecha
                     </a>
                   </td>
                 </tr>
@@ -877,16 +880,16 @@ export async function sendBookingCancelledEmails(params: BookingEmailNotificatio
   <title>${teacherSubject}</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 16px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 8px;">
     <tr>
       <td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
           <tr>
-            <td style="background-color: #475569; padding: 28px 32px; text-align: left;">
-              <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 8px;">
-                ${brandName} • Notificación de Profesor
+            <td style="background-color: #475569; padding: 32px 32px; text-align: left;">
+              <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
+                ${brandName}
               </span>
-              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 800; line-height: 1.3;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; line-height: 1.3;">
                 Clase cancelada en tu turno
               </h1>
             </td>
@@ -900,18 +903,18 @@ export async function sendBookingCancelledEmails(params: BookingEmailNotificatio
                 Te informamos que la siguiente clase ha sido <strong>cancelada</strong> y dicho hueco vuelve a estar disponible para reservas:
               </p>
 
-              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; margin-bottom: 24px;">
-                <tr>
-                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600; width: 38%;">Alumno:</td>
-                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 700;">${studentName}</td>
-                </tr>
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; margin-bottom: 24px;">
                 <tr>
                   <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Fecha:</td>
-                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 700;">${displayDate}</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #e11d48; font-weight: 600;">${displayDate}</td>
                 </tr>
                 <tr>
                   <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">Horario:</td>
-                  <td style="padding: 6px 0; font-size: 14px; color: #e11d48; font-weight: 700;">${startTime} - ${endTime}</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #e11d48; font-weight: 600;">${startTime} - ${endTime}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600; width: 38%;">Alumno:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: #0f172a; font-weight: 600;">${studentName}</td>
                 </tr>
                 ${cancelledBy ? `
                 <tr>
@@ -926,10 +929,10 @@ export async function sendBookingCancelledEmails(params: BookingEmailNotificatio
               </table>
 
               ${baseUrl ? `
-              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;">
+               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
                 <tr>
                   <td align="center">
-                    <a href="${baseUrl}" target="_blank" style="display: inline-block; background-color: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 12px;">
+                    <a href="${baseUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px;">
                       Ver agenda actualizada
                     </a>
                   </td>
@@ -939,7 +942,8 @@ export async function sendBookingCancelledEmails(params: BookingEmailNotificatio
           </tr>
           <tr>
             <td style="background-color: #f8fafc; padding: 16px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8;">
-              ${brandName} • Notificación interna para profesores.
+              Notificación generada automáticamente por ${brandName}.<br>
+              Por favor, no respondas a este correo.
             </td>
           </tr>
         </table>
@@ -961,4 +965,145 @@ export async function sendBookingCancelledEmails(params: BookingEmailNotificatio
   }
 
   return { studentResult, teacherResult };
+}
+
+/**
+ * Generates and sends a secure password recovery email with a reset link
+ */
+export async function sendPasswordResetEmail({
+  to,
+  userName,
+  resetToken,
+  appUrl,
+  schoolName,
+}: {
+  to: string;
+  userName?: string;
+  resetToken: string;
+  appUrl?: string;
+  schoolName?: string;
+}): Promise<EmailResult> {
+  const brandName = schoolName || 'AutoescuelaPro';
+  const brandColor = '#3068b5';
+  const baseUrl = (appUrl || process.env.APP_URL || '').replace(/\/$/, '');
+  const resetUrl = baseUrl ? `${baseUrl}?resetToken=${encodeURIComponent(resetToken)}&email=${encodeURIComponent(to)}` : '#';
+  const subject = `🔑 Restablecer contraseña - ${brandName}`;
+  const displayName = userName || 'estimado/a usuario/a';
+
+  const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 8px;">
+    <tr>
+      <td align="center">
+        <!-- Main Card -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
+          
+          <!-- Header Banner -->
+          <tr>
+            <td style="background-color: ${brandColor}; padding: 32px 32px; text-align: left;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
+                      ${brandName}
+                    </span>
+                    <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; line-height: 1.3;">
+                      Recuperación de contraseña
+                    </h1>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Body Content -->
+          <tr>
+            <td style="padding: 32px;">
+              <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; color: #1e293b;">
+                Hola <strong>${displayName}</strong>,
+              </p>
+              
+              <p style="margin: 0 0 20px 0; font-size: 14px; line-height: 1.6; color: #475569;">
+                Hemos recibido una solicitud para restablecer la contraseña asociada a tu cuenta en <strong>${brandName}</strong> (<span style="color: #0f172a; font-weight: 600;">${to}</span>).
+              </p>
+
+              <p style="margin: 0 0 24px 0; font-size: 14px; line-height: 1.6; color: #475569;">
+                Para elegir una nueva contraseña y recuperar tu acceso, haz clic en el siguiente botón:
+              </p>
+
+              <!-- CTA Button -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin: 20px 0 32px 0;">
+                <tr>
+                  <td align="center">
+                    <a href="${resetUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px; box-shadow: 0 4px 14px rgba(${brandColor}, 0.35);">
+                      Restablecer mi contraseña
+                    </a>
+                    <div style="margin-top: 10px; font-size: 12px; color: #64748b;">
+                      Este enlace es de un solo uso y caduca en <strong>1 hora</strong>.
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Manual Code / Link Info Box -->
+              <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+                <p style="margin: 0 0 8px 0; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">
+                  ¿Problemas con el botón?
+                </p>
+                <p style="margin: 0 0 8px 0; font-size: 12px; color: #475569; line-height: 1.5;">
+                  Copia y pega la siguiente dirección en tu navegador:
+                </p>
+                <p style="margin: 0 0 12px 0; font-size: 12px; word-break: break-all; color: ${brandColor};">
+                  <a href="${resetUrl}" target="_blank" style="color: ${brandColor}; text-decoration: underline;">${resetUrl}</a>
+                </p>
+                <div style="border-top: 1px dashed #cbd5e1; padding-top: 10px; margin-top: 10px;">
+                  <span style="font-size: 11px; color: #64748b; display: block; margin-bottom: 4px;">Código de seguridad:</span>
+                  <code style="background-color: #e2e8f0; padding: 4px 8px; border-radius: 6px; font-family: monospace; font-size: 13px; font-weight: 700; color: #0f172a; display: inline-block;">${resetToken}</code>
+                </div>
+              </div>
+
+              <!-- Security Advice Box -->
+              <div style="background-color: #fffbeb; border: 1px solid #fde896; border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;">
+                <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #92400e;">
+                <strong>¿No has sido tú?</strong> Si no solicitaste este cambio, puedes ignorar este mensaje. Tu cuenta permanecerá protegida y tu contraseña actual no cambiará.
+                </p>
+              </div>
+
+              <p style="margin:0; border-top: 1px solid #e2e8f0; padding-top: 16px; font-size: 12px; color: #94a3b8; line-height: 1.5;">
+                Por motivos de seguridad, nunca compartas este correo ni tu código de recuperación.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f8fafc; padding: 20px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8; line-height: 1.5;">
+              Notificación generada automáticamente por ${brandName} para la recuperación de contraseña.<br>
+              Por favor, no respondas a este correo.
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `;
+
+  const text = `${subject}\n\nHola ${displayName},\n\nHemos recibido una solicitud para restablecer la contraseña asociada a tu cuenta (${to}) en ${brandName}.\n\nPara definir una nueva contraseña, abre el siguiente enlace en tu navegador (válido durante 1 hora):\n${resetUrl}\n\nCódigo de recuperación manual: ${resetToken}\n\nSi no has sido tú quien solicitó este cambio, puedes ignorar este correo tranquilamente; tu contraseña no sufrirá ningún cambio.\n\nAtentamente,\nEquipo de ${brandName}\n`;
+
+  return sendEmail({
+    to,
+    subject,
+    html,
+    text,
+  });
 }

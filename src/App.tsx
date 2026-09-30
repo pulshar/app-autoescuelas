@@ -34,8 +34,9 @@ function AppContent() {
   const { user, role, login } = useAuth();
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState<'login' | 'register'>('login');
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'forgot' | 'reset'>('login');
   const [initialAuthEmail, setInitialAuthEmail] = useState('');
+  const [initialResetToken, setInitialResetToken] = useState('');
 
   // Admin Modals
   const [manualBookingOpen, setManualBookingOpen] = useState(false);
@@ -43,12 +44,20 @@ function AppContent() {
   const [initialOpenCreateBlock, setInitialOpenCreateBlock] = useState(false);
 
 
-  // Check for ?login=true & ?email= in URL from welcome email link
+  // Check for URL parameters (?login=true, ?email=..., ?resetToken=...)
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('login') === 'true' || params.get('login') === '1') {
-        const emailParam = params.get('email') || '';
+      const resetTokenParam = params.get('resetToken') || params.get('token');
+      const emailParam = params.get('email') || '';
+
+      if (resetTokenParam) {
+        if (emailParam) setInitialAuthEmail(emailParam);
+        setInitialResetToken(resetTokenParam);
+        setAuthModalMode('reset');
+        setAuthModalOpen(true);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else if (params.get('login') === 'true' || params.get('login') === '1') {
         if (emailParam) {
           setInitialAuthEmail(emailParam);
         }
@@ -308,6 +317,7 @@ function AppContent() {
         onClose={() => setAuthModalOpen(false)}
         initialMode={authModalMode}
         initialEmail={initialAuthEmail}
+        initialResetToken={initialResetToken}
       />
 
       {/* Manual Booking Modal for Admin */}

@@ -10,13 +10,16 @@ import {
   UserCheck,
   AlertCircle,
   CheckCircle2,
+  Mail,
 } from 'lucide-react';
+import { Button } from './common/Button.tsx';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialMode?: 'login' | 'register';
-  initialEmail: string;
+  initialMode?: 'login' | 'register' | 'forgot' | 'reset';
+  initialEmail?: string;
+  initialResetToken?: string;
 }
 
 export default function AuthModal({
@@ -24,6 +27,7 @@ export default function AuthModal({
   onClose,
   initialMode = 'login',
   initialEmail = '',
+  initialResetToken = '',
 }: AuthModalProps) {
   const { login, register, loginWithGoogle } = useAuth();
   const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'reset'>(initialMode);
@@ -35,8 +39,11 @@ export default function AuthModal({
   const [phone, setPhone] = useState('');
 
   // Password Recovery State
-  const [resetToken, setResetToken] = useState('');
+  const [resetToken, setResetToken] = useState(initialResetToken);
   const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [forgotEmailSent, setForgotEmailSent] = useState(false);
+  const [sentToEmail, setSentToEmail] = useState('');
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,8 +53,12 @@ export default function AuthModal({
     if (isOpen) {
       if (initialMode) setMode(initialMode);
       if (initialEmail) setEmail(initialEmail);
+      if (initialResetToken) setResetToken(initialResetToken);
+      setError(null);
+      setSuccessMessage(null);
+      setForgotEmailSent(false);
     }
-  }, [isOpen, initialMode, initialEmail]);
+  }, [isOpen, initialMode, initialEmail, initialResetToken]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -76,19 +87,43 @@ export default function AuthModal({
         await register(email, password, name, phone);
         onClose();
       } else if (mode === 'forgot') {
-        const res = await api.forgotPassword(email);
-        setSuccessMessage(res.message);
-        if (res.resetToken) {
-          setResetToken(res.resetToken);
-          setMode('reset');
+        if (!email.trim()) {
+          setError('Introduce tu correo electrónico.');
+          setLoading(false);
+          return;
         }
-      } else if (mode === 'reset') {
-        const res = await api.resetPassword({ token: resetToken, newPassword });
+        const res = await api.forgotPassword(email.trim());
+        setSentToEmail(email.trim());
+        setForgotEmailSent(true);
         setSuccessMessage(res.message);
-        setTimeout(() => setMode('login'), 2000);
+      } else if (mode === 'reset') {
+        if (!resetToken.trim()) {
+          setError('El código o token de recuperación es obligatorio.');
+          setLoading(false);
+          return;
+        }
+        if (newPassword.length < 6) {
+          setError('La nueva contraseña debe tener al menos 6 caracteres.');
+          setLoading(false);
+          return;
+        }
+        if (newPassword !== confirmPassword) {
+          setError('Las contraseñas no coinciden. Asegúrate de escribir la misma en ambos campos.');
+          setLoading(false);
+          return;
+        }
+
+        const res = await api.resetPassword({ token: resetToken.trim(), newPassword });
+        setSuccessMessage(res.message);
+        setTimeout(() => {
+          setMode('login');
+          setNewPassword('');
+          setConfirmPassword('');
+          setResetToken('');
+        }, 2200);
       }
     } catch (err: any) {
-      setError(err.message || 'Error en la autenticación.');
+      setError(err.message || 'Error en la solicitud. Inténtalo de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -138,7 +173,7 @@ export default function AuthModal({
             {mode === 'login' && 'Accede a tu agenda y reservas de clases de conducir'}
             {mode === 'register' && 'Regístrate para reservar tus clases online'}
             {mode === 'forgot' && 'Te enviaremos las instrucciones de recuperación'}
-            {mode === 'reset' && 'Introduce el código y tu nueva contraseña'}
+            {mode === 'reset' && 'Introduce el código recibido por email y tu nueva contraseña'}
           </p>
         </div>
 
@@ -151,136 +186,184 @@ export default function AuthModal({
             </div>
           )}
 
-          {successMessage && (
+          {successMessage && !forgotEmailSent && (
             <div className="mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs flex items-start gap-2">
               <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{successMessage}</span>
             </div>
           )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {mode === 'register' && (
-              <>
+          {/* Special State: Forgot password email confirmation card */}
+          {mode === 'forgot' && forgotEmailSent ? (
+            <div className="space-y-4">
+              <div className="p-4 rounded-2xl bg-brand-50/70 border border-brand-100 text-center space-y-3">
+                <div className="w-12 h-12 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center mx-auto">
+                  <Mail className="w-6 h-6" />
+                </div>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Si tu correo electrónico está registrado recibirás un mensaje con el enlace para restablecer tu contraseña.
+                </p>
+                <div className="bg-white/80 rounded-xl p-3 text-[11px] text-slate-500 space-y-1 text-left border border-brand-50">
+                  <p className="flex items-center gap-1.5 font-medium text-slate-700">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" /> Revisa tu bandeja de entrada y correo no deseado (spam).
+                  </p>
+                  <p className="flex items-center gap-1.5 font-medium text-slate-700">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" /> El enlace caduca por seguridad en <strong>1 hora</strong>.
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2 pt-2">
+                <Button
+                  type="button"
+                  size="md"
+                  leftIcon={<KeyRound className="w-4 h-4" />}
+                  className="w-full"
+                  onClick={() => {
+                    setMode('reset');
+                    setError(null);
+                  }}
+                >
+                  Introducir código manualmente
+                </Button>
+              </div>
+            </div>
+          ) : (
+            /* Standard Forms */
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {mode === 'register' && (
+                <>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Nombre y Apellidos</label>
+                    <input
+                      type="text"
+                      required
+                      value={name}
+                      onChange={e => setName(e.target.value)}
+                      placeholder="Ej. Carlos Ruiz"
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Teléfono móvil</label>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={e => setPhone(e.target.value)}
+                      placeholder="Ej. +34 600 000 000"
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    />
+                  </div>
+                </>
+              )}
+
+              {mode !== 'reset' && (
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Nombre y Apellidos</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Correo electrónico</label>
                   <input
-                    type="text"
+                    type="email"
                     required
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                    placeholder="Ej. Carlos Ruiz"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder="tu@email.com"
                     className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   />
                 </div>
+              )}
 
+              {(mode === 'login' || mode === 'register') && (
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Teléfono móvil</label>
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={e => setPhone(e.target.value)}
-                    placeholder="Ej. +34 600 000 000"
-                    className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                  />
-                </div>
-              </>
-            )}
-
-            {mode !== 'reset' && (
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Correo electrónico</label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="tu@email.com"
-                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                />
-              </div>
-            )}
-
-            {(mode === 'login' || mode === 'register') && (
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-semibold text-slate-700">Contraseña</label>
-                  {mode === 'login' && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMode('forgot');
-                        setSuccessMessage(null);
-                        setError(null);
-                      }}
-                      className="text-[11px] text-brand-600 hover:text-brand-800 font-medium"
-                    >
-                      ¿Olvidaste tu contraseña?
-                    </button>
-                  )}
-                </div>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                />
-              </div>
-            )}
-
-            {mode === 'reset' && (
-              <>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Token de recuperación</label>
-                  <input
-                    type="text"
-                    required
-                    value={resetToken}
-                    onChange={e => setResetToken(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Nueva Contraseña</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold text-slate-700">Contraseña</label>
+                    {mode === 'login' && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMode('forgot');
+                          setSuccessMessage(null);
+                          setForgotEmailSent(false);
+                          setError(null);
+                        }}
+                        className="text-[11px] text-brand-600 hover:text-brand-800 font-medium"
+                      >
+                        ¿Olvidaste tu contraseña?
+                      </button>
+                    )}
+                  </div>
                   <input
                     type="password"
                     required
-                    value={newPassword}
-                    onChange={e => setNewPassword(e.target.value)}
-                    placeholder="Mínimo 6 caracteres"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="••••••••"
                     className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   />
                 </div>
-              </>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300 text-white font-semibold text-xs sm:text-sm  transition-colors flex items-center justify-center gap-2 mt-4"
-            >
-              {loading ? (
-                <span>Procesando...</span>
-              ) : mode === 'login' ? (
-                <>
-                  <LogIn className="w-4 h-4" /> Iniciar Sesión
-                </>
-              ) : mode === 'register' ? (
-                <>
-                  <UserPlus className="w-4 h-4" /> Registrarme
-                </>
-              ) : mode === 'forgot' ? (
-                <>
-                  <KeyRound className="w-4 h-4" /> Enviar Instrucciones
-                </>
-              ) : (
-                'Restablecer Contraseña'
               )}
-            </button>
-          </form>
 
+              {mode === 'reset' && (
+                <>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Token de recuperación</label>
+                    <input
+                      type="text"
+                      required
+                      value={resetToken}
+                      onChange={e => setResetToken(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Nueva Contraseña</label>
+                    <input
+                      type="password"
+                      required
+                      value={newPassword}
+                      onChange={e => setNewPassword(e.target.value)}
+                      placeholder="Mínimo 6 caracteres"
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Confirmar Nueva Contraseña</label>
+                    <input
+                      type="password"
+                      required
+                      value={confirmPassword}
+                      onChange={e => setConfirmPassword(e.target.value)}
+                      placeholder="Repite la nueva contraseña"
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    />
+                  </div>
+                </>
+              )}
+              <Button
+                type="submit"
+                size="md"
+                className="w-full"
+                disabled={loading}
+              >
+                {loading ? (
+                  <span>Procesando...</span>
+                ) : mode === 'login' ? (
+                  <>
+                    <LogIn className="w-4 h-4" /> Iniciar sesión
+                  </>
+                ) : mode === 'register' ? (
+                  <>
+                    <UserPlus className="w-4 h-4" /> Registrarme
+                  </>
+                ) : mode === 'forgot' ? (
+                  <>
+                    <KeyRound className="w-4 h-4" /> Enviar instrucciones
+                  </>
+                ) : (
+                  'Restablecer contraseña'
+                )}
+              </Button>
+            </form>
+          )}
           {/* Google OAuth Button */}
           {mode === 'login' && (
             <>
@@ -292,11 +375,12 @@ export default function AuthModal({
                   <span className="bg-white px-2">o continúa con</span>
                 </div>
               </div>
-
-              <button
+              <Button
                 onClick={handleGoogleSignIn}
+                size="md"
+                variant='outline'
+                className="w-full"
                 disabled={loading}
-                className="w-full py-2.5 px-4 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm transition-colors flex items-center justify-center gap-2"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path
@@ -317,7 +401,7 @@ export default function AuthModal({
                   />
                 </svg>
                 Continuar con Google
-              </button>
+              </Button>
             </>
           )}
 

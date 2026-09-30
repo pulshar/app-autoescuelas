@@ -21,6 +21,7 @@ import {
   sendEmail,
   sendClassReminderEmail,
   sendStudentWelcomeEmail,
+  sendPasswordResetEmail,
   sendBookingCreatedEmails,
   sendBookingCancelledEmails,
   isResendConfigured,
@@ -335,34 +336,113 @@ async function startServer() {
     }
   });
 
+  // Change Password (for logged in users from Profile)
+  app.post('/api/auth/change-password', requireAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { newPassword } = req.body;
+      if (!newPassword || newPassword.length < 6) {
+        res.status(400).json({ error: 'La nueva contraseña debe tener al menos 6 caracteres.' });
+        return;
+      }
+
+      const { hash, salt } = hashPassword(newPassword);
+      const now = new Date().toISOString();
+
+      await db.prepare(`
+        UPDATE users SET password_hash = ?, salt = ?, updated_at = ?
+        WHERE id = ?
+      `).run(hash, salt, now, req.user!.id);
+
+      res.json({ message: 'Contraseña actualizada con éxito.' });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   // Forgot Password Request
   app.post('/api/auth/forgot-password', async (req, res) => {
     try {
       const { email } = req.body;
-      if (!email) {
+      if (!email || !email.trim()) {
         res.status(400).json({ error: 'Introduce tu email.' });
         return;
       }
-      const user = (await db.prepare('SELECT id, email, name FROM users WHERE email = ?').get(email.trim().toLowerCase())) as any;
+      const cleanEmail = email.trim().toLowerCase();
+      const user = (await db.prepare('SELECT id, email, name FROM users WHERE email = ?').get(cleanEmail)) as any;
+
+      const genericSuccessMessage =
+        'Si el correo está registrado, se han enviado las instrucciones de recuperación. Revisa tu bandeja de entrada o spam';
+
       if (!user) {
-        res.json({ message: 'Si el correo está registrado, se han enviado las instrucciones de recuperación.' });
+        res.json({
+          success: true,
+          message: genericSuccessMessage,
+        });
         return;
       }
 
-      const token = 'rst_' + crypto.randomBytes(20).toString('hex');
-      const expiresAt = new Date(Date.now() + 3600 * 1000).toISOString();
+      // Generate a secure reset token
+      const token = 'rst_' + crypto.randomBytes(24).toString('hex');
+      const expiresAt = new Date(Date.now() + 3600 * 1000).toISOString(); // 1 hour
 
       await db.prepare(`
         INSERT OR REPLACE INTO password_resets (token, email, expires_at, used)
         VALUES (?, ?, ?, 0)
       `).run(token, user.email, expiresAt);
 
-      res.json({
-        message: 'Código de recuperación generado.',
+      // Determine public app URL for reset link
+      const host = req.get('host') || '';
+      const protocol = req.protocol === 'https' || req.get('x-forwarded-proto') === 'https' ? 'https' : 'http';
+      const detectedAppUrl = process.env.APP_URL || (host ? `${protocol}://${host}` : '');
+
+      // Send the recovery email
+      const emailResult = await sendPasswordResetEmail({
+        to: user.email,
+        userName: user.name,
         resetToken: token,
+        appUrl: detectedAppUrl,
+      });
+
+      console.log(`[Password Reset] Correo solicitado para ${user.email}. Resultado:`, emailResult);
+
+      res.json({
+        success: true,
+        message: genericSuccessMessage,
+        emailDelivery: {
+          configured: emailResult.configured,
+          redirected: emailResult.redirected,
+          note: emailResult.note,
+        },
       });
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      console.error('[Password Reset Error]', err);
+      res.status(500).json({ error: 'Ocurrió un error al procesar la solicitud. Inténtalo más tarde.' });
+    }
+  });
+
+  // Verify Reset Token
+  app.get('/api/auth/verify-reset-token', async (req, res) => {
+    try {
+      const token = req.query.token as string;
+      if (!token) {
+        res.status(400).json({ valid: false, error: 'Token no proporcionado.' });
+        return;
+      }
+
+      const reset = (await db.prepare('SELECT * FROM password_resets WHERE token = ? AND used = 0').get(token)) as any;
+      if (!reset) {
+        res.status(400).json({ valid: false, error: 'El enlace o token de recuperación es inválido o ya ha sido utilizado.' });
+        return;
+      }
+
+      if (new Date(reset.expires_at) < new Date()) {
+        res.status(400).json({ valid: false, error: 'El enlace de recuperación ha caducado (duración máxima de 1 hora).' });
+        return;
+      }
+
+      res.json({ valid: true, email: reset.email });
+    } catch (err: any) {
+      res.status(500).json({ valid: false, error: err.message });
     }
   });
 
@@ -386,7 +466,7 @@ async function startServer() {
       }
 
       if (new Date(reset.expires_at) < new Date()) {
-        res.status(400).json({ error: 'El enlace de recuperación ha caducado.' });
+        res.status(400).json({ error: 'El enlace de recuperación ha caducado (válido durante 1 hora).' });
         return;
       }
 
@@ -400,7 +480,7 @@ async function startServer() {
 
       await db.prepare('UPDATE password_resets SET used = 1 WHERE token = ?').run(token);
 
-      res.json({ message: 'Contraseña actualizada correctamente. Ya puedes iniciar sesión.' });
+      res.json({ message: '¡Contraseña actualizada correctamente! Ya puedes iniciar sesión con tu nueva clave.' });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }

@@ -56,14 +56,10 @@ export default function ProfileView() {
     }
 
     try {
-      // Generate a quick reset token and apply it
-      const res = await api.forgotPassword(user.email);
-      if (res.resetToken) {
-        await api.resetPassword({ token: res.resetToken, newPassword });
-        setResetSuccess('¡Contraseña actualizada correctamente!');
-        setNewPassword('');
-        setTimeout(() => setShowPasswordChange(false), 2000);
-      }
+      const res = await api.changePassword({ newPassword });
+      setResetSuccess(res.message || '¡Contraseña actualizada correctamente!');
+      setNewPassword('');
+      setTimeout(() => setShowPasswordChange(false), 2000);
     } catch (err: any) {
       setFeedback({ type: 'error', message: err.message || 'Error al cambiar contraseña.' });
     }

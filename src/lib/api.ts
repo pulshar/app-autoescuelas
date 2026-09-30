@@ -80,11 +80,22 @@ export const api = {
       body: JSON.stringify(body),
     }),
 
+  changePassword: (body: { newPassword: string }) =>
+    request<{ message: string }>('/api/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+
   forgotPassword: (email: string) =>
-    request<{ message: string; resetToken?: string }>('/api/auth/forgot-password', {
+    request<{ success: boolean; message: string; emailDelivery?: any }>('/api/auth/forgot-password', {
       method: 'POST',
       body: JSON.stringify({ email }),
     }),
+
+  verifyResetToken: (token: string) =>
+    request<{ valid: boolean; email?: string; error?: string }>(
+      `/api/auth/verify-reset-token?token=${encodeURIComponent(token)}`
+    ),
 
   resetPassword: (body: { token: string; newPassword: string }) =>
     request<{ message: string }>('/api/auth/reset-password', {
