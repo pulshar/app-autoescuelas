@@ -151,7 +151,7 @@ export default function AdminDashboard({
 
         {/* Metric 2 */}
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between text-emerald-600 mb-2">
+          <div className="flex items-center justify-between text-brand-600 mb-2">
             <span className="font-mono text-slate-500">Próximas Clases</span>
             <Clock className="w-5 h-5" />
           </div>
@@ -163,7 +163,7 @@ export default function AdminDashboard({
 
         {/* Metric 3 */}
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between text-purple-600 mb-2">
+          <div className="flex items-center justify-between text-slate-600 mb-2">
             <span className="font-mono text-slate-500">Alumnos</span>
             <Users className="w-5 h-5" />
           </div>
@@ -175,7 +175,7 @@ export default function AdminDashboard({
 
         {/* Metric 4 */}
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between text-blue-600 mb-2">
+          <div className="flex items-center justify-between text-slate-600 mb-2">
             <span className="font-mono text-slate-500">Profesores</span>
             <UserCheck className="w-5 h-5" />
           </div>
@@ -187,7 +187,7 @@ export default function AdminDashboard({
 
         {/* Metric 5 */}
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between text-emerald-600 mb-2">
+          <div className="flex items-center justify-between text-brand-600 mb-2">
             <span className="font-mono text-slate-500">Huecos Libres Hoy</span>
             <CheckCircle2 className="w-5 h-5" />
           </div>

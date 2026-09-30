@@ -1042,7 +1042,7 @@ export async function sendPasswordResetEmail({
               <table width="100%" cellpadding="0" cellspacing="0" style="margin: 20px 0 32px 0;">
                 <tr>
                   <td align="center">
-                    <a href="${resetUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px; box-shadow: 0 4px 14px rgba(${brandColor}, 0.35);">
+                    <a href="${resetUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px;">
                       Restablecer mi contraseña
                     </a>
                     <div style="margin-top: 10px; font-size: 12px; color: #64748b;">
