@@ -211,7 +211,8 @@ export async function sendClassReminderEmail({
   const match = date.match(/^(\d{4})-(\d{2})-(\d{2})/);
   const displayDate = match ? `${match[3]}/${match[2]}/${match[1]}` : date;
   const subject = customTitle || `Recordatorio: Clase práctica el ${displayDate} a las ${time}`;
-  const appUrl = process.env.APP_URL || '';
+  const baseUrl = (process.env.APP_URL || '').replace(/\/$/, '');
+  const loginUrl = baseUrl ? `${baseUrl}?login=true&email=${encodeURIComponent(to)}` : '#';
 
   const html = `
 <!DOCTYPE html>
@@ -302,13 +303,13 @@ export async function sendClassReminderEmail({
                 💡 <em>Por favor, llega con 5 minutos de antelación y recuerda llevar tu documento de identidad (DNI/NIE) o permiso de aprendizaje.</em>
               </p>
 
-              ${appUrl
+              ${baseUrl
       ? `
               <!-- CTA Button -->
               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
                 <tr>
                   <td align="center">
-                    <a href="${appUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px;">
+                    <a href="${loginUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px;">
                       Ver mis clases en la plataforma
                     </a>
                   </td>
@@ -546,6 +547,8 @@ export async function sendBookingCreatedEmails(params: BookingEmailNotificationP
   const match = date.match(/^(\d{4})-(\d{2})-(\d{2})/);
   const displayDate = match ? `${match[3]}/${match[2]}/${match[1]}` : date;
   const baseUrl = (appUrl || process.env.APP_URL || '').replace(/\/$/, '');
+  const loginUrlStudent = baseUrl ? `${baseUrl}?login=true&email=${encodeURIComponent(studentEmail)}` : '#';
+  const loginUrlTeacher = baseUrl ? `${baseUrl}?login=true&email=${encodeURIComponent(teacherEmail)}` : '#';
 
   let studentResult: EmailResult | undefined;
   let teacherResult: EmailResult | undefined;
@@ -609,7 +612,7 @@ export async function sendBookingCreatedEmails(params: BookingEmailNotificationP
                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
                 <tr>
                   <td align="center">
-                    <a href="${baseUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px;">
+                    <a href="${loginUrlStudent}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px;">
                       Gestionar mis clases
                     </a>
                   </td>
@@ -706,15 +709,15 @@ export async function sendBookingCreatedEmails(params: BookingEmailNotificationP
               </table>
 
               ${baseUrl ? `
-               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+               <!--<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
                 <tr>
                   <td align="center">
-                    <a href="${baseUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px;">
+                    <a href="${loginUrlTeacher}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px;">
                       Ver mis clases en la plataforma
                     </a>
                   </td>
                 </tr>
-              </table>` : ''}
+              </table>-->` : ''}
             </td>
           </tr>
           <tr>
@@ -770,6 +773,8 @@ export async function sendBookingCancelledEmails(params: BookingEmailNotificatio
   const match = date.match(/^(\d{4})-(\d{2})-(\d{2})/);
   const displayDate = match ? `${match[3]}/${match[2]}/${match[1]}` : date;
   const baseUrl = (appUrl || process.env.APP_URL || '').replace(/\/$/, '');
+  const loginUrlStudent = baseUrl ? `${baseUrl}?login=true&email=${encodeURIComponent(studentEmail)}` : '#';
+  const loginUrlTeacher = baseUrl ? `${baseUrl}?login=true&email=${encodeURIComponent(teacherEmail)}` : '#';
 
   let studentResult: EmailResult | undefined;
   let teacherResult: EmailResult | undefined;
@@ -837,7 +842,7 @@ export async function sendBookingCancelledEmails(params: BookingEmailNotificatio
                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
                 <tr>
                   <td align="center">
-                    <a href="${baseUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px;">
+                    <a href="${loginUrlStudent}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px;">
                        Reservar otra fecha
                     </a>
                   </td>
@@ -929,15 +934,15 @@ export async function sendBookingCancelledEmails(params: BookingEmailNotificatio
               </table>
 
               ${baseUrl ? `
-               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+               <!-- <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
                 <tr>
                   <td align="center">
-                    <a href="${baseUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px;">
+                    <a href="${loginUrlTeacher}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px;">
                       Ver agenda actualizada
                     </a>
                   </td>
                 </tr>
-              </table>` : ''}
+              </table>-->` : ''}
             </td>
           </tr>
           <tr>
