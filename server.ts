@@ -1936,6 +1936,27 @@ async function startServer() {
     }
   });
 
+  // Delete all notifications for current user
+  app.delete('/api/notifications', requireAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      await db.prepare('DELETE FROM notifications WHERE user_id = ?').run(req.user!.id);
+      res.json({ message: 'Notificaciones eliminadas correctamente.' });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Delete single notification
+  app.delete('/api/notifications/:id', requireAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { id } = req.params;
+      await db.prepare('DELETE FROM notifications WHERE id = ? AND user_id = ?').run(id, req.user!.id);
+      res.json({ message: 'Notificación eliminada.' });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   // Function to process automatic class reminders
   async function processAutomaticReminders(): Promise<{ sent: number; emails_dispatched: number; checked: number; message: string }> {
     const settings = await getAppSettings();

@@ -248,6 +248,10 @@ export const api = {
     request<{ message: string }>(`/api/notifications/${id}/read`, {
       method: 'PUT',
     }),
+  clearAllNotifications: () =>
+    request<{ message: string }>('/api/notifications', {
+      method: 'DELETE',
+    }),
   testReminderNotification: (body?: {
     title_template?: string;
     message_template?: string;

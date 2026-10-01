@@ -61,6 +61,7 @@ export async function sendEmail({
   html: string;
   text?: string;
 }): Promise<EmailResult> {
+
   const client = getResendClient();
   if (!client) {
     console.warn(`[Resend] Intento de envío a "${to}" omitido: RESEND_API_KEY no está configurada.`);

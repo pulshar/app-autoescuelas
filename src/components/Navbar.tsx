@@ -14,6 +14,7 @@ import {
   LogIn,
   KeyRound,
   Settings,
+  Trash2,
 } from 'lucide-react';
 import { Button } from './common/Button.tsx';
 
@@ -125,6 +126,15 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
       setNotifications(prev => prev.map(n => (n.id === id ? { ...n, read: true } : n)));
     } catch {
       // Ignore
+    }
+  };
+
+  const handleClearAll = async () => {
+    try {
+      await api.clearAllNotifications();
+      setNotifications(prev => prev.filter(n => !n.read));
+    } catch (err) {
+      console.error('Error al borrar todas las notificaciones:', err);
     }
   };
 
@@ -303,21 +313,36 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                   {/* Notifications Popover */}
                   {showNotifications && (
                     <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-lg shadow-xl border border-slate-200 py-3 z-50 animate-in fade-in zoom-in-95 duration-150">
-                      <div className="flex items-center justify-between px-4 pb-2 border-b border-slate-100">
+                      <div className="flex items-center justify-between px-4 pb-3 border-b border-slate-200">
                         <h4 className="font-semibold text-slate-900 text-sm">Notificaciones</h4>
-                        <button
-                          type="button"
-                          onClick={() => setShowNotifications(false)}
-                          className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-50 transition-colors"
-                          aria-label="Cerrar notificaciones"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center gap-1">
+                          {notifications.length > 0 && (
+                            <button
+                              type="button"
+                              onClick={handleClearAll}
+                              className="text-[10px] font-semibold text-slate-500 hover:text-rose-600 flex items-center gap-1 p-2 rounded-full hover:bg-rose-50 transition-colors"
+                              title="Borrar todas las notificaciones"
+                            >
+                              <Trash2 className="w-3.5 h-3.5 text-rose-500" />
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => setShowNotifications(false)}
+                            className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-50 transition-colors"
+                            aria-label="Cerrar notificaciones"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+
                       </div>
                       <div className="max-h-72 overflow-y-auto divide-y divide-slate-50">
                         {notifications.length === 0 ? (
-                          <div className="py-6 text-center text-slate-400 text-xs">
-                            No tienes notificaciones
+                          <div className="py-8 text-center text-slate-400 text-xs flex flex-col items-center justify-center gap-1.5">
+                            <Bell className="w-6 h-6 text-slate-300 mb-1" />
+                            <span className="font-medium text-slate-600">No tienes notificaciones</span>
+                            <span className="text-[11px] text-slate-400">Te avisaremos cuando haya novedades en tus clases</span>
                           </div>
                         ) : (
                           notifications.map(n => (
@@ -333,7 +358,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                                   <span className="w-2 h-2 rounded-full bg-brand-600 shrink-0 mt-1" />
                                 )}
                               </div>
-                              <p className="text-xs text-slate-600 mt-1 leading-relaxed">{replaceDateInText(n.message)}</p>
+                              <p className="text-xs text-slate-600 mt-1 leading-relaxed pr-3">{replaceDateInText(n.message)}</p>
                               <span className="text-[10px] text-slate-400 mt-1.5 block">
                                 {new Date(n.created_at).toLocaleTimeString('es-ES', {
                                   hour: '2-digit',
