@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 
 function AppContent() {
-  const { user, role, login } = useAuth();
+  const { user, role, login, loading } = useAuth();
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'forgot' | 'reset'>('login');
@@ -46,35 +46,65 @@ function AppContent() {
 
   // Check for URL parameters (?login=true, ?email=..., ?resetToken=...)
   useEffect(() => {
+
+    // Esperamos a que AuthContext termine de comprobar la sesión
+    if (loading) return;
+
     try {
       const params = new URLSearchParams(window.location.search);
       const resetTokenParam = params.get('resetToken') || params.get('token');
       const emailParam = params.get('email') || '';
 
+      // Recuperación de contraseña
       if (resetTokenParam) {
-        if (emailParam) setInitialAuthEmail(emailParam);
-        setInitialResetToken(resetTokenParam);
-        setAuthModalMode('reset');
-        setAuthModalOpen(true);
-        window.history.replaceState({}, document.title, window.location.pathname);
-      } else if (params.get('login') === 'true' || params.get('login') === '1') {
         if (emailParam) {
           setInitialAuthEmail(emailParam);
         }
-        setAuthModalMode('login');
+
+        setInitialResetToken(resetTokenParam);
+        setAuthModalMode('reset');
         setAuthModalOpen(true);
+
         // Clear params cleanly without reload
         window.history.replaceState({}, document.title, window.location.pathname);
+
+        return;
+      }
+
+      // Login desde enlace de email
+      if (params.get('login') === 'true' || params.get('login') === '1') {
+        if (emailParam) {
+          setInitialAuthEmail(emailParam);
+        }
+
+        // Solo mostramos login si NO hay sesión
+        if (!user) {
+          setAuthModalMode('login');
+          setAuthModalOpen(true);
+        }
+
+        // Limpiar los parámetros de la URL
+        window.history.replaceState({}, document.title, window.location.pathname)
       }
     } catch {
       // Ignore
     }
-  }, []);
+  }, [loading, user]);
 
   const handleOpenAuth = (mode: 'login' | 'register' = 'login') => {
     setAuthModalMode(mode);
     setAuthModalOpen(true);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 rounded-full border-2 border-slate-200 border-t-brand-600 animate-spin" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans selection:bg-brand-500 selection:text-white pb-16 md:pb-6">
