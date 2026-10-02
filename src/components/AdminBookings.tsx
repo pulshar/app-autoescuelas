@@ -615,10 +615,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
       {/* Quick Action Modal (Realizada con notas / No presentado) */}
       {quickActionModal && (
         <div
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setQuickActionModal(null);
-          }}
-          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
         >
           <div className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
@@ -700,10 +697,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
       {/* Change Status Modal */}
       {selectedBooking && (
         <div
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setSelectedBooking(null);
-          }}
-          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
         >
           <div className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
@@ -784,10 +778,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
       {/* Cancel Booking Confirmation Modal */}
       {cancellingBooking && (
         <div
-          onClick={e => {
-            if (e.target === e.currentTarget) handleCloseCancel();
-          }}
-          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
         >
           <div className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">

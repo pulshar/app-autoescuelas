@@ -352,10 +352,7 @@ export default function AdminSchedules() {
       {/* Schedule Edit / Create Modal */}
       {modalOpen && (
         <div
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setModalOpen(false);
-          }}
-          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
         >
           <div className="bg-white rounded-xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[92vh] flex flex-col cursor-default">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
@@ -541,10 +538,7 @@ export default function AdminSchedules() {
       {/* Delete Confirmation Modal */}
       {deletingSchedule && (
         <div
-          onClick={e => {
-            if (e.target === e.currentTarget) handleCloseDelete();
-          }}
-          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
         >
           <div className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
@@ -583,7 +577,7 @@ export default function AdminSchedules() {
                 </p>
                 <ul className="list-disc pl-4 space-y-1 text-amber-800">
                   <li>Dejarán de generarse nuevos turnos de reserva para este profesor según esta plantilla.</li>
-                  <li>Las clases que ya hubieran sido reservadas o confirmadas previamente <strong>se conservarán intactas</strong>.</li>
+                  <li>Las clases que ya hubieran sido reservadas previamente <strong>se conservarán intactas</strong>.</li>
                 </ul>
               </div>
 

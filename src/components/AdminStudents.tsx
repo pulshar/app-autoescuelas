@@ -119,6 +119,20 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
     }).catch(() => { });
   }, []);
 
+  useEffect(() => {
+    if (!isModalOpen && !editingStudent && !deletingStudent) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      handleCloseDelete();
+      handleCloseEdit();
+      handleCloseModal();
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isModalOpen, editingStudent, deletingStudent]);
+
   // Creation Handler
   const handleCreateStudent = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -500,10 +514,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
       {/* CREATE STUDENT MODAL */}
       {isModalOpen && (
         <div
-          onClick={e => {
-            if (e.target === e.currentTarget) handleCloseModal();
-          }}
-          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
         >
           <div className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
@@ -732,10 +743,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
       {/* EDIT STUDENT MODAL */}
       {editingStudent && (
         <div
-          onClick={e => {
-            if (e.target === e.currentTarget) handleCloseEdit();
-          }}
-          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
         >
           <div className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
@@ -870,10 +878,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
       {/* DELETE / BAJA CONFIRMATION MODAL */}
       {deletingStudent && (
         <div
-          onClick={e => {
-            if (e.target === e.currentTarget) handleCloseDelete();
-          }}
-          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
         >
           <div className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">

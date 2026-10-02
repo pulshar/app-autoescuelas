@@ -69,15 +69,17 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
   }, [initialOpenCreate]);
 
   useEffect(() => {
-    if (!modalOpen) return;
+    if (!modalOpen && !deletingTeacher) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setModalOpen(false);
-      }
+      if (e.key !== 'Escape') return;
+      handleCloseDelete();
+      setModalOpen(false);
     };
     document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [modalOpen]);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [modalOpen, deletingTeacher]);
 
   const handleOpenCreate = () => {
     setEditingTeacher(null);
@@ -327,10 +329,7 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
       {/* Create / Edit Modal */}
       {modalOpen && (
         <div
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setModalOpen(false);
-          }}
-          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
         >
           <div className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
@@ -448,10 +447,7 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
       {/* Delete / Baja Confirmation Modal */}
       {deletingTeacher && (
         <div
-          onClick={e => {
-            if (e.target === e.currentTarget) handleCloseDelete();
-          }}
-          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
         >
           <div className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
