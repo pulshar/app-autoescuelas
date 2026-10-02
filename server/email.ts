@@ -433,9 +433,7 @@ export async function sendStudentWelcomeEmail({
                   <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 600;">
                     Contraseña provisional:
                   </td>
-                  <td style="padding: 6px 0; font-size: 14px; color: ${brandColor}; font-weight: 800; font-family: monospace;">
-                    ${temporaryPassword}
-                  </td>
+                  <td style="padding: 8px 0; font-size: 15px; color: ${brandColor}; font-weight: 700; font-family: monospace;"><code style="color: ${brandColor}; font-family: monospace; font-size: 15px; font-weight: 700; display: inline-block;">${temporaryPassword}</code></td>
                 </tr>
                 `
       : ''

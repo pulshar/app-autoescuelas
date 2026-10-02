@@ -81,10 +81,10 @@ export default function AuthModal({
 
     try {
       if (mode === 'login') {
-        await login(email, password);
+        await login(email.trim().toLowerCase(), password.trim());
         onClose();
       } else if (mode === 'register') {
-        await register(email, password, name, phone);
+        await register(email.trim().toLowerCase(), password.trim(), name.trim(), phone.trim());
         onClose();
       } else if (mode === 'forgot') {
         if (!email.trim()) {

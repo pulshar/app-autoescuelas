@@ -115,13 +115,25 @@ async function startServer() {
         return;
       }
 
-      const row = (await db.prepare('SELECT * FROM users WHERE email = ?').get(email.trim().toLowerCase())) as any;
+      const cleanEmail = String(email).trim().toLowerCase();
+      const rawPassword = typeof password === 'string' ? password : String(password);
+      const cleanPassword = rawPassword.trim();
+
+      const row = (await db.prepare('SELECT * FROM users WHERE email = ?').get(cleanEmail)) as any;
+
       if (!row || !row.password_hash || !row.salt) {
         res.status(401).json({ error: 'Credenciales incorrectas o usuario no registrado.' });
         return;
       }
 
-      const isValid = verifyPassword(password, row.password_hash, row.salt);
+      if (row.is_active !== undefined && row.is_active !== null && !Boolean(Number(row.is_active))) {
+        res.status(403).json({ error: 'Tu cuenta ha sido dada de baja en la autoescuela. Por favor, ponte en contacto con secretaría.' });
+        return;
+      }
+
+      // Check both trimmed password and raw password (to handle inadvertent whitespace copied from email)
+      const isValid = verifyPassword(cleanPassword, row.password_hash, row.salt) || verifyPassword(rawPassword, row.password_hash, row.salt);
+
       if (!isValid) {
         res.status(401).json({ error: 'Credenciales incorrectas.' });
         return;
@@ -1845,10 +1857,20 @@ async function startServer() {
         process.env.APP_URL ||
         ''
       ).replace(/\/$/, '');
+
+      // Generate a fresh temporary password and update it in DB
+      const newTemporaryPassword = `Auto${Math.floor(100000 + Math.random() * 900000)}!`;
+      const { hash, salt } = hashPassword(newTemporaryPassword);
+      const now = new Date().toISOString();
+
+      await db.prepare('UPDATE users SET password_hash = ?, salt = ?, updated_at = ? WHERE id = ?')
+        .run(hash, salt, now, student.id);
+
       const appSettings = await getAppSettings();
       const emailResult = await sendStudentWelcomeEmail({
         to: student.email,
         studentName: student.name,
+        temporaryPassword: newTemporaryPassword,
         appUrl,
         schoolName: appSettings.school_name || 'AutoescuelaPro',
       });
@@ -1863,12 +1885,13 @@ async function startServer() {
         req.user!.name,
         req.user!.email,
         student.id,
-        `Reenvío de correo de acceso a ${student.name} (${student.email})`,
-        new Date().toISOString()
+        `Reenvío de correo de acceso a ${student.name} (${student.email}) con nueva clave provisional`,
+        now
       );
 
       res.json({
-        message: `Correo de acceso reenviado correctamente a ${student.email}.`,
+        message: `Correo de acceso reenviado a ${student.email} con nueva clave de acceso provisional (${newTemporaryPassword}).`,
+        newPassword: newTemporaryPassword,
         emailResult,
       });
     } catch (err: any) {
