@@ -3,9 +3,8 @@ import { useAuth } from '../context/AuthContext.tsx';
 import { api } from '../lib/api.ts';
 import {
   User as UserIcon,
-  Phone,
-  Mail,
-  ShieldCheck,
+  Eye,
+  EyeOff,
   Save,
   CheckCircle2,
   AlertCircle,
@@ -21,6 +20,7 @@ export default function ProfileView() {
   const [phone, setPhone] = useState(user?.phone || '');
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || '');
 
+  const [showPassword, setShowPassword] = useState(false);
   // Password reset state
   const [showPasswordChange, setShowPasswordChange] = useState(false);
   const [newPassword, setNewPassword] = useState('');
@@ -230,21 +230,34 @@ export default function ProfileView() {
               <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Nueva contraseña
               </label>
-              <input
-                type="password"
-                required
-                value={newPassword}
-                onChange={e => setNewPassword(e.target.value)}
-                placeholder="Mínimo 6 caracteres"
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm focus:ring-2 focus:ring-brand-500"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                  placeholder="Mínimo 6 caracteres"
+                  className="w-full pl-3.5 pr-10 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-semibold focus:outline-hidden focus:ring-2 focus:ring-brand-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
 
             <div className="flex items-center justify-end gap-3 pt-2">
               <Button
                 variant="ghost"
                 size="modal"
-                onClick={() => setShowPasswordChange(false)}
+                onClick={() => {
+                  setShowPasswordChange(false)
+                  setShowPassword(false)
+                  setNewPassword('')
+                }}
               >
                 Cancelar
               </Button>

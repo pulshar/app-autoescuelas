@@ -472,7 +472,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                         onClick={() => onSelectStudentForBooking(s.id)}
                         disabled={isInactive}
                         title={isInactive ? 'Alumno dado de baja' : 'Asignar clase práctica'}
-                        className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${isInactive
+                        className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${isInactive
                           ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
                           : 'bg-brand-50 hover:bg-brand-100 text-brand-700'
                           }`}
@@ -932,20 +932,20 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
               )}
 
               {/* Notification by email option */}
-              <div className="p-3.5 rounded-2xl bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-900 flex items-start gap-2.5">
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-900 flex items-start gap-2.5">
                 <input
                   type="checkbox"
                   id="notifyStudentCheckbox"
                   checked={notifyStudentOnDelete}
                   onChange={(e) => setNotifyStudentOnDelete(e.target.checked)}
-                  className="mt-0.5 rounded text-indigo-600 focus:ring-indigo-500 border-indigo-300 w-4 h-4 cursor-pointer"
+                  className="mt-0.5 rounded text-slate-600 focus:ring-slate-500 border-slate-300 w-4 h-4 cursor-pointer"
                 />
                 <label htmlFor="notifyStudentCheckbox" className="cursor-pointer select-none leading-relaxed">
-                  <span className="font-bold flex items-center gap-1.5 text-indigo-950">
-                    <Mail className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                  <span className="font-bold flex items-center gap-1.5 text-slate-950">
+                    <Mail className="w-3.5 h-3.5 text-slate-600 shrink-0" />
                     Enviar correo de confirmación de baja al alumno
                   </span>
-                  <span className="text-[11px] text-indigo-700 block mt-0.5">
+                  <span className="text-[11px] text-slate-700 block mt-0.5">
                     Se remitirá un email formal a <strong>{deletingStudent.email}</strong> notificándole el cierre de su cuenta
                     {(deletingStudent.active_classes || 0) > 0 ? ` y la cancelación de sus ${deletingStudent.active_classes} clase(s) pendiente(s)` : ''}.
                   </span>
