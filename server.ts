@@ -1097,8 +1097,8 @@ async function startServer() {
 
       // 5. Audit
       const auditDetails = `Bloqueo creado para fecha ${formatToDisplayDate(date)} (${fullDayInt ? 'Día completo' : `${start_time}-${end_time}`}): ${reason.trim()}.${conflicts.length > 0
-          ? ` • ${conflicts.length} clases canceladas automáticamente • Notificados ${notifiedStudentsCount} alumnos y ${notifiedTeachersCount} profesores.`
-          : ' • Sin clases en conflicto.'
+        ? ` • ${conflicts.length} clases canceladas automáticamente • Notificados ${notifiedStudentsCount} alumnos y ${notifiedTeachersCount} profesores.`
+        : ' • Sin clases en conflicto.'
         }`;
       await db.prepare(`
         INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
@@ -1865,7 +1865,7 @@ async function startServer() {
       if (activeInt === 0 && Number(existing.is_active ?? 1) === 1) {
         await db.prepare(`
           UPDATE bookings
-          SET status = 'Cancelada', notes = 'Cancelada automáticamente por baja del alumno', updated_at = ?
+          SET status = 'Cancelada por baja del alumno', notes = 'Cancelada automáticamente por baja del alumno', updated_at = ?
          WHERE student_id = ? AND status = 'Reservada'
         `).run(now, id);
       }
@@ -2030,7 +2030,7 @@ async function startServer() {
         // Soft delete / baja lógica: cancel active bookings and deactivate
         await db.prepare(`
           UPDATE bookings
-          SET status = 'Cancelada', notes = 'Cancelada automáticamente por baja del alumno', updated_at = ?
+          SET status = 'Cancelada por baja del alumno', notes = 'Cancelada automáticamente por baja del alumno', updated_at = ?
          WHERE student_id = ? AND status = 'Reservada'
         `).run(now, id);
 

@@ -25,9 +25,10 @@ import { StatusBadge } from './common/StatusBadge.tsx';
 
 interface AdminBookingsProps {
   onOpenManualModal: () => void;
+  refreshTrigger?: number;
 }
 
-export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps) {
+export default function AdminBookings({ onOpenManualModal, refreshTrigger }: AdminBookingsProps) {
   const [activeTab, setActiveTab] = useState<'pending_review' | 'upcoming' | 'history'>('upcoming');
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -80,7 +81,12 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
 
   useEffect(() => {
     fetchBookings();
-  }, []);
+    if (refreshTrigger && refreshTrigger > 0) {
+      setActiveTab('upcoming');
+      setActionMessage('Reserva registrada correctamente.');
+      setTimeout(() => setActionMessage(null), 6000);
+    }
+  }, [refreshTrigger]);
 
   useEffect(() => {
     if (!selectedBooking && !cancellingBooking && !quickActionModal) return;

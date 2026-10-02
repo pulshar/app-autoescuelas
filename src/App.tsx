@@ -40,6 +40,8 @@ function AppContent() {
 
   // Admin Modals
   const [manualBookingOpen, setManualBookingOpen] = useState(false);
+  const [manualBookingInitialStudentId, setManualBookingInitialStudentId] = useState<string | undefined>(undefined);
+  const [bookingsRefreshKey, setBookingsRefreshKey] = useState(0);
   const [initialOpenCreateTeacher, setInitialOpenCreateTeacher] = useState(false);
   const [initialOpenCreateBlock, setInitialOpenCreateBlock] = useState(false);
 
@@ -257,7 +259,10 @@ function AppContent() {
             {currentTab === 'dashboard' && (
               <AdminDashboard
                 onNavigate={setCurrentTab}
-                onOpenManualBooking={() => setManualBookingOpen(true)}
+                onOpenManualBooking={() => {
+                  setManualBookingInitialStudentId(undefined);
+                  setManualBookingOpen(true);
+                }}
                 onOpenCreateTeacher={() => {
                   setCurrentTab('teachers');
                   setInitialOpenCreateTeacher(true);
@@ -266,11 +271,18 @@ function AppContent() {
                   setCurrentTab('blocks');
                   setInitialOpenCreateBlock(true);
                 }}
+                refreshTrigger={bookingsRefreshKey}
               />
             )}
 
             {currentTab === 'bookings' && (
-              <AdminBookings onOpenManualModal={() => setManualBookingOpen(true)} />
+              <AdminBookings
+                onOpenManualModal={() => {
+                  setManualBookingInitialStudentId(undefined);
+                  setManualBookingOpen(true);
+                }}
+                refreshTrigger={bookingsRefreshKey}
+              />
             )}
 
             {currentTab === 'calendar' && <CalendarView />}
@@ -293,7 +305,8 @@ function AppContent() {
 
             {currentTab === 'students' && (
               <AdminStudents
-                onSelectStudentForBooking={_studentId => {
+                onSelectStudentForBooking={studentId => {
+                  setManualBookingInitialStudentId(studentId);
                   setManualBookingOpen(true);
                 }}
               />
@@ -355,6 +368,7 @@ function AppContent() {
         isOpen={manualBookingOpen}
         onClose={() => setManualBookingOpen(false)}
         onSuccess={() => {
+          setBookingsRefreshKey(prev => prev + 1);
           setCurrentTab('bookings');
         }}
       />

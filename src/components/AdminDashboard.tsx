@@ -23,6 +23,7 @@ interface AdminDashboardProps {
   onOpenManualBooking: () => void;
   onOpenCreateTeacher: () => void;
   onOpenCreateBlock: () => void;
+  refreshTrigger?: number;
 }
 
 export default function AdminDashboard({
@@ -30,6 +31,7 @@ export default function AdminDashboard({
   onOpenManualBooking,
   onOpenCreateTeacher,
   onOpenCreateBlock,
+  refreshTrigger,
 }: AdminDashboardProps) {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [todayBookings, setTodayBookings] = useState<Booking[]>([]);
@@ -54,7 +56,7 @@ export default function AdminDashboard({
 
   useEffect(() => {
     fetchDashboard();
-  }, []);
+  }, [refreshTrigger]);
 
   return (
     <div className="space-y-6 pb-12">

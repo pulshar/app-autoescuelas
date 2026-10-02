@@ -17,9 +17,10 @@ interface ManualBookingModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  initialStudentId?: string;
 }
 
-export default function ManualBookingModal({ isOpen, onClose, onSuccess }: ManualBookingModalProps) {
+export default function ManualBookingModal({ isOpen, onClose, onSuccess, initialStudentId }: ManualBookingModalProps) {
   const [students, setStudents] = useState<User[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
 
@@ -44,14 +45,21 @@ export default function ManualBookingModal({ isOpen, onClose, onSuccess }: Manua
         ]);
         setStudents(stdRes.students);
         setTeachers(tchRes.teachers.filter(t => t.is_active));
-        if (stdRes.students.length > 0) setSelectedStudentId(stdRes.students[0].id);
+
+        if (stdRes.students.length > 0) {
+          if (initialStudentId && stdRes.students.some(s => s.id === initialStudentId)) {
+            setSelectedStudentId(initialStudentId);
+          } else {
+            setSelectedStudentId(stdRes.students[0].id);
+          }
+        }
         if (tchRes.teachers.length > 0) setSelectedTeacherId(tchRes.teachers[0].id);
       } catch (err) {
         console.error('Error loading modal data:', err);
       }
     }
     loadData();
-  }, [isOpen]);
+  }, [isOpen, initialStudentId]);
 
   // Load slots whenever teacher or date changes
   useEffect(() => {

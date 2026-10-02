@@ -62,11 +62,11 @@ export async function sendEmail({
   text?: string;
 }): Promise<EmailResult> {
 
-  // //TODO: quitar para reponer envío de emails
-  // console.log("Se va a enviar un email a: ", to);
-  // console.log("El asunto es: ", subject);
-  // return
-  // ///////////////
+  //TODO: quitar para reponer envío de emails
+  console.log("Se va a enviar un email a: ", to);
+  console.log("El asunto es: ", subject);
+  return
+  ///////////////
 
   const client = getResendClient();
   if (!client) {
@@ -1415,7 +1415,7 @@ export async function sendStudentClassCancelledDueToBlockEmail({
                 <tr>
                   <td>
                     <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
-                      ${brandName} • Incidencia en la programación
+                      ${brandName}
                     </span>
                     <h1 style="margin: 0; color: #ffffff; font-size: 21px; font-weight: 700; line-height: 1.3;">
                       Clase práctica cancelada
@@ -1584,7 +1584,7 @@ export async function sendTeacherBlockCreatedEmail({
                 <tr>
                   <td>
                     <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.15); color: #cbd5e1; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
-                      ${brandName} • Notificación de Cuadrante
+                      ${brandName}
                     </span>
                     <h1 style="margin: 0; color: #ffffff; font-size: 21px; font-weight: 700; line-height: 1.3;">
                       Bloqueo de horario en tu agenda

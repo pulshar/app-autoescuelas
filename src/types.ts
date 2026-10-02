@@ -65,7 +65,8 @@ export type BookingStatus =
   | 'Completada'
   | 'No presentado'
   | 'Cancelada por alumno'
-  | 'Cancelada por administrador';
+  | 'Cancelada por administrador'
+  | 'Cancelada por baja del alumno';
 
 export interface Booking {
   id: string;
