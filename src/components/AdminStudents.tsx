@@ -441,10 +441,13 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                       <button
                         onClick={() => handleResendWelcome(s)}
                         disabled={resendingId === s.id}
-                        title="Reenviar correo de bienvenida con instrucciones de acceso"
-                        className="inline-flex items-center gap-1.5 p-1.5 xl:px-3 rounded-full border border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-semibold transition-colors disabled:opacity-50"
+                        title={isInactive ? 'Alumno dado de baja' : 'Reenviar correo de bienvenida con instrucciones de acceso'}
+                        className={`inline-flex items-center gap-1.5 p-1.5 xl:px-3 rounded-full text-xs font-semibold border border-slate-200 transition-colors ${isInactive
+                          ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                          : 'text-slate-700 hover:bg-slate-100'
+                          }`}
                       >
-                        <Mail className="w-3.5 h-3.5 text-brand-600" />
+                        <Mail className={`w-3.5 h-3.5 ${isInactive ? 'text-slate-400' : 'text-brand-600'}`} />
                         <span className="hidden xl:inline">
                           {resendingId === s.id ? 'Enviando...' : 'Reenviar'}
                         </span>

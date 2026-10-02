@@ -127,7 +127,7 @@ async function startServer() {
       }
 
       if (row.is_active !== undefined && row.is_active !== null && !Boolean(Number(row.is_active))) {
-        res.status(403).json({ error: 'Tu cuenta ha sido dada de baja en la autoescuela. Por favor, ponte en contacto con secretaría.' });
+        res.status(403).json({ error: 'Tu cuenta ha sido dada de baja. Por favor, ponte en contacto con la autoescuela.' });
         return;
       }
 

@@ -1262,7 +1262,7 @@ export default function AdminSettings() {
               </div>
               <span className="text-[11px] text-slate-400 mt-1.5 block leading-relaxed">
                 Si un alumno intenta cancelar una clase con menos de esta antelación, el sistema impedirá
-                la cancelación automática y le solicitará contactar con secretaría.
+                la cancelación automática y le solicitará contactar con la autoescuela.
               </span>
             </div>
           </div>
