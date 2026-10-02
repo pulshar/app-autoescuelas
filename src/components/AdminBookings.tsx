@@ -32,7 +32,7 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [loading, setLoading] = useState(true);
-  const initialTabSet = useRef(false);
+  // const initialTabSet = useRef(false);
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -211,15 +211,15 @@ export default function AdminBookings({ onOpenManualModal }: AdminBookingsProps)
     .filter(b => b.status !== 'Pendiente de revisión' && !isUpcoming(b))
     .sort((a, b) => b.date.localeCompare(a.date) || b.start_time.localeCompare(a.start_time));
 
-  useEffect(() => {
-    if (loading || initialTabSet.current) return;
+  // useEffect(() => {
+  //   if (loading || initialTabSet.current) return;
 
-    if (pendingReviewBookings.length > 0) {
-      setActiveTab('pending_review');
-    }
+  //   if (pendingReviewBookings.length > 0) {
+  //     setActiveTab('pending_review');
+  //   }
 
-    initialTabSet.current = true;
-  }, [loading, pendingReviewBookings.length]);
+  //   initialTabSet.current = true;
+  // }, [loading, pendingReviewBookings.length]);
 
   // Common filter function for search, teacher, status, and date
   const applyFilters = (list: Booking[]) => {

@@ -342,7 +342,6 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                           <div className="py-8 text-center text-slate-400 text-xs flex flex-col items-center justify-center gap-1.5">
                             <Bell className="w-6 h-6 text-slate-300 mb-1" />
                             <span className="font-medium text-slate-600">No tienes notificaciones</span>
-                            <span className="text-[11px] text-slate-400">Te avisaremos cuando haya novedades en tus clases</span>
                           </div>
                         ) : (
                           notifications.map(n => (
