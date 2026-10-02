@@ -335,8 +335,7 @@ export async function sendClassReminderEmail({
           <!-- Footer -->
            <tr>
             <td style="background-color: #f8fafc; padding: 20px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8; line-height: 1.5;">
-              Notificación generada automáticamente por ${brandName}.<br>
-              Por favor, no respondas a este correo.
+              ${brandName} • Recordatorio de clase programada.
             </td>
           </tr>
 
@@ -391,7 +390,7 @@ export async function sendStudentWelcomeEmail({
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 8px;">
     <tr>
       <td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
           <tr>
             <td style="background-color: ${brandColor}; padding: 32px 32px; text-align: left;">
               <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
@@ -994,7 +993,7 @@ export async function sendPasswordResetEmail({
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 8px;">
     <tr>
       <td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
           <tr>
             <td style="background-color: ${brandColor}; padding: 32px 32px; text-align: left;">
               <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
@@ -1114,7 +1113,7 @@ export async function sendAccountDeletionEmail({
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 8px;">
     <tr>
       <td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
           <tr>
             <td style="background-color: #475569; padding: 32px 32px; text-align: left;">
               <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
@@ -1307,7 +1306,7 @@ export async function sendTeacherClassCancelledDueToStudentDepartureEmail({
                   Clases canceladas y turnos liberados en tu agenda
                 </p>
                 <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #166534;">
-                  Se ha${count > 1 ? 'n' : ''} cancelado automáticamente <strong>${count} clase${count > 1 ? 's' : ''}</strong> que tenías programada${count > 1 ? 's' : ''} con este alumno. Las franjas horarias han quedado <strong>disponibles de inmediato</strong> para que otros alumnos puedan reservarlas.
+                  Se ha${count > 1 ? 'n' : ''} cancelado automáticamente <strong>${count} clase${count > 1 ? 's' : ''}</strong> que tenías programada${count > 1 ? 's' : ''} con este alumno. Las franjas horarias han quedado disponibles para que otros alumnos puedan reservarlas.
                 </p>
               </div>
 
@@ -1324,10 +1323,6 @@ export async function sendTeacherClassCancelledDueToStudentDepartureEmail({
                   ${classesListHtml}
                 </tbody>
               </table>
-
-              <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #64748b;">
-                Puedes consultar el estado actualizado de tu agenda y cuadrante diario en el portal de ${brandName}.
-              </p>
             </td>
           </tr>
 
@@ -1348,6 +1343,341 @@ export async function sendTeacherClassCancelledDueToStudentDepartureEmail({
 
   const classesText = cancelledClasses.map(c => `- ${formatSpanishDate(c.date)} de ${c.startTime} a ${c.endTime} (Liberada)`).join('\n');
   const text = `${subject}\n\nHola ${teacherName},\n\nEl alumno ${studentName} ha causado baja en ${brandName}.\n\nSe han cancelado las siguientes clases que tenías asignadas y sus turnos han quedado disponibles:\n${classesText}\n\nTu calendario ya refleja estos cambios.\n`;
+
+  return sendEmail({
+    to,
+    subject,
+    html,
+    text,
+  });
+}
+
+
+/**
+ * Notifies a student when their booking is cancelled because the school created a schedule block
+ */
+export async function sendStudentClassCancelledDueToBlockEmail({
+  to,
+  studentName,
+  teacherName,
+  date,
+  startTime,
+  endTime,
+  reason,
+  schoolName,
+}: {
+  to: string;
+  studentName: string;
+  teacherName: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  reason: string;
+  schoolName?: string;
+}): Promise<EmailResult> {
+  const brandName = schoolName || 'AutoescuelaPro';
+  const displayName = studentName || 'Alumno';
+
+  const formatSpanishDate = (dStr: string) => {
+    try {
+      const parts = dStr.split('-');
+      if (parts.length === 3) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+      return dStr;
+    } catch {
+      return dStr;
+    }
+  };
+
+  const formattedDate = formatSpanishDate(date);
+  const subject = `Aviso: Cancelación de tu clase del ${formattedDate} por incidencia/bloqueo • ${brandName}`;
+
+  const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 8px;">
+    <tr>
+      <td align="center">
+        <!-- Main Card -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
+          
+          <!-- Header Banner -->
+          <tr>
+            <td style="background-color: #475569; padding: 32px 32px; text-align: left;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
+                      ${brandName} • Incidencia en la programación
+                    </span>
+                    <h1 style="margin: 0; color: #ffffff; font-size: 21px; font-weight: 700; line-height: 1.3;">
+                      Clase práctica cancelada
+                    </h1>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Body Content -->
+          <tr>
+            <td style="padding: 32px;">
+              <p style="margin: 0 0 16px 0; font-size: 16px; line-height: 1.6; color: #1e293b;">
+                Hola <strong>${displayName}</strong>,
+              </p>
+              
+              <p style="margin: 0 0 20px 0; font-size: 14px; line-height: 1.6; color: #475569;">
+                Lamentamos comunicarte que la clase práctica que tenías reservada ha tenido que ser <strong>cancelada</strong> debido a un bloqueo o indisponibilidad en la autoescuela:
+              </p>
+
+              <!-- Reason Box -->
+              <div style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 16px 18px; margin-bottom: 24px;">
+                <p style="margin: 0 0 4px 0; font-size: 12px; font-weight: 700; color: #991b1b; text-transform: uppercase; letter-spacing: 0.05em;">
+                  Motivo de la cancelación:
+                </p>
+                <p style="margin: 0; font-size: 14px; font-weight: 700; color: #b91c1c;">
+                  ${reason || 'Incidencia de horario / Cierre programado'}
+                </p>
+              </div>
+
+              <!-- Booking Details -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; margin-bottom: 24px; font-size: 13px; line-height: 1.8;">
+                <tr>
+                  <td style="color: #64748b; width: 35%;"><strong>Fecha:</strong></td>
+                  <td style="color: #1e293b; font-weight: 600;">${formattedDate}</td>
+                </tr>
+                <tr>
+                  <td style="color: #64748b;"><strong>Horario:</strong></td>
+                  <td style="color: #1e293b; font-weight: 600;">${startTime} - ${endTime}</td>
+                </tr>
+                <tr>
+                  <td style="color: #64748b;"><strong>Profesor:</strong></td>
+                  <td style="color: #1e293b; font-weight: 600;">${teacherName}</td>
+                </tr>
+              </table>
+
+              <!-- Action Prompt -->
+              <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 14px; padding: 18px; margin-bottom: 24px;">
+                <p style="margin: 0 0 8px 0; font-size: 14px; font-weight: 700; color: #1e40af;">
+                  ¿Cómo reprogramar tu clase?
+                </p>
+                <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #1e3a8a;">
+                  Sentimos mucho las molestias ocasionadas. Puedes acceder a la plataforma web de <strong>${brandName}</strong> en cualquier momento para elegir otro turno disponible con cualquiera de nuestros profesores.
+                </p>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f8fafc; padding: 20px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8; line-height: 1.5;">
+              ${brandName} • Notificación por bloqueo de horario.
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `;
+
+  const text = `${subject}\n\nHola ${displayName},\n\nTu clase del ${formattedDate} de ${startTime} a ${endTime} con ${teacherName} ha sido cancelada debido a: ${reason}.\n\nSentimos las molestias ocasionadas. Ya puedes acceder al portal para reservar un nuevo turno disponible.\n\nAtentamente,\n${brandName}\n`;
+
+  return sendEmail({
+    to,
+    subject,
+    html,
+    text,
+  });
+}
+
+/**
+ * Notifies a teacher when a schedule block is created on their calendar
+ */
+export async function sendTeacherBlockCreatedEmail({
+  to,
+  teacherName,
+  date,
+  isFullDay,
+  startTime,
+  endTime,
+  reason,
+  cancelledClasses = [],
+  schoolName,
+}: {
+  to: string;
+  teacherName: string;
+  date: string;
+  isFullDay: boolean;
+  startTime?: string | null;
+  endTime?: string | null;
+  reason: string;
+  cancelledClasses?: Array<{ studentName: string; startTime: string; endTime: string }>;
+  schoolName?: string;
+}): Promise<EmailResult> {
+  const brandName = schoolName || 'AutoescuelaPro';
+
+  const formatSpanishDate = (dStr: string) => {
+    try {
+      const parts = dStr.split('-');
+      if (parts.length === 3) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+      return dStr;
+    } catch {
+      return dStr;
+    }
+  };
+
+  const formattedDate = formatSpanishDate(date);
+  const timeDesc = isFullDay ? 'Jornada completa' : `${startTime || ''} a ${endTime || ''}`;
+  const subject = `Bloqueo de horario registrado: ${formattedDate} (${timeDesc}) • ${brandName}`;
+
+  const classesRowsHtml = cancelledClasses.length > 0
+    ? cancelledClasses
+      .map(
+        c => `
+        <tr style="border-bottom: 1px solid #f1f5f9;">
+          <td style="padding: 10px 12px; font-size: 13px; color: #1e293b; font-weight: 600;">
+            ${c.studentName}
+          </td>
+          <td style="padding: 10px 12px; font-size: 13px; color: #1e293b; font-weight: 700; font-family: monospace;">
+            ${c.startTime} - ${c.endTime}
+          </td>
+          <td style="padding: 10px 12px; font-size: 12px; color: #dc2626; font-weight: 700; text-align: right;">
+            Cancelada por bloqueo
+          </td>
+        </tr>
+      `
+      )
+      .join('')
+    : '';
+
+  const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 8px;">
+    <tr>
+      <td align="center">
+        <!-- Main Card -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
+          
+          <!-- Header Banner -->
+          <tr>
+            <td style="background-color: #475569; padding: 32px 32px; text-align: left;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.15); color: #cbd5e1; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
+                      ${brandName} • Notificación de Cuadrante
+                    </span>
+                    <h1 style="margin: 0; color: #ffffff; font-size: 21px; font-weight: 700; line-height: 1.3;">
+                      Bloqueo de horario en tu agenda
+                    </h1>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Body Content -->
+          <tr>
+            <td style="padding: 32px;">
+              <p style="margin: 0 0 16px 0; font-size: 16px; line-height: 1.6; color: #1e293b;">
+                Hola <strong>${teacherName}</strong>,
+              </p>
+              
+              <p style="margin: 0 0 20px 0; font-size: 14px; line-height: 1.6; color: #475569;">
+                Te informamos de que secretaría/administración ha registrado un bloqueo de disponibilidad en tu calendario de trabajo:
+              </p>
+
+              <!-- Block Summary Box -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; margin-bottom: 24px; font-size: 13px; line-height: 1.8;">
+                <tr>
+                  <td style="color: #64748b; width: 35%;"><strong>Fecha:</strong></td>
+                  <td style="color: #1e293b; font-weight: 600;">${formattedDate}</td>
+                </tr>
+                <tr>
+                  <td style="color: #64748b;"><strong>Horario:</strong></td>
+                  <td style="color: #1e293b; font-weight: 600;">${timeDesc}</td>
+                </tr>
+                <tr>
+                  <td style="color: #64748b;"><strong>Motivo:</strong></td>
+                  <td style="color: #b91c1c; font-weight: 700;">${reason}</td>
+                </tr>
+              </table>
+
+              ${cancelledClasses.length > 0
+      ? `
+              <div style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 16px 18px; margin-bottom: 16px;">
+                <p style="margin: 0 0 4px 0; font-size: 13px; font-weight: 700; color: #991b1b;">
+                  ${cancelledClasses.length} clase(s) cancelada(s) por coincidencia con el bloqueo
+                </p>
+                <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #7f1d1d;">
+                  Las siguientes reservas que tenías programadas han sido canceladas automáticamente y se ha notificado por correo a los alumnos:
+                </p>
+              </div>
+
+              <!-- Cancelled Classes Table -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; margin-bottom: 24px;">
+                <thead>
+                  <tr style="background-color: #f1f5f9; text-align: left;">
+                    <th style="padding: 10px 12px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Alumno</th>
+                    <th style="padding: 10px 12px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Horario</th>
+                    <th style="padding: 10px 12px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; text-align: right;">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${classesRowsHtml}
+                </tbody>
+              </table>
+              `
+      : `
+              <p style="margin: 0 0 20px 0; font-size: 13px; line-height: 1.5; color: #059669; font-weight: 600;">
+                No tenías ninguna clase reservada en este tramo, por lo que ningún alumno se ha visto afectado.
+              </p>
+              `
+    }
+
+              <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #64748b;">
+                Tu agenda ya se encuentra actualizada con este bloqueo.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f8fafc; padding: 20px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8; line-height: 1.5;">
+               ${brandName} • Notificación por bloqueo de horario.
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `;
+
+  const classesText = cancelledClasses.map(c => `- ${c.studentName} (${c.startTime} a ${c.endTime})`).join('\n');
+  const text = `${subject}\n\nHola ${teacherName},\n\nSe ha registrado un bloqueo en tu agenda para el ${formattedDate} (${timeDesc}).\nMotivo: ${reason}\n\n${cancelledClasses.length > 0 ? `Clases canceladas por coincidir con el bloqueo:\n${classesText}\n` : 'No había clases afectadas.\n'
+    }\nAtentamente,\n${brandName}\n`;
 
   return sendEmail({
     to,

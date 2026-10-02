@@ -147,8 +147,52 @@ export const api = {
     if (teacherId) params.set('teacher_id', teacherId);
     return request<{ blocks: ScheduleBlock[] }>(`/api/blocks?${params.toString()}`);
   },
-  createBlock: (body: any) =>
-    request<{ id: string; message: string }>('/api/blocks', {
+  checkBlockConflicts: (params: {
+    date: string;
+    teacher_id?: string | null;
+    is_full_day: boolean;
+    start_time?: string | null;
+    end_time?: string | null;
+  }) => {
+    const search = new URLSearchParams();
+    search.set('date', params.date);
+    if (params.teacher_id) search.set('teacher_id', params.teacher_id);
+    search.set('is_full_day', String(params.is_full_day));
+    if (params.start_time) search.set('start_time', params.start_time);
+    if (params.end_time) search.set('end_time', params.end_time);
+    return request<{
+      conflicts: Array<{
+        id: string;
+        date: string;
+        start_time: string;
+        end_time: string;
+        student_id: string;
+        student_name: string;
+        student_email?: string;
+        teacher_id: string;
+        teacher_name: string;
+        teacher_last_name: string;
+        teacher_email?: string;
+      }>;
+    }>(`/api/blocks/check-conflicts?${search.toString()}`);
+  },
+  createBlock: (body: {
+    teacher_id?: string | null;
+    date: string;
+    is_full_day: boolean;
+    start_time?: string | null;
+    end_time?: string | null;
+    reason: string;
+    notifyStudents?: boolean;
+    notifyTeachers?: boolean;
+  }) =>
+    request<{
+      id: string;
+      message: string;
+      cancelledBookingsCount?: number;
+      notifiedStudentsCount?: number;
+      notifiedTeachersCount?: number;
+    }>('/api/blocks', {
       method: 'POST',
       body: JSON.stringify(body),
     }),

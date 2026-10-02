@@ -26,6 +26,8 @@ import {
   sendBookingCreatedEmails,
   sendBookingCancelledEmails,
   sendTeacherClassCancelledDueToStudentDepartureEmail,
+  sendStudentClassCancelledDueToBlockEmail,
+  sendTeacherBlockCreatedEmail,
   isResendConfigured,
   getSenderEmail,
   isSandboxDomain,
@@ -887,9 +889,58 @@ async function startServer() {
     }
   });
 
+  app.get('/api/blocks/check-conflicts', requireAdmin, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { date, teacher_id, is_full_day, start_time, end_time } = req.query as Record<string, string>;
+      if (!date) {
+        res.status(400).json({ error: 'La fecha es obligatoria.' });
+        return;
+      }
+      const fullDay = is_full_day === 'true' || is_full_day === '1';
+
+      let sql = `
+        SELECT b.id, b.date, b.start_time, b.end_time, b.student_id, b.teacher_id,
+               u.name as student_name, u.email as student_email,
+               t.name as teacher_name, t.last_name as teacher_last_name, t.email as teacher_email
+        FROM bookings b
+        JOIN users u ON b.student_id = u.id
+        JOIN teachers t ON b.teacher_id = t.id
+        WHERE b.date = ? AND b.status = 'Reservada'
+      `;
+      const params: any[] = [date];
+
+      if (teacher_id && teacher_id.trim()) {
+        sql += ` AND b.teacher_id = ?`;
+        params.push(teacher_id.trim());
+      }
+
+      if (!fullDay && start_time && end_time) {
+        sql += ` AND b.start_time < ? AND b.end_time > ?`;
+        params.push(end_time, start_time);
+      }
+
+      sql += ` ORDER BY b.start_time ASC`;
+
+      const conflicts = (await db.prepare(sql).all(...params)) as any[];
+      res.json({ conflicts });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   app.post('/api/blocks', requireAdmin, async (req: AuthenticatedRequest, res) => {
     try {
-      const { teacher_id, date, is_full_day, start_time, end_time, reason } = req.body;
+      const {
+        teacher_id,
+        date,
+        is_full_day,
+        start_time,
+        end_time,
+        reason,
+        notifyStudents = true,
+        notifyTeachers = true,
+      } = req.body;
+
       if (!date || !reason) {
         res.status(400).json({ error: 'Fecha y motivo del bloqueo son obligatorios.' });
         return;
@@ -902,7 +953,33 @@ async function startServer() {
 
       const id = 'blk_' + crypto.randomUUID().slice(0, 8);
       const now = new Date().toISOString();
+      const settings = await getAppSettings();
+      const schoolName = settings.school_name || 'AutoescuelaPro';
 
+      // 1. Detect conflicting active bookings
+      let conflictSql = `
+        SELECT b.id, b.date, b.start_time, b.end_time, b.student_id, b.teacher_id,
+               u.name as student_name, u.email as student_email,
+               t.name as teacher_name, t.last_name as teacher_last_name, t.email as teacher_email
+        FROM bookings b
+        JOIN users u ON b.student_id = u.id
+        JOIN teachers t ON b.teacher_id = t.id
+        WHERE b.date = ? AND b.status = 'Reservada'
+      `;
+      const conflictParams: any[] = [date];
+      if (teacher_id && teacher_id.trim()) {
+        conflictSql += ` AND b.teacher_id = ?`;
+        conflictParams.push(teacher_id.trim());
+      }
+      if (!fullDayInt && start_time && end_time) {
+        conflictSql += ` AND b.start_time < ? AND b.end_time > ?`;
+        conflictParams.push(end_time, start_time);
+      }
+      conflictSql += ` ORDER BY b.start_time ASC`;
+
+      const conflicts = (await db.prepare(conflictSql).all(...conflictParams)) as any[];
+
+      // 2. Insert schedule block
       await db.prepare(`
         INSERT INTO schedule_blocks (id, teacher_id, date, is_full_day, start_time, end_time, reason, created_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -917,7 +994,112 @@ async function startServer() {
         now
       );
 
-      // Audit
+      // 3. Cancel conflicting bookings & notify students
+      const cancellationReason = `Bloqueo de horario: ${reason.trim()}`;
+      let notifiedStudentsCount = 0;
+      let notifiedTeachersCount = 0;
+
+      for (const booking of conflicts) {
+        await db.prepare(`
+          UPDATE bookings
+          SET status = 'Cancelada por bloqueo',
+              notes = ?,
+              updated_at = ?
+          WHERE id = ?
+        `).run(cancellationReason, now, booking.id);
+
+        // In-app notification for student
+        await db.prepare(`
+          INSERT INTO notifications (id, user_id, booking_id, type, title, message, read, created_at)
+          VALUES (?, ?, ?, 'booking_cancelled', 'Clase cancelada por bloqueo', ?, 0, ?)
+        `).run(
+          crypto.randomUUID(),
+          booking.student_id,
+          booking.id,
+          `Tu clase del ${formatToDisplayDate(booking.date)} a las ${booking.start_time} con ${booking.teacher_name} ${booking.teacher_last_name} ha sido cancelada por bloqueo de horario (${reason.trim()}).`,
+          now
+        );
+
+        // Email to student
+        if (notifyStudents !== false && booking.student_email) {
+          try {
+            await sendStudentClassCancelledDueToBlockEmail({
+              to: booking.student_email,
+              studentName: booking.student_name,
+              teacherName: `${booking.teacher_name} ${booking.teacher_last_name}`.trim(),
+              date: booking.date,
+              startTime: booking.start_time,
+              endTime: booking.end_time,
+              reason: reason.trim(),
+              schoolName,
+            });
+            notifiedStudentsCount++;
+          } catch (err) {
+            console.error(`[Block Student Email Error for ${booking.student_email}]:`, err);
+          }
+        }
+      }
+
+      // 4. Notify affected teachers by email
+      if (notifyTeachers !== false) {
+        const teachersToNotify: Record<string, { teacherName: string; teacherEmail: string; classes: any[] }> = {};
+
+        if (teacher_id) {
+          const tRow = (await db.prepare('SELECT id, name, last_name, email FROM teachers WHERE id = ?').get(teacher_id)) as any;
+          if (tRow && tRow.email) {
+            teachersToNotify[tRow.id] = {
+              teacherName: `${tRow.name} ${tRow.last_name}`.trim(),
+              teacherEmail: tRow.email,
+              classes: conflicts
+                .filter(c => c.teacher_id === tRow.id)
+                .map(c => ({ studentName: c.student_name, startTime: c.start_time, endTime: c.end_time })),
+            };
+          }
+        } else {
+          // General block for all teachers
+          const allTeachers = (await db.prepare('SELECT id, name, last_name, email FROM teachers WHERE is_active = 1').all()) as any[];
+          for (const t of allTeachers) {
+            if (t.email) {
+              const teacherCancelled = conflicts
+                .filter(c => c.teacher_id === t.id)
+                .map(c => ({ studentName: c.student_name, startTime: c.start_time, endTime: c.end_time }));
+
+              if (teacherCancelled.length > 0 || fullDayInt) {
+                teachersToNotify[t.id] = {
+                  teacherName: `${t.name} ${t.last_name}`.trim(),
+                  teacherEmail: t.email,
+                  classes: teacherCancelled,
+                };
+              }
+            }
+          }
+        }
+
+        for (const tData of Object.values(teachersToNotify)) {
+          try {
+            await sendTeacherBlockCreatedEmail({
+              to: tData.teacherEmail,
+              teacherName: tData.teacherName,
+              date,
+              isFullDay: Boolean(fullDayInt),
+              startTime: fullDayInt ? null : start_time,
+              endTime: fullDayInt ? null : end_time,
+              reason: reason.trim(),
+              cancelledClasses: tData.classes,
+              schoolName,
+            });
+            notifiedTeachersCount++;
+          } catch (err) {
+            console.error(`[Block Teacher Email Error for ${tData.teacherEmail}]:`, err);
+          }
+        }
+      }
+
+      // 5. Audit
+      const auditDetails = `Bloqueo creado para fecha ${formatToDisplayDate(date)} (${fullDayInt ? 'Día completo' : `${start_time}-${end_time}`}): ${reason.trim()}.${conflicts.length > 0
+          ? ` • ${conflicts.length} clases canceladas automáticamente • Notificados ${notifiedStudentsCount} alumnos y ${notifiedTeachersCount} profesores.`
+          : ' • Sin clases en conflicto.'
+        }`;
       await db.prepare(`
         INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
         VALUES (?, ?, ?, ?, 'Creación de bloqueo/excepción', 'block', ?, ?, ?)
@@ -927,11 +1109,19 @@ async function startServer() {
         req.user!.name,
         req.user!.email,
         id,
-        `Bloqueo creado para fecha ${formatToDisplayDate(date)} (${fullDayInt ? 'Día completo' : `${start_time}-${end_time}`}): ${reason}`,
+        auditDetails,
         now
       );
 
-      res.status(201).json({ id, message: 'Bloqueo registrado correctamente.' });
+      res.status(201).json({
+        id,
+        message: conflicts.length > 0
+          ? `Bloqueo registrado. Se han cancelado ${conflicts.length} clases en conflicto y se ha notificado por email a ${notifiedStudentsCount} alumno(s) y ${notifiedTeachersCount} profesor(es).`
+          : 'Bloqueo registrado correctamente.',
+        cancelledBookingsCount: conflicts.length,
+        notifiedStudentsCount,
+        notifiedTeachersCount,
+      });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }

@@ -5,15 +5,15 @@ import type { ScheduleBlock, Teacher } from '../types.ts';
 import {
   Ban,
   Calendar,
-  Clock,
   PlusCircle,
   Trash2,
   CheckCircle2,
   AlertCircle,
   X,
   User,
-  AlertTriangle,
+  Mail,
   ShieldCheck,
+  AlertTriangle,
 } from 'lucide-react';
 import { Button } from './common/Button.tsx';
 
@@ -35,6 +35,12 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
   const [startTime, setStartTime] = useState('09:00');
   const [endTime, setEndTime] = useState('13:00');
   const [reason, setReason] = useState('');
+
+  // Notification & Conflict States
+  const [notifyStudents, setNotifyStudents] = useState(true);
+  const [notifyTeachers, setNotifyTeachers] = useState(true);
+  const [conflicts, setConflicts] = useState<any[]>([]);
+  const [checkingConflicts, setCheckingConflicts] = useState(false);
 
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -82,6 +88,44 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [modalOpen, deletingBlock]);
 
+
+  // Check conflicts live when parameters change
+  useEffect(() => {
+    if (!modalOpen || !date) {
+      setConflicts([]);
+      return;
+    }
+
+    let isCurrent = true;
+    const timer = setTimeout(async () => {
+      try {
+        setCheckingConflicts(true);
+        const res = await api.checkBlockConflicts({
+          date,
+          teacher_id: teacherId || null,
+          is_full_day: isFullDay,
+          start_time: isFullDay ? null : startTime,
+          end_time: isFullDay ? null : endTime,
+        });
+        if (isCurrent) {
+          setConflicts(res.conflicts || []);
+        }
+      } catch (err) {
+        console.error('Error checking block conflicts:', err);
+      } finally {
+        if (isCurrent) {
+          setCheckingConflicts(false);
+        }
+      }
+    }, 250);
+
+    return () => {
+      isCurrent = false;
+      clearTimeout(timer);
+    };
+  }, [modalOpen, date, teacherId, isFullDay, startTime, endTime]);
+
+
   const handleOpenCreate = () => {
     setTeacherId('');
     setDate(new Date().toISOString().split('T')[0]);
@@ -89,6 +133,9 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
     setStartTime('09:00');
     setEndTime('13:00');
     setReason('Día Festivo');
+    setNotifyStudents(true);
+    setNotifyTeachers(true);
+    setConflicts([]);
     setModalOpen(true);
   };
 
@@ -103,20 +150,24 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
     setFeedback(null);
 
     try {
-      await api.createBlock({
+      const res = await api.createBlock({
         teacher_id: teacherId || null,
         date,
         is_full_day: isFullDay,
         start_time: isFullDay ? null : startTime,
         end_time: isFullDay ? null : endTime,
         reason: reason.trim(),
+        notifyStudents,
+        notifyTeachers,
       });
 
-      setFeedback({ type: 'success', message: 'Bloqueo registrado correctamente.' });
+      setFeedback({ type: 'success', message: res.message || 'Bloqueo registrado correctamente.' });
+      setTimeout(() => setFeedback(null), 7000);
       setModalOpen(false);
       fetchData();
     } catch (err: any) {
       setFeedback({ type: 'error', message: err.message || 'Error al guardar el bloqueo.' });
+      setTimeout(() => setFeedback(null), 6000);
     } finally {
       setSaving(false);
     }
@@ -295,7 +346,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
               </div>
 
               <div>
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 mb-6">
                   <input
                     type="checkbox"
                     id="fullDay"
@@ -344,6 +395,74 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                   placeholder="Ej. Día Festivo Nacional, Exámenes DGT, Baja médica..."
                   className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs"
                 />
+              </div>
+              {/* Conflict warning if existing bookings coincide */}
+              {conflicts.length > 0 && (
+                <div className="p-3.5 rounded-2xl bg-amber-50 mt-6 border border-amber-200 text-xs text-amber-950 space-y-2 animate-in fade-in duration-150">
+                  <div className="flex items-center gap-1.5 font-bold text-amber-900">
+                    <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span>Se cancelarán {conflicts.length} clase(s) en conflicto:</span>
+                  </div>
+                  <div className="max-h-28 overflow-y-auto space-y-1 text-[11px] pr-1">
+                    {conflicts.map(c => (
+                      <div
+                        key={c.id}
+                        className="flex items-center justify-between bg-white/80 p-2 rounded-xl border border-amber-200/60 text-slate-800"
+                      >
+                        <span className="truncate mr-2">
+                          <strong>{c.student_name}</strong> • Prof. {c.teacher_name}
+                        </span>
+                        <span className="font-mono text-slate-800 font-semibold shrink-0">
+                          {c.start_time} - {c.end_time}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[11px] text-amber-800 leading-relaxed">
+                    Estas reservas pasarán automáticamente a estado <strong>Cancelada por bloqueo</strong>.
+                  </p>
+                </div>
+              )}
+
+              {/* Notification Toggles */}
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                {/* Conflict warning if existing bookings coincide */}
+                {conflicts.length > 0 && (
+                  <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={notifyStudents}
+                      onChange={e => setNotifyStudents(e.target.checked)}
+                      className="mt-0.5 rounded border-slate-300 w-4 h-4 cursor-pointer shrink-0"
+                    />
+                    <span className="text-xs text-slate-700 leading-tight">
+                      <strong className="text-slate-900 flex items-center gap-1">
+                        <Mail className="w-3.5 h-3.5 inline" />
+                        Notificar por email a los alumnos afectados
+                      </strong>
+                      <span className="block text-[11px] text-slate-500 mt-0.5">
+                        Recibirán un aviso informándoles del motivo ({reason || 'bloqueo'}) e invitándoles a reprogramar.
+                      </span>
+                    </span>
+                  </label>
+                )}
+                <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={notifyTeachers}
+                    onChange={e => setNotifyTeachers(e.target.checked)}
+                    className="mt-0.5 rounded border-slate-300 w-4 h-4 cursor-pointer shrink-0"
+                  />
+                  <span className="text-xs text-slate-700 leading-tight">
+                    <strong className="text-slate-900 flex items-center gap-1">
+                      <Mail className="w-3.5 h-3.5 inline" />
+                      Avisar por email al profesorado afectado
+                    </strong>
+                    <span className="block text-[11px] text-slate-500 mt-0.5">
+                      Se enviará un correo informando del bloqueo en su cuadrante y el desglose de clases canceladas si aplica.
+                    </span>
+                  </span>
+                </label>
               </div>
               <div className="flex items-center justify-end gap-3 pt-2">
                 <Button
