@@ -47,7 +47,7 @@ async function startServer() {
   // Auto-complete bookings whose end_time has already passed
   await autoCompletePassedBookings();
   const app = express();
-  const PORT = 3000;
+  const PORT = parseInt(process.env.PORT || '3000', 10);
 
   app.use(express.json());
   app.use(authenticateToken);

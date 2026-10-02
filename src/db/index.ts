@@ -11,12 +11,23 @@ declare global {
 // Function to create or retrieve the connection pool.
 export const createPool = () => {
     if (!global._postgresPool) {
+        // Railway (production) provides a single DATABASE_URL
+        // Local development uses individual SQL_* variables
+        const connectionConfig = process.env.DATABASE_URL
+            ? {
+                connectionString: process.env.DATABASE_URL,
+                ssl: { rejectUnauthorized: false },
+              }
+            : {
+                host: process.env.SQL_HOST,
+                user: process.env.SQL_USER,
+                port: Number(process.env.SQL_PORT || 5432),
+                password: process.env.SQL_PASSWORD,
+                database: process.env.SQL_DB_NAME,
+              };
+
         global._postgresPool = new Pool({
-            host: process.env.SQL_HOST,
-            user: process.env.SQL_USER,
-            port: Number(process.env.SQL_PORT || 5432),
-            password: process.env.SQL_PASSWORD,
-            database: process.env.SQL_DB_NAME,
+            ...connectionConfig,
             max: 10,
             connectionTimeoutMillis: 15000,
         });
