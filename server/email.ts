@@ -62,11 +62,11 @@ export async function sendEmail({
   text?: string;
 }): Promise<EmailResult> {
 
-  //TODO: quitar para reponer envío de emails
-  console.log("Se va a enviar un email a: ", to);
-  console.log("El asunto es: ", subject);
-  return
-  ///////////////
+  // //TODO: quitar para reponer envío de emails
+  // console.log("Se va a enviar un email a: ", to);
+  // console.log("El asunto es: ", subject);
+  // return
+  // ///////////////
 
   const client = getResendClient();
   if (!client) {

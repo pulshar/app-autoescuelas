@@ -941,7 +941,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   id="notifyStudentCheckbox"
                   checked={notifyStudentOnDelete}
                   onChange={(e) => setNotifyStudentOnDelete(e.target.checked)}
-                  className="mt-0.5 rounded text-slate-600 focus:ring-slate-500 border-slate-300 w-4 h-4 cursor-pointer shrink-0"
+                  className="mt-0.5 rounded text-slate-600 focus:ring-slate-500 border-slate-300 w-4 h-4"
                 />
                 <label htmlFor="notifyStudentCheckbox" className="cursor-pointer select-none leading-relaxed">
                   <span className="font-bold flex items-center gap-1.5 text-slate-950">
@@ -962,7 +962,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                     id="notifyTeachersCheckbox"
                     checked={notifyTeachersOnDelete}
                     onChange={(e) => setNotifyTeachersOnDelete(e.target.checked)}
-                    className="mt-0.5 rounded text-slate-600 focus:ring-slate-500 border-slate-300 w-4 h-4 cursor-pointer shrink-0"
+                    className="mt-0.5 rounded text-slate-600 focus:ring-slate-500 border-slate-300 w-4 h-4"
                   />
                   <label htmlFor="notifyTeachersCheckbox" className="cursor-pointer select-none leading-relaxed">
                     <span className="font-bold flex items-center gap-1.5 text-slate-900">

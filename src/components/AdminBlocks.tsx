@@ -433,7 +433,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                       type="checkbox"
                       checked={notifyStudents}
                       onChange={e => setNotifyStudents(e.target.checked)}
-                      className="mt-0.5 rounded border-slate-300 w-4 h-4 cursor-pointer shrink-0"
+                      className="mt-0.5 rounded border-slate-300 w-4 h-4"
                     />
                     <span className="text-xs text-slate-700 leading-tight">
                       <strong className="text-slate-900 flex items-center gap-1">
@@ -451,7 +451,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
                     type="checkbox"
                     checked={notifyTeachers}
                     onChange={e => setNotifyTeachers(e.target.checked)}
-                    className="mt-0.5 rounded border-slate-300 w-4 h-4 cursor-pointer shrink-0"
+                    className="mt-0.5 rounded border-slate-300 w-4 h-4"
                   />
                   <span className="text-xs text-slate-700 leading-tight">
                     <strong className="text-slate-900 flex items-center gap-1">
