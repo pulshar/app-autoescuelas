@@ -68,6 +68,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
   // Delete / Baja Modal State
   const [deletingStudent, setDeletingStudent] = useState<StudentWithMetrics | null>(null);
   const [notifyStudentOnDelete, setNotifyStudentOnDelete] = useState<boolean>(true);
+  const [notifyTeachersOnDelete, setNotifyTeachersOnDelete] = useState<boolean>(true);
   const [deleteSubmitting, setDeleteSubmitting] = useState(false);
 
   // Global Feedback Banner
@@ -251,13 +252,15 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
   const handleCloseDelete = () => {
     setDeletingStudent(null);
     setNotifyStudentOnDelete(true);
+    setNotifyTeachersOnDelete(true);
   };
 
   const handleConfirmDelete = async () => {
     if (!deletingStudent) return;
     try {
       setDeleteSubmitting(true);
-      const res = await api.deleteStudent(deletingStudent.id, notifyStudentOnDelete);
+      const res = await api.deleteStudent(deletingStudent.id, notifyStudentOnDelete, notifyTeachersOnDelete);
+
       setFeedback({ type: 'success', message: res.message });
       setTimeout(() => setFeedback(null), 6000);
       handleCloseDelete();
@@ -932,13 +935,13 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
               )}
 
               {/* Notification by email option */}
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-900 flex items-start gap-2.5">
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 flex items-start gap-2.5">
                 <input
                   type="checkbox"
                   id="notifyStudentCheckbox"
                   checked={notifyStudentOnDelete}
                   onChange={(e) => setNotifyStudentOnDelete(e.target.checked)}
-                  className="mt-0.5 rounded text-slate-600 focus:ring-slate-500 border-slate-300 w-4 h-4 cursor-pointer"
+                  className="mt-0.5 rounded text-slate-600 focus:ring-slate-500 border-slate-300 w-4 h-4 cursor-pointer shrink-0"
                 />
                 <label htmlFor="notifyStudentCheckbox" className="cursor-pointer select-none leading-relaxed">
                   <span className="font-bold flex items-center gap-1.5 text-slate-950">
@@ -951,6 +954,27 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   </span>
                 </label>
               </div>
+              {/* Notification to affected teachers option */}
+              {(deletingStudent.active_classes || 0) > 0 && (
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 flex items-start gap-2.5">
+                  <input
+                    type="checkbox"
+                    id="notifyTeachersCheckbox"
+                    checked={notifyTeachersOnDelete}
+                    onChange={(e) => setNotifyTeachersOnDelete(e.target.checked)}
+                    className="mt-0.5 rounded text-slate-600 focus:ring-slate-500 border-slate-300 w-4 h-4 cursor-pointer shrink-0"
+                  />
+                  <label htmlFor="notifyTeachersCheckbox" className="cursor-pointer select-none leading-relaxed">
+                    <span className="font-bold flex items-center gap-1.5 text-slate-900">
+                      <Mail className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                      Avisar por email a los profesores
+                    </span>
+                    <span className="text-[11px] text-slate-700 block mt-0.5">
+                      Se enviará un correo automático a los profesores asignados indicándoles las <strong>clases canceladas ({deletingStudent.active_classes})</strong> y que sus huecos quedan liberados en su agenda.
+                    </span>
+                  </label>
+                </div>
+              )}
 
               {/* Actions */}
               <div className="flex items-center justify-end gap-3 pt-2">

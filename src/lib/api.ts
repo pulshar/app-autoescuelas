@@ -229,14 +229,16 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify(body),
     }),
-  deleteStudent: (id: string, notifyEmail: boolean = true) =>
+  deleteStudent: (id: string, notifyEmail: boolean = true, notifyTeachers: boolean = true) =>
     request<{
       action: 'deleted' | 'deactivated';
       message: string;
       emailSent?: boolean;
       emailRedirected?: boolean;
       recipient?: string;
-    }>(`/api/students/${id}?notifyEmail=${notifyEmail}`, {
+      notifiedTeachersCount?: number;
+      teachersNotified?: string[];
+    }>(`/api/students/${id}?notifyEmail=${notifyEmail}&notifyTeachers=${notifyTeachers}`, {
       method: 'DELETE',
     }),
   resendWelcomeEmail: (studentId: string) =>

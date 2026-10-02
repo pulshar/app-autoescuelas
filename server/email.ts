@@ -1203,3 +1203,156 @@ export async function sendAccountDeletionEmail({
     text,
   });
 }
+
+
+/**
+ * Notifies a teacher when future bookings are cancelled due to a student being deactivated or permanently deleted
+ */
+export async function sendTeacherClassCancelledDueToStudentDepartureEmail({
+  to,
+  teacherName,
+  studentName,
+  schoolName,
+  isPurge = false,
+  cancelledClasses = [],
+}: {
+  to: string;
+  teacherName: string;
+  studentName: string;
+  schoolName?: string;
+  isPurge?: boolean;
+  cancelledClasses: Array<{ date: string; startTime: string; endTime: string }>;
+}): Promise<EmailResult> {
+  const brandName = schoolName || 'AutoescuelaPro'
+  const count = cancelledClasses.length;
+  const subject = `Aviso de cancelación: ${count} clase${count > 1 ? 's' : ''} liberada${count > 1 ? 's' : ''} por baja de alumno • ${brandName}`;
+
+  const formatSpanishDate = (dStr: string) => {
+    try {
+      const parts = dStr.split('-');
+      if (parts.length === 3) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+      return dStr;
+    } catch {
+      return dStr;
+    }
+  };
+
+  const classesListHtml = cancelledClasses
+    .map(
+      c => `
+      <tr style="border-bottom: 1px solid #f1f5f9;">
+        <td style="padding: 10px 12px; font-size: 13px; color: #1e293b; font-weight: 600;">
+          ${formatSpanishDate(c.date)}
+        </td>
+        <td style="padding: 10px 12px; font-size: 13px; color: #475569; font-weight: 700; font-family: monospace;">
+          ${c.startTime} - ${c.endTime}
+        </td>
+        <td style="padding: 10px 12px; font-size: 12px; color: #059669; font-weight: 700; text-align: right;">
+          Hueco Liberado
+        </td>
+      </tr>
+    `
+    )
+    .join('');
+
+  const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 8px;">
+    <tr>
+      <td align="center">
+        <!-- Main Card -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
+          
+          <!-- Header Banner -->
+          <tr>
+            <td style="background-color: #475569; padding: 30px 32px; text-align: left;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.15); color: #94a3b8; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
+                      ${brandName}
+                    </span>
+                    <h1 style="margin: 0; color: #ffffff; font-size: 21px; font-weight: 700; line-height: 1.3;">
+                      Actualización de tu cuadrante
+                    </h1>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Body Content -->
+          <tr>
+            <td style="padding: 32px;">
+              <p style="margin: 0 0 16px 0; font-size: 16px; line-height: 1.6; color: #1e293b;">
+                Hola <strong>${teacherName}</strong>,
+              </p>
+              
+              <p style="margin: 0 0 20px 0; font-size: 14px; line-height: 1.6; color: #475569;">
+                Te informamos de que el alumno <strong>${studentName}</strong> ha causad${isPurge ? 'o baja definitiva y eliminación' : 'o baja'} en la autoescuela por parte de secretaría / administración.
+              </p>
+
+              <!-- Notice Box -->
+              <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 16px 18px; margin-bottom: 24px;">
+                <p style="margin: 0 0 4px 0; font-size: 13px; font-weight: 700; color: #14532d;">
+                  Clases canceladas y turnos liberados en tu agenda
+                </p>
+                <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #166534;">
+                  Se ha${count > 1 ? 'n' : ''} cancelado automáticamente <strong>${count} clase${count > 1 ? 's' : ''}</strong> que tenías programada${count > 1 ? 's' : ''} con este alumno. Las franjas horarias han quedado <strong>disponibles de inmediato</strong> para que otros alumnos puedan reservarlas.
+                </p>
+              </div>
+
+              <!-- Cancelled Classes Table -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; margin-bottom: 24px;">
+                <thead>
+                  <tr style="background-color: #f1f5f9; text-align: left;">
+                    <th style="padding: 10px 12px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Fecha</th>
+                    <th style="padding: 10px 12px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Horario</th>
+                    <th style="padding: 10px 12px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; text-align: right;">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${classesListHtml}
+                </tbody>
+              </table>
+
+              <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #64748b;">
+                Puedes consultar el estado actualizado de tu agenda y cuadrante diario en el portal de ${brandName}.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f8fafc; padding: 16px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8;">
+              ${brandName} • Notificación de baja de alumno.
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `;
+
+  const classesText = cancelledClasses.map(c => `- ${formatSpanishDate(c.date)} de ${c.startTime} a ${c.endTime} (Liberada)`).join('\n');
+  const text = `${subject}\n\nHola ${teacherName},\n\nEl alumno ${studentName} ha causado baja en ${brandName}.\n\nSe han cancelado las siguientes clases que tenías asignadas y sus turnos han quedado disponibles:\n${classesText}\n\nTu calendario ya refleja estos cambios.\n`;
+
+  return sendEmail({
+    to,
+    subject,
+    html,
+    text,
+  });
+}

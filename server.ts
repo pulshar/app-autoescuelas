@@ -25,6 +25,7 @@ import {
   sendAccountDeletionEmail,
   sendBookingCreatedEmails,
   sendBookingCancelledEmails,
+  sendTeacherClassCancelledDueToStudentDepartureEmail,
   isResendConfigured,
   getSenderEmail,
   isSandboxDomain,
@@ -1758,8 +1759,22 @@ async function startServer() {
 
       // Check whether email notification was requested (enabled by default)
       const shouldNotify = req.query.notifyEmail !== 'false' && req.body?.notifyEmail !== false;
+      // Check whether teacher email notifications were requested (enabled by default)
+      const shouldNotifyTeachers = req.query.notifyTeachers !== 'false' && req.body?.notifyTeachers !== false;
+
       let emailResult: any = null;
 
+      // 1. Fetch all active/future bookings with teacher details BEFORE cancelling or deleting
+      const activeBookingsWithTeachers = (await db.prepare(`
+        SELECT b.id, b.date, b.start_time, b.end_time, b.teacher_id,
+               t.name as teacher_name, t.last_name as teacher_last_name, t.email as teacher_email
+        FROM bookings b
+        JOIN teachers t ON b.teacher_id = t.id
+        WHERE b.student_id = ? AND b.status = 'Reservada'
+        ORDER BY b.date ASC, b.start_time ASC
+      `).all(id)) as any[];
+
+      // 2. Notify student by email if requested
       if (shouldNotify && student.email) {
         try {
           emailResult = await sendAccountDeletionEmail({
@@ -1773,9 +1788,52 @@ async function startServer() {
         }
       }
 
+      // 3. Notify affected teachers by email if requested
+      const notifiedTeachersList: string[] = [];
+      if (shouldNotifyTeachers && activeBookingsWithTeachers.length > 0) {
+        const teacherMap: Record<string, { teacherName: string; teacherEmail: string; classes: any[] }> = {};
+        for (const b of activeBookingsWithTeachers) {
+          if (!teacherMap[b.teacher_id]) {
+            teacherMap[b.teacher_id] = {
+              teacherName: `${b.teacher_name} ${b.teacher_last_name}`.trim(),
+              teacherEmail: b.teacher_email,
+              classes: [],
+            };
+          }
+          teacherMap[b.teacher_id].classes.push({
+            date: b.date,
+            startTime: b.start_time,
+            endTime: b.end_time,
+          });
+        }
+
+        for (const tData of Object.values(teacherMap)) {
+          if (tData.teacherEmail) {
+            try {
+              const tResult = await sendTeacherClassCancelledDueToStudentDepartureEmail({
+                to: tData.teacherEmail,
+                teacherName: tData.teacherName,
+                studentName: student.name || 'Alumno',
+                schoolName,
+                cancelledClasses: tData.classes,
+              });
+              if (tResult.success) {
+                notifiedTeachersList.push(tData.teacherName);
+              }
+            } catch (tErr) {
+              console.error(`[Teacher Departure Notification Error for ${tData.teacherEmail}]:`, tErr);
+            }
+          }
+        }
+      }
+
       const emailAuditNote = emailResult?.success
         ? ` • Correo de baja enviado a ${student.email}${emailResult.redirected ? ` (Sandbox Resend -> ${emailResult.actualRecipient})` : ''}`
-        : (shouldNotify && student.email ? ' • Intento de notificación por email realizado' : '');
+        : (shouldNotify && student.email ? ' • Intento de notificación por email a alumno realizado' : '');
+
+      const teacherAuditNote = notifiedTeachersList.length > 0
+        ? ` • Notificación enviada a ${notifiedTeachersList.length} profesor(es) (${notifiedTeachersList.join(', ')})`
+        : '';
 
 
       if (count > 0) {
@@ -1797,16 +1855,18 @@ async function startServer() {
           req.user!.name,
           req.user!.email,
           id,
-          `El alumno ${student.name} (${student.email}) tiene ${count} clases registradas. Ha sido dado de baja protegiendo el histórico.${emailAuditNote}`,
+          `El alumno ${student.name} (${student.email}) tiene ${count} clases registradas. Ha sido dado de baja protegiendo el histórico.${emailAuditNote}${teacherAuditNote}`,
           now
         );
 
         res.json({
           action: 'deactivated',
-          message: `El alumno tiene ${count} clases en su historial. Ha sido dado de baja, sus reservas pendientes se han cancelado${emailResult?.success ? ' y se le ha enviado la confirmación por email' : ''}.`,
+          message: `El alumno tiene ${count} clases en su historial. Ha sido dado de baja, sus reservas pendientes se han cancelado${emailResult?.success ? ', se le ha notificado por email' : ''}${notifiedTeachersList.length > 0 ? ` y se ha avisado a ${notifiedTeachersList.length} profesor(es)` : ''}.`,
           emailSent: Boolean(emailResult?.success),
           emailRedirected: Boolean(emailResult?.redirected),
           recipient: student.email,
+          notifiedTeachersCount: notifiedTeachersList.length,
+          teachersNotified: notifiedTeachersList,
         });
       } else {
         // Physical permanent deletion: clean notifications and password resets first
