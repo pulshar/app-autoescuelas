@@ -391,31 +391,20 @@ export async function sendStudentWelcomeEmail({
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 8px;">
     <tr>
       <td align="center">
-        <!-- Main Card -->
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
-          
-          <!-- Header Banner -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
           <tr>
             <td style="background-color: ${brandColor}; padding: 32px 32px; text-align: left;">
-              <table width="100%" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td>
-                    <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
-                      ${brandName}
-                    </span>
-                    <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; line-height: 1.3;">
-                      ¡Bienvenido/a a la Autoescuela!
-                    </h1>
-                  </td>
-                </tr>
-              </table>
+              <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
+                ${brandName}
+              </span>
+              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; line-height: 1.3;">
+                ¡Bienvenido/a a la Autoescuela!
+              </h1>
             </td>
           </tr>
-
-          <!-- Body Content -->
           <tr>
-            <td style="padding: 32px;">
-              <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; color: #1e293b;">
+           <td style="padding: 32px;">
+               <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; color: #1e293b;">
                 Hola <strong>${studentName}</strong>,
               </p>
               
@@ -481,15 +470,11 @@ export async function sendStudentWelcomeEmail({
               </p>
             </td>
           </tr>
-
-          <!-- Footer -->
           <tr>
-            <td style="background-color: #f8fafc; padding: 20px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8; line-height: 1.5;">
-              Notificación generada automáticamente por ${brandName} para la activación de tu cuenta de alumno.<br>
-              Por favor, no respondas a este correo.
+            <td style="background-color: #f8fafc; padding: 16px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8;">
+              ${brandName} • Notificación de alta de usuario.
             </td>
           </tr>
-
         </table>
       </td>
     </tr>
@@ -633,8 +618,7 @@ export async function sendBookingCreatedEmails(params: BookingEmailNotificationP
           </tr>
           <tr>
             <td style="background-color: #f8fafc; padding: 16px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8;">
-              Notificación generada automáticamente por ${brandName}.<br>
-              Por favor, no respondas a este correo.
+              ${brandName} • Notificación de clase confirmada.
             </td>
           </tr>
         </table>
@@ -729,8 +713,7 @@ export async function sendBookingCreatedEmails(params: BookingEmailNotificationP
           </tr>
           <tr>
             <td style="background-color: #f8fafc; padding: 16px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8;">
-              Notificación generada automáticamente por ${brandName}.<br>
-              Por favor, no respondas a este correo.
+              ${brandName} • Notificación de clase confirmada.
             </td>
           </tr>
         </table>
@@ -859,7 +842,7 @@ export async function sendBookingCancelledEmails(params: BookingEmailNotificatio
           </tr>
           <tr>
             <td style="background-color: #f8fafc; padding: 16px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8;">
-              ${brandName} • Notificación de cancelación de clase.
+              ${brandName} • Notificación de clase cancelada.
             </td>
           </tr>
         </table>
@@ -954,8 +937,7 @@ export async function sendBookingCancelledEmails(params: BookingEmailNotificatio
           </tr>
           <tr>
             <td style="background-color: #f8fafc; padding: 16px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8;">
-              Notificación generada automáticamente por ${brandName}.<br>
-              Por favor, no respondas a este correo.
+              ${brandName} • Notificación de clase cancelada.
             </td>
           </tr>
         </table>
@@ -1014,30 +996,19 @@ export async function sendPasswordResetEmail({
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 8px;">
     <tr>
       <td align="center">
-        <!-- Main Card -->
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
-          
-          <!-- Header Banner -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
           <tr>
             <td style="background-color: ${brandColor}; padding: 32px 32px; text-align: left;">
-              <table width="100%" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td>
-                    <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
-                      ${brandName}
-                    </span>
-                    <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; line-height: 1.3;">
-                      Recuperación de contraseña
-                    </h1>
-                  </td>
-                </tr>
-              </table>
+              <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
+                ${brandName}
+              </span>
+              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; line-height: 1.3;">
+                Recuperación de contraseña
+              </h1>
             </td>
           </tr>
-
-          <!-- Body Content -->
           <tr>
-            <td style="padding: 32px;">
+           <td style="padding: 32px;">
               <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; color: #1e293b;">
                 Hola <strong>${displayName}</strong>,
               </p>
@@ -1054,7 +1025,7 @@ export async function sendPasswordResetEmail({
               <table width="100%" cellpadding="0" cellspacing="0" style="margin: 20px 0 32px 0;">
                 <tr>
                   <td align="center">
-                    <a href="${resetUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px;">
+                    <a href="${resetUrl}" target="_blank" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 34px; border-radius: 8px; box-shadow: 0 4px 14px rgba(${brandColor}, 0.35);">
                       Restablecer mi contraseña
                     </a>
                     <div style="margin-top: 10px; font-size: 12px; color: #64748b;">
@@ -1093,15 +1064,11 @@ export async function sendPasswordResetEmail({
               </p>
             </td>
           </tr>
-
-          <!-- Footer -->
           <tr>
-            <td style="background-color: #f8fafc; padding: 20px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8; line-height: 1.5;">
-              Notificación generada automáticamente por ${brandName} para la recuperación de contraseña.<br>
-              Por favor, no respondas a este correo.
+            <td style="background-color: #f8fafc; padding: 16px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8;">
+              ${brandName} • Notificación de recuperación de contraseña.
             </td>
           </tr>
-
         </table>
       </td>
     </tr>
