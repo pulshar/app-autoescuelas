@@ -22,6 +22,7 @@ import {
   sendClassReminderEmail,
   sendStudentWelcomeEmail,
   sendPasswordResetEmail,
+  sendAccountDeletionEmail,
   sendBookingCreatedEmails,
   sendBookingCancelledEmails,
   isResendConfigured,
@@ -1735,7 +1736,35 @@ async function startServer() {
 
       const bookingCount = (await db.prepare('SELECT COUNT(*) as count FROM bookings WHERE student_id = ?').get(id)) as any;
       const count = Number(bookingCount?.count || 0);
+
+      const activeBookingsRow = (await db.prepare("SELECT COUNT(*) as count FROM bookings WHERE student_id = ? AND status = 'Reservada'").get(id)) as any;
+      const activeCount = Number(activeBookingsRow?.count || 0);
+
       const now = new Date().toISOString();
+      const settings = await getAppSettings();
+      const schoolName = settings.school_name || 'AutoescuelaPro';
+
+      // Check whether email notification was requested (enabled by default)
+      const shouldNotify = req.query.notifyEmail !== 'false' && req.body?.notifyEmail !== false;
+      let emailResult: any = null;
+
+      if (shouldNotify && student.email) {
+        try {
+          emailResult = await sendAccountDeletionEmail({
+            to: student.email,
+            studentName: student.name || 'Alumno',
+            schoolName,
+            cancelledBookingsCount: activeCount,
+          });
+        } catch (emailErr) {
+          console.error('[Resend Deletion Email Exception]:', emailErr);
+        }
+      }
+
+      const emailAuditNote = emailResult?.success
+        ? ` • Correo de baja enviado a ${student.email}${emailResult.redirected ? ` (Sandbox Resend -> ${emailResult.actualRecipient})` : ''}`
+        : (shouldNotify && student.email ? ' • Intento de notificación por email realizado' : '');
+
 
       if (count > 0) {
         // Soft delete / baja lógica: cancel active bookings and deactivate
@@ -1756,13 +1785,16 @@ async function startServer() {
           req.user!.name,
           req.user!.email,
           id,
-          `El alumno ${student.name} (${student.email}) tiene ${count} clases registradas. Ha sido dado de baja protegiendo el histórico.`,
+          `El alumno ${student.name} (${student.email}) tiene ${count} clases registradas. Ha sido dado de baja protegiendo el histórico.${emailAuditNote}`,
           now
         );
 
         res.json({
           action: 'deactivated',
-          message: `El alumno tiene ${count} clases en su historial. Para proteger las estadísticas y registros de la autoescuela, ha sido dado de baja y sus reservas activas pendientes han sido canceladas.`,
+          message: `El alumno tiene ${count} clases en su historial. Ha sido dado de baja, sus reservas pendientes se han cancelado${emailResult?.success ? ' y se le ha enviado la confirmación por email' : ''}.`,
+          emailSent: Boolean(emailResult?.success),
+          emailRedirected: Boolean(emailResult?.redirected),
+          recipient: student.email,
         });
       } else {
         // Physical permanent deletion: clean notifications and password resets first
@@ -1779,13 +1811,16 @@ async function startServer() {
           req.user!.name,
           req.user!.email,
           id,
-          `Alumno ${student.name} (${student.email}) eliminado permanentemente (sin historial de clases).`,
+          `Alumno ${student.name} (${student.email}) eliminado permanentemente (sin historial de clases).${emailAuditNote}`,
           now
         );
 
         res.json({
           action: 'deleted',
-          message: 'Alumno eliminado permanentemente del sistema.',
+          message: `Alumno eliminado permanentemente del sistema${emailResult?.success ? ' y notificado por email' : ''}.`,
+          emailSent: Boolean(emailResult?.success),
+          emailRedirected: Boolean(emailResult?.redirected),
+          recipient: student.email,
         });
       }
     } catch (err: any) {

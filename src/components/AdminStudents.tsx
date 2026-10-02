@@ -67,6 +67,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
 
   // Delete / Baja Modal State
   const [deletingStudent, setDeletingStudent] = useState<StudentWithMetrics | null>(null);
+  const [notifyStudentOnDelete, setNotifyStudentOnDelete] = useState<boolean>(true);
   const [deleteSubmitting, setDeleteSubmitting] = useState(false);
 
   // Global Feedback Banner
@@ -235,13 +236,14 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
 
   const handleCloseDelete = () => {
     setDeletingStudent(null);
+    setNotifyStudentOnDelete(true);
   };
 
   const handleConfirmDelete = async () => {
     if (!deletingStudent) return;
     try {
       setDeleteSubmitting(true);
-      const res = await api.deleteStudent(deletingStudent.id);
+      const res = await api.deleteStudent(deletingStudent.id, notifyStudentOnDelete);
       setFeedback({ type: 'success', message: res.message });
       setTimeout(() => setFeedback(null), 6000);
       handleCloseDelete();
@@ -920,6 +922,27 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
                   </p>
                 </div>
               )}
+
+              {/* Notification by email option */}
+              <div className="p-3.5 rounded-2xl bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-900 flex items-start gap-2.5">
+                <input
+                  type="checkbox"
+                  id="notifyStudentCheckbox"
+                  checked={notifyStudentOnDelete}
+                  onChange={(e) => setNotifyStudentOnDelete(e.target.checked)}
+                  className="mt-0.5 rounded text-indigo-600 focus:ring-indigo-500 border-indigo-300 w-4 h-4 cursor-pointer"
+                />
+                <label htmlFor="notifyStudentCheckbox" className="cursor-pointer select-none leading-relaxed">
+                  <span className="font-bold flex items-center gap-1.5 text-indigo-950">
+                    <Mail className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                    Enviar correo de confirmación de baja al alumno
+                  </span>
+                  <span className="text-[11px] text-indigo-700 block mt-0.5">
+                    Se remitirá un email formal a <strong>{deletingStudent.email}</strong> notificándole el cierre de su cuenta
+                    {(deletingStudent.active_classes || 0) > 0 ? ` y la cancelación de sus ${deletingStudent.active_classes} clase(s) pendiente(s)` : ''}.
+                  </span>
+                </label>
+              </div>
 
               {/* Actions */}
               <div className="flex items-center justify-end gap-3 pt-2">

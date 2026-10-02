@@ -62,6 +62,12 @@ export async function sendEmail({
   text?: string;
 }): Promise<EmailResult> {
 
+  // //TODO: quitar para reponer envío de emails
+  // console.log("Se va a enviar un email a: ", to);
+  // console.log("El asunto es: ", subject);
+  // return
+  // ///////////////
+
   const client = getResendClient();
   if (!client) {
     console.warn(`[Resend] Intento de envío a "${to}" omitido: RESEND_API_KEY no está configurada.`);
@@ -795,7 +801,7 @@ export async function sendBookingCancelledEmails(params: BookingEmailNotificatio
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 8px;">
     <tr>
       <td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
           <tr>
             <td style="background-color: #475569; padding: 32px 32px; text-align: left;">
               <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
@@ -1105,6 +1111,125 @@ export async function sendPasswordResetEmail({
   `;
 
   const text = `${subject}\n\nHola ${displayName},\n\nHemos recibido una solicitud para restablecer la contraseña asociada a tu cuenta (${to}) en ${brandName}.\n\nPara definir una nueva contraseña, abre el siguiente enlace en tu navegador (válido durante 1 hora):\n${resetUrl}\n\nCódigo de recuperación manual: ${resetToken}\n\nSi no has sido tú quien solicitó este cambio, puedes ignorar este correo tranquilamente; tu contraseña no sufrirá ningún cambio.\n\nAtentamente,\nEquipo de ${brandName}\n`;
+
+  return sendEmail({
+    to,
+    subject,
+    html,
+    text,
+  });
+}
+
+export async function sendAccountDeletionEmail({
+  to,
+  studentName,
+  schoolName,
+  cancelledBookingsCount = 0,
+  reason,
+}: {
+  to: string;
+  studentName: string;
+  schoolName?: string;
+  cancelledBookingsCount?: number;
+  reason?: string;
+}): Promise<EmailResult> {
+  const brandName = schoolName || 'AutoescuelaPro';
+  const displayName = studentName || 'Alumno';
+  const subject = `Confirmación de baja de cuenta • ${brandName}`;
+
+  const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 32px 8px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);">
+          <tr>
+            <td style="background-color: #475569; padding: 32px 32px; text-align: left;">
+              <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 9999px; margin-bottom: 10px;">
+                ${brandName}
+              </span>
+              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; line-height: 1.3;">
+                Baja de cuenta de usuario
+              </h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 32px;">
+              <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; color: #334155;">
+                Hola <strong>${displayName}</strong>,
+              </p>
+               <p style="margin: 0 0 20px 0; font-size: 14px; line-height: 1.6; color: #475569;">
+                Te confirmamos que tu cuenta de usuario asociada a este correo (<span style="color: #0f172a; font-weight: 600;">${to}</span>) ha sido dada de baja en la plataforma de reservas de <strong>${brandName}</strong>.
+              </p>
+
+               ${cancelledBookingsCount > 0
+      ? `
+              <!-- Cancelled Classes Alert -->
+              <div style="background-color: #fff7ed; border: 1px solid #fed7aa; border-radius: 12px; padding: 16px 18px; margin-bottom: 24px;">
+
+                <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #7c2d12;">
+                  Se ha${cancelledBookingsCount > 1 ? 'n' : ''} cancelado automáticamente <strong>${cancelledBookingsCount} clase${cancelledBookingsCount > 1 ? 's' : ''} práctica${cancelledBookingsCount > 1 ? 's' : ''}</strong> que tenías programada${cancelledBookingsCount > 1 ? 's' : ''} en tu calendario para liberar el cuadrante.
+                </p>
+              </div>
+              `
+      : ''
+    }
+
+                <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px; color: #475569; line-height: 1.6; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; margin-bottom: 24px;">
+                <tr>
+                    <td style="padding: 4px 0; vertical-align: top; width: 22px;">🔒</td>
+                    <td style="padding: 4px 0;">Tus credenciales de acceso a la aplicación han sido revocadas.</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 4px 0; vertical-align: top; width: 22px;">🔕</td>
+                    <td style="padding: 4px 0;">No recibirás más avisos, notificaciones ni recordatorios automáticos.</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 4px 0; vertical-align: top; width: 22px;">🛡️</td>
+                    <td style="padding: 4px 0;">Tus datos son tratados de conformidad con la normativa de protección de datos (RGPD).</td>
+                  </tr>
+              </table>
+
+              <!-- Congratulations & Good Luck Note -->
+              <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 16px 18px; margin-bottom: 24px;">
+                <p style="margin: 0 0 6px 0; font-size: 13px; font-weight: 700; color: #166534;">
+                  ¡Muchas gracias por formarte con nosotros!
+                </p>
+                <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #15803d;">
+                  Si has culminado tu formación y obtenido tu permiso de conducir, ¡te felicitamos por este gran logro! Te deseamos una conducción segura y prudente en cada viaje.
+                </p>
+              </div>
+
+              <!-- Contact Info -->
+              <p style="margin:0; border-top: 1px solid #e2e8f0; padding-top: 16px; font-size: 12px; color: #94a3b8; line-height: 1.5;">
+                Si tienes cualquier duda con la eliminación de tu cuenta, contacta con tu autoescuela.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8fafc; padding: 16px 32px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 11px; color: #94a3b8;">
+              ${brandName} • Notificación de baja de usuario.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `;
+
+  const text = `${subject}\n\nHola ${displayName},\n\nTe confirmamos que tu cuenta de usuario asociada a ${to} ha sido dada de baja en la plataforma de reservas de ${brandName}.\n\n${cancelledBookingsCount > 0
+    ? `Aviso: Se han cancelado automáticamente ${cancelledBookingsCount} clase(s) práctica(s) pendiente(s) que tenías programada(s).\n\n`
+    : ''
+    }Detalles de tu cuenta:\n- Credenciales de acceso inhabilitadas.\n- Notificaciones y recordatorios desactivados.\n- Tratamiento de datos conforme a RGPD.\n\nSi has aprobado tu carnet de conducir, ¡te damos nuestra más sincera enhorabuena y te deseamos una conducción segura!\n\nSi consideras que se trata de un error o requieres cualquier gestión adicional, no dudes en contactar con nosotros.\n\nAtentamente,\nEquipo de ${brandName}\n`;
 
   return sendEmail({
     to,
