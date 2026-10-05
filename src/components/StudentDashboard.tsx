@@ -119,7 +119,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
       )}
 
       {/* PROMINENT "PRÓXIMA CLASE" CARD */}
-      <div className="bg-gradient-to-br from-brand-900 via-slate-900 to-brand-950 text-white rounded-xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+      <div className="bg-gradient-to-br from-brand-900 via-slate-900 to-brand-950 text-white rounded-xl p-6 sm:p-8 shadow-xs relative overflow-hidden">
         <div className="absolute top-0 right-0 -mr-8 -mt-8 w-64 h-64 bg-brand-500/10 rounded-full blur-2xl pointer-events-none" />
         <div className="absolute bottom-0 right-1/4 w-32 h-32 bg-brand-400/10 rounded-full blur-xl pointer-events-none" />
 

@@ -913,7 +913,7 @@ export default function AdminSettings() {
           </div>
 
           {/* Card 4: Live Previews (Tabbed: Email HTML vs App Notification) */}
-          <div className="bg-slate-900 text-white rounded-xl p-6 sm:p-7 shadow-lg space-y-4">
+          <div className="bg-slate-900 text-white rounded-xl p-6 sm:p-7 shadow-xs space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <Mail className="w-5 h-5 text-white-400" />
@@ -1005,7 +1005,7 @@ export default function AdminSettings() {
               </div>
             ) : (
               /* APP NOTIFICATION PREVIEW MOCKUP */
-              <div className="bg-white text-slate-900 rounded-lg p-4 sm:p-5 shadow-xl border border-white/20">
+              <div className="bg-white text-slate-900 rounded-lg p-4 sm:p-5 shadow-xs border border-white/20">
                 <div className="flex items-start gap-3">
                   <div className="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0">
                     <Bell className="w-4 h-4" />

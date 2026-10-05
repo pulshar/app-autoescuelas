@@ -328,7 +328,7 @@ function AppContent() {
             )}
 
             {currentTab === 'book' && (
-              <div className="py-2">
+              <div className="py-2 pb-12">
                 <BookingWizard
                   onSuccess={() => {
                     setCurrentTab('my-classes');
