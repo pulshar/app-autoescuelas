@@ -237,7 +237,11 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ reason }),
     }),
-
+  bulkUpdateBookingStatus: (ids: string[], status: string = 'Completada', notes?: string) =>
+    request<{ updatedCount: number; message: string }>('/api/bookings/bulk-status', {
+      method: 'POST',
+      body: JSON.stringify({ ids, status, notes }),
+    }),
   updateBookingStatus: (id: string, status: string, notes?: string) =>
     request<{ message: string }>(`/api/bookings/${id}/status`, {
       method: 'PUT',

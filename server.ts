@@ -1424,7 +1424,7 @@ async function startServer() {
       await db.prepare(`
         UPDATE bookings SET status = ?, notes = COALESCE(?, notes), updated_at = ?
         WHERE id = ?
-      `).run(newStatus, reason ? `Cancelación: ${reason}` : null, now, id);
+      `).run(newStatus, reason ? `${reason}` : null, now, id);
 
       // Audit
       await db.prepare(`
@@ -1580,6 +1580,70 @@ async function startServer() {
       }
 
       res.json({ message: `Estado actualizado a ${status}.` });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/bookings/bulk-status', requireAdmin, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { ids, status = 'Completada', notes } = req.body;
+      const allowedStatuses = [
+        'Completada',
+      ];
+
+      if (!Array.isArray(ids) || ids.length === 0) {
+        res.status(400).json({ error: 'Debes seleccionar al menos una clase.' });
+        return;
+      }
+
+      if (!allowedStatuses.includes(status)) {
+        res.status(400).json({ error: 'Estado no válido para actualización masiva.' });
+        return;
+      }
+
+      const now = new Date().toISOString();
+      const trimmedNotes = typeof notes === 'string' && notes.trim() ? notes.trim() : null;
+      let updatedCount = 0;
+
+      for (const rawId of ids) {
+        const id = String(rawId).trim();
+        if (!id) continue;
+
+        const booking = (await db.prepare('SELECT id, student_id, date, start_time, end_time, notes FROM bookings WHERE id = ?').get(id)) as any;
+        if (!booking) continue;
+
+        const finalNotes = trimmedNotes
+          ? trimmedNotes
+          : booking.notes || (status === 'Completada' ? 'Clase realizada y validada por el administrador' : null);
+
+        await db.prepare(`
+          UPDATE bookings SET status = ?, notes = COALESCE(?, notes), updated_at = ?
+          WHERE id = ?
+        `).run(status, finalNotes, now, id);
+
+        updatedCount++;
+      }
+
+      if (updatedCount > 0) {
+        await db.prepare(`
+          INSERT INTO audit_logs (id, user_id, user_name, user_email, action, entity_type, entity_id, details, created_at)
+          VALUES (?, ?, ?, ?, 'Validación masiva de reservas', 'booking', ?, ?, ?)
+        `).run(
+          crypto.randomUUID(),
+          req.user!.id,
+          req.user!.name,
+          req.user!.email,
+          ids[0],
+          `Se actualizaron ${updatedCount} clases en lote al estado '${status}'.`,
+          now
+        );
+      }
+
+      res.json({
+        updatedCount,
+        message: `${updatedCount} ${updatedCount === 1 ? 'clase validada' : 'clases validadas'} como ${status} correctamente.`,
+      });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
