@@ -25,9 +25,6 @@ import {
   Clock,
   ShieldCheck,
   UserCheck,
-  CheckCircle2,
-  CalendarPlus,
-  LogIn,
   ArrowRight,
   Sparkles,
 } from 'lucide-react';
