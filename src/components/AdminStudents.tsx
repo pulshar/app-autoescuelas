@@ -22,6 +22,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { Button } from './common/Button.tsx';
+import { useToast } from '../context/ToastContext.tsx';
 
 interface AdminStudentsProps {
   onSelectStudentForBooking: (studentId: string) => void;
@@ -34,6 +35,7 @@ interface StudentWithMetrics extends User {
 }
 
 export default function AdminStudents({ onSelectStudentForBooking }: AdminStudentsProps) {
+  const { toast } = useToast();
   const [students, setStudents] = useState<StudentWithMetrics[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -71,8 +73,6 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
   const [notifyTeachersOnDelete, setNotifyTeachersOnDelete] = useState<boolean>(true);
   const [deleteSubmitting, setDeleteSubmitting] = useState(false);
 
-  // Global Feedback Banner
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   // Re-send welcome email state
   const [schoolName, setSchoolName] = useState<string>('AutoescuelaPro');
@@ -233,8 +233,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
         is_active: editIsActive,
       });
 
-      setFeedback({ type: 'success', message: res.message || 'Alumno actualizado correctamente.' });
-      setTimeout(() => setFeedback(null), 5000);
+      toast(res.message || 'Alumno actualizado correctamente.', 'success');
       handleCloseEdit();
       await fetchStudents();
     } catch (err: any) {
@@ -261,13 +260,11 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
       setDeleteSubmitting(true);
       const res = await api.deleteStudent(deletingStudent.id, notifyStudentOnDelete, notifyTeachersOnDelete);
 
-      setFeedback({ type: 'success', message: res.message });
-      setTimeout(() => setFeedback(null), 6000);
+      toast(res.message, 'success');
       handleCloseDelete();
       await fetchStudents();
     } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Error al procesar la solicitud.' });
-      setTimeout(() => setFeedback(null), 6000);
+      toast(err.message || 'Error al procesar la solicitud.', 'error');
       handleCloseDelete();
     } finally {
       setDeleteSubmitting(false);
@@ -279,17 +276,9 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
     try {
       setResendingId(student.id);
       const res = await api.resendWelcomeEmail(student.id);
-      setFeedback({
-        type: 'success',
-        message: res.message || `Correo de acceso reenviado a ${student.email}`,
-      });
-      setTimeout(() => setFeedback(null), 5000);
+      toast(res.message || `Correo de acceso reenviado a ${student.email}`, 'success');
     } catch (err: any) {
-      setFeedback({
-        type: 'error',
-        message: err.message || 'Error al reenviar correo de acceso',
-      });
-      setTimeout(() => setFeedback(null), 6000);
+      toast(err.message || 'Error al reenviar correo de acceso', 'error');
     } finally {
       setResendingId(null);
     }
@@ -308,7 +297,7 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
         <div>
           <div className="flex items-center gap-2.5">
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Alumnos registrados</h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-100">
+            <span className="shrink-0 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-100">
               {students.length} alumnos
             </span>
           </div>
@@ -340,28 +329,6 @@ export default function AdminStudents({ onSelectStudentForBooking }: AdminStuden
           </Button>
         </div>
       </div>
-
-      {/* Global Feedback Banner */}
-      {feedback && (
-        <div
-          className={`p-3.5 rounded-lg text-xs sm:text-sm flex items-center justify-between gap-2 transition-all ${feedback.type === 'success'
-            ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
-            : 'bg-rose-50 border border-rose-200 text-rose-800'
-            }`}
-        >
-          <div className="flex items-center gap-2">
-            {feedback.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-            ) : (
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-            )}
-            <span>{feedback.message}</span>
-          </div>
-          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-slate-600 p-1">
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
 
       {/* Table / Cards */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">

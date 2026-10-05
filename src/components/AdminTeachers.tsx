@@ -6,8 +6,6 @@ import {
   PlusCircle,
   Edit2,
   Trash2,
-  CheckCircle2,
-  AlertCircle,
   Phone,
   Mail,
   X,
@@ -15,6 +13,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { Button } from './common/Button.tsx';
+import { useToast } from '../context/ToastContext.tsx';
 
 interface AdminTeachersProps {
   initialOpenCreate?: boolean;
@@ -22,6 +21,7 @@ interface AdminTeachersProps {
 }
 
 export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCreate }: AdminTeachersProps) {
+  const { toast } = useToast();
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -39,7 +39,6 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
   const [isActive, setIsActive] = useState(true);
 
   const [saving, setSaving] = useState(false);
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   // Delete / Baja Modal state
   const [deletingTeacher, setDeletingTeacher] = useState<Teacher | null>(null);
@@ -108,7 +107,6 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    setFeedback(null);
 
     try {
       const payload = {
@@ -123,16 +121,16 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
 
       if (editingTeacher) {
         await api.updateTeacher(editingTeacher.id, payload);
-        setFeedback({ type: 'success', message: 'Profesor actualizado correctamente.' });
+        toast('Profesor actualizado correctamente.', 'success');
       } else {
         await api.createTeacher(payload);
-        setFeedback({ type: 'success', message: 'Nuevo profesor añadido con éxito.' });
+        toast('Nuevo profesor añadido con éxito.', 'success');
       }
 
       setModalOpen(false);
       fetchTeachers();
     } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Error al guardar el profesor.' });
+      toast(err.message || 'Error al guardar el profesor.', 'error');
     } finally {
       setSaving(false);
     }
@@ -143,7 +141,7 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
       await api.updateTeacher(t.id, { is_active: !t.is_active });
       fetchTeachers();
     } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Error al cambiar estado.' });
+      toast(err.message || 'Error al cambiar estado.', 'error');
     }
   };
 
@@ -160,13 +158,11 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
     try {
       setDeleteSubmitting(true);
       const res = await api.deleteTeacher(deletingTeacher.id);
-      setFeedback({ type: 'success', message: res.message });
-      setTimeout(() => setFeedback(null), 5000);
+      toast(res.message, 'success');
       handleCloseDelete();
       fetchTeachers();
     } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Error al eliminar el profesor.' });
-      setTimeout(() => setFeedback(null), 6000);
+      toast(err.message || 'Error al eliminar el profesor.', 'error');
       handleCloseDelete();
     } finally {
       setDeleteSubmitting(false);
@@ -191,27 +187,6 @@ export default function AdminTeachers({ initialOpenCreate, onResetInitialOpenCre
           Nuevo profesor
         </Button>
       </div>
-
-      {feedback && (
-        <div
-          className={`p-3.5 rounded-lg text-xs sm:text-sm flex items-center justify-between gap-2 transition-all ${feedback.type === 'success'
-            ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
-            : 'bg-rose-50 border border-rose-200 text-rose-800'
-            }`}
-        >
-          <div className="flex items-center gap-2">
-            {feedback.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-            ) : (
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-            )}
-            <span>{feedback.message}</span>
-          </div>
-          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-slate-600 p-1">
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
 
       {/* Teachers Grid */}
       {loading ? (

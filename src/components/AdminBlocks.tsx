@@ -7,8 +7,6 @@ import {
   Calendar,
   PlusCircle,
   Trash2,
-  CheckCircle2,
-  AlertCircle,
   X,
   User,
   Mail,
@@ -16,6 +14,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { Button } from './common/Button.tsx';
+import { useToast } from '../context/ToastContext.tsx';
 
 interface AdminBlocksProps {
   initialOpenCreate?: boolean;
@@ -23,6 +22,7 @@ interface AdminBlocksProps {
 }
 
 export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreate }: AdminBlocksProps) {
+  const { toast } = useToast();
   const [blocks, setBlocks] = useState<ScheduleBlock[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,7 +43,6 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
   const [checkingConflicts, setCheckingConflicts] = useState(false);
 
   const [saving, setSaving] = useState(false);
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   // Delete modal state
   const [deletingBlock, setDeletingBlock] = useState<ScheduleBlock | null>(null);
@@ -142,12 +141,11 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!date || !reason) {
-      setFeedback({ type: 'error', message: 'Fecha y motivo son obligatorios.' });
+      toast('Fecha y motivo son obligatorios.', 'error');
       return;
     }
 
     setSaving(true);
-    setFeedback(null);
 
     try {
       const res = await api.createBlock({
@@ -161,13 +159,11 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
         notifyTeachers,
       });
 
-      setFeedback({ type: 'success', message: res.message || 'Bloqueo registrado correctamente.' });
-      setTimeout(() => setFeedback(null), 7000);
+      toast(res.message || 'Bloqueo registrado correctamente.', 'success');
       setModalOpen(false);
       fetchData();
     } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Error al guardar el bloqueo.' });
-      setTimeout(() => setFeedback(null), 6000);
+      toast(err.message || 'Error al guardar el bloqueo.', 'error');
     } finally {
       setSaving(false);
     }
@@ -186,13 +182,11 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
     try {
       setDeleteSubmitting(true);
       await api.deleteBlock(deletingBlock.id);
-      setFeedback({ type: 'success', message: 'Bloqueo eliminado correctamente.' });
-      setTimeout(() => setFeedback(null), 5000);
+      toast('Bloqueo eliminado correctamente.', 'success');
       handleCloseDelete();
       fetchData();
     } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Error al eliminar el bloqueo.' });
-      setTimeout(() => setFeedback(null), 6000);
+      toast(err.message || 'Error al eliminar el bloqueo.', 'error');
       handleCloseDelete();
     } finally {
       setDeleteSubmitting(false);
@@ -217,27 +211,6 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
           Nuevo bloqueo
         </Button>
       </div>
-
-      {feedback && (
-        <div
-          className={`p-3.5 rounded-lg text-xs sm:text-sm flex items-center justify-between gap-2 transition-all ${feedback.type === 'success'
-            ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
-            : 'bg-rose-50 border border-rose-200 text-rose-800'
-            }`}
-        >
-          <div className="flex items-center gap-2">
-            {feedback.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-            ) : (
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-            )}
-            <span>{feedback.message}</span>
-          </div>
-          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-slate-600 p-1">
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
 
       {/* Blocks List */}
       {loading ? (

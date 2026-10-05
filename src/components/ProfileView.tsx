@@ -7,14 +7,14 @@ import {
   EyeOff,
   Save,
   CheckCircle2,
-  AlertCircle,
   KeyRound,
-  X,
 } from 'lucide-react';
 import { Button } from './common/Button.tsx';
+import { useToast } from '../context/ToastContext.tsx';
 
 export default function ProfileView() {
   const { user, role, updateProfile } = useAuth();
+  const { toast } = useToast();
 
   const [name, setName] = useState(user?.name || '');
   const [phone, setPhone] = useState(user?.phone || '');
@@ -27,12 +27,10 @@ export default function ProfileView() {
   const [resetSuccess, setResetSuccess] = useState<string | null>(null);
 
   const [saving, setSaving] = useState(false);
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    setFeedback(null);
 
     try {
       await updateProfile({
@@ -40,9 +38,9 @@ export default function ProfileView() {
         phone: phone.trim() || undefined,
         avatar_url: avatarUrl.trim() || undefined,
       });
-      setFeedback({ type: 'success', message: 'Perfil actualizado con éxito.' });
+      toast('Perfil actualizado con éxito.', 'success');
     } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Error al actualizar perfil.' });
+      toast(err.message || 'Error al actualizar perfil.', 'error');
     } finally {
       setSaving(false);
     }
@@ -51,7 +49,7 @@ export default function ProfileView() {
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || newPassword.length < 6) {
-      setFeedback({ type: 'error', message: 'La contraseña debe tener al menos 6 caracteres.' });
+      toast('La contraseña debe tener al menos 6 caracteres.', 'error');
       return;
     }
 
@@ -61,7 +59,7 @@ export default function ProfileView() {
       setNewPassword('');
       setTimeout(() => setShowPasswordChange(false), 2000);
     } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Error al cambiar contraseña.' });
+      toast(err.message || 'Error al cambiar contraseña.', 'error');
     }
   };
 
@@ -85,27 +83,6 @@ export default function ProfileView() {
           {role === 'admin' ? 'Administrador' : 'Alumno'}
         </span>
       </div>
-
-      {feedback && (
-        <div
-          className={`p-3.5 rounded-lg text-xs sm:text-sm flex items-center justify-between gap-2 transition-all ${feedback.type === 'success'
-            ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
-            : 'bg-rose-50 border border-rose-200 text-rose-800'
-            }`}
-        >
-          <div className="flex items-center gap-2">
-            {feedback.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-            ) : (
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-            )}
-            <span>{feedback.message}</span>
-          </div>
-          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-slate-600 p-1">
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
 
       {/* Edit Profile Form */}
       <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs">

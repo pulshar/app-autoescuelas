@@ -8,14 +8,13 @@ import {
   PlusCircle,
   Trash2,
   Edit2,
-  CheckCircle2,
-  AlertCircle,
   X,
   Plus,
   Power,
   ShieldCheck,
 } from 'lucide-react';
 import { Button } from './common/Button.tsx';
+import { useToast } from '../context/ToastContext.tsx';
 
 const DAYS_OF_WEEK = [
   { id: 1, name: 'Lunes' },
@@ -28,6 +27,7 @@ const DAYS_OF_WEEK = [
 ];
 
 export default function AdminSchedules() {
+  const { toast } = useToast();
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +49,7 @@ export default function AdminSchedules() {
   const [weeklyHours, setWeeklyHours] = useState<{ day_of_week: number; start_time: string; end_time: string }[]>([]);
 
   const [saving, setSaving] = useState(false);
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
 
   // Delete modal state
   const [deletingSchedule, setDeletingSchedule] = useState<Schedule | null>(null);
@@ -146,12 +146,11 @@ export default function AdminSchedules() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!teacherId || !name || !startDate) {
-      setFeedback({ type: 'error', message: 'Profesor, nombre y fecha de inicio son requeridos.' });
+      toast('Profesor, nombre y fecha de inicio son requeridos.', 'error');
       return;
     }
 
     setSaving(true);
-    setFeedback(null);
 
     try {
       const payload = {
@@ -166,16 +165,16 @@ export default function AdminSchedules() {
 
       if (editingSchedule) {
         await api.updateSchedule(editingSchedule.id, payload);
-        setFeedback({ type: 'success', message: 'Agenda actualizada correctamente.' });
+        toast('Agenda actualizada correctamente.', 'success');
       } else {
         await api.createSchedule(payload);
-        setFeedback({ type: 'success', message: 'Nueva agenda creada con éxito.' });
+        toast('Nueva agenda creada con éxito.', 'success');
       }
 
       setModalOpen(false);
       fetchData();
     } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Error al guardar la agenda.' });
+      toast(err.message || 'Error al guardar la agenda.', 'error');
     } finally {
       setSaving(false);
     }
@@ -194,13 +193,11 @@ export default function AdminSchedules() {
     try {
       setDeleteSubmitting(true);
       await api.deleteSchedule(deletingSchedule.id);
-      setFeedback({ type: 'success', message: `Agenda "${deletingSchedule.name}" eliminada correctamente.` });
-      setTimeout(() => setFeedback(null), 5000);
+      toast(`Agenda "${deletingSchedule.name}" eliminada correctamente.`, 'success');
       handleCloseDelete();
       fetchData();
     } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Error al eliminar agenda.' });
-      setTimeout(() => setFeedback(null), 6000);
+      toast(err.message || 'Error al eliminar agenda.', 'error');
       handleCloseDelete();
     } finally {
       setDeleteSubmitting(false);
@@ -225,27 +222,6 @@ export default function AdminSchedules() {
           Crear nueva agenda
         </Button>
       </div>
-
-      {feedback && (
-        <div
-          className={`p-3.5 rounded-lg text-xs sm:text-sm flex items-center justify-between gap-2 transition-all ${feedback.type === 'success'
-            ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
-            : 'bg-rose-50 border border-rose-200 text-rose-800'
-            }`}
-        >
-          <div className="flex items-center gap-2">
-            {feedback.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-            ) : (
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-            )}
-            <span>{feedback.message}</span>
-          </div>
-          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-slate-600 p-1">
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
 
       {/* Schedules List */}
       {loading ? (

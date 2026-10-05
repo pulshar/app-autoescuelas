@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { api } from '../lib/api.ts';
 import { formatDisplayDate } from '../lib/dateUtils.ts';
 import type { Booking, Teacher, User } from '../types.ts';
+import { useToast } from '../context/ToastContext.tsx';
 import {
   Calendar,
   Clock,
@@ -46,8 +47,7 @@ export default function AdminBookings({ onOpenManualModal, refreshTrigger }: Adm
   const [newStatus, setNewStatus] = useState('');
   const [statusNotes, setStatusNotes] = useState('');
   const [statusLoading, setStatusLoading] = useState(false);
-  const [actionMessage, setActionMessage] = useState<string | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   // Quick Action Modal (e.g. Complete with optional notes or Mark No-Show)
   const [quickActionModal, setQuickActionModal] = useState<{
@@ -83,8 +83,7 @@ export default function AdminBookings({ onOpenManualModal, refreshTrigger }: Adm
     fetchBookings();
     if (refreshTrigger && refreshTrigger > 0) {
       setActiveTab('upcoming');
-      setActionMessage('Reserva registrada correctamente.');
-      setTimeout(() => setActionMessage(null), 6000);
+      toast('Reserva registrada correctamente.', 'success');
     }
   }, [refreshTrigger]);
 
@@ -104,18 +103,14 @@ export default function AdminBookings({ onOpenManualModal, refreshTrigger }: Adm
   const handleUpdateStatus = async () => {
     if (!selectedBooking || !newStatus) return;
     setStatusLoading(true);
-    setActionError(null);
-    setActionMessage(null);
 
     try {
       const res = await api.updateBookingStatus(selectedBooking.id, newStatus, statusNotes);
-      setActionMessage(res.message);
-      setTimeout(() => setActionMessage(null), 5000);
+      toast(res.message || 'Estado actualizado correctamente.', 'success');
       setSelectedBooking(null);
       fetchBookings();
     } catch (err: any) {
-      setActionError(err.message || 'Error al actualizar el estado.');
-      setTimeout(() => setActionError(null), 6000);
+      toast(err.message || 'Error al actualizar el estado.', 'error');
     } finally {
       setStatusLoading(false);
     }
@@ -125,8 +120,6 @@ export default function AdminBookings({ onOpenManualModal, refreshTrigger }: Adm
   const handleExecuteQuickAction = async () => {
     if (!quickActionModal) return;
     setQuickActionLoading(true);
-    setActionError(null);
-    setActionMessage(null);
 
     const { booking, type, notes } = quickActionModal;
     const targetStatus = type === 'complete' ? 'Completada' : 'No presentado';
@@ -137,18 +130,19 @@ export default function AdminBookings({ onOpenManualModal, refreshTrigger }: Adm
         : (booking.notes ? `${booking.notes} - No se presentó` : 'El alumno no se presentó a la clase');
 
     try {
-      const res = await api.updateBookingStatus(booking.id, targetStatus, finalNotes);
-      setActionMessage(
+      await api.updateBookingStatus(booking.id, targetStatus, finalNotes);
+
+      toast(
         type === 'complete'
-          ? `Clase de ${booking.student_name} validada como Completada.`
-          : `Clase de ${booking.student_name} registrada como No presentado.`
+          ? `Clase de ${booking.student_name} validada como completada.`
+          : `Clase de ${booking.student_name} registrada como No presentado.`,
+        'success'
       );
-      setTimeout(() => setActionMessage(null), 5000);
+
       setQuickActionModal(null);
       fetchBookings();
     } catch (err: any) {
-      setActionError(err.message || 'Error al actualizar el estado.');
-      setTimeout(() => setActionError(null), 6000);
+      toast(err.message || 'Error al actualizar el estado.', 'error');
     } finally {
       setQuickActionLoading(false);
     }
@@ -167,21 +161,26 @@ export default function AdminBookings({ onOpenManualModal, refreshTrigger }: Adm
   const handleConfirmCancel = async () => {
     if (!cancellingBooking) return;
     setCancelLoading(true);
-    setActionError(null);
-    setActionMessage(null);
 
     try {
       const res = await api.cancelBooking(
         cancellingBooking.id,
         cancelReason.trim() || 'Cancelada directamente por el administrador'
       );
-      setActionMessage(res.message || 'Reserva cancelada correctamente.');
-      setTimeout(() => setActionMessage(null), 5000);
+
+      toast(
+        res.message || 'Reserva cancelada correctamente.',
+        'success'
+      );
+
       handleCloseCancel();
       fetchBookings();
     } catch (err: any) {
-      setActionError(err.message || 'Error al cancelar la reserva.');
-      setTimeout(() => setActionError(null), 6000);
+      toast(
+        err.message || 'Error al cancelar la reserva.',
+        'error'
+      );
+
       handleCloseCancel();
     } finally {
       setCancelLoading(false);
@@ -287,31 +286,6 @@ export default function AdminBookings({ onOpenManualModal, refreshTrigger }: Adm
         </Button>
       </div>
 
-      {actionMessage && (
-        <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>{actionMessage}</span>
-          </div>
-          <button onClick={() => setActionMessage(null)} className="text-slate-400 hover:text-slate-600 p-1">
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
-
-      {actionError && (
-        <div className="p-3.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-            <span>{actionError}</span>
-          </div>
-          <button onClick={() => setActionError(null)} className="text-slate-400 hover:text-slate-600 p-1">
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
-
-
       {/* Filter Bar */}
       <div className="bg-white rounded-xl p-4 sm:p-5 border border-slate-200 shadow-xs space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -401,7 +375,7 @@ export default function AdminBookings({ onOpenManualModal, refreshTrigger }: Adm
       {/* Booking list} */}
       <div className="space-y-6">
         {/* Tabs */}
-        <div className="flex border-b border-slate-200 gap-4 sm:gap-6 overflow-x-auto">
+        <div className="flex border-b border-slate-200 gap-4 sm:gap-6 overflow-x-auto hide-scrollbar">
           <button
             onClick={() => handleTabChange('upcoming')}
             className={`pb-3 text-sm font-bold transition-all relative flex items-center gap-2 whitespace-nowrap ${activeTab === 'upcoming'

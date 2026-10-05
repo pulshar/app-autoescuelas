@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext.tsx';
+import { useToast } from '../context/ToastContext.tsx';
 import { useStudentBookings } from '../hooks/useStudentBookings.ts';
 import { Button } from './common/Button.tsx';
 import { StatusBadge } from './common/StatusBadge.tsx';
@@ -9,14 +10,11 @@ import {
   Calendar,
   Clock,
   User,
-  AlertCircle,
-  CheckCircle2,
   CalendarPlus,
   Car,
   ChevronRight,
   Ban,
   Compass,
-  X,
 } from 'lucide-react';
 
 interface StudentDashboardProps {
@@ -25,6 +23,7 @@ interface StudentDashboardProps {
 
 export default function StudentDashboard({ onNavigate }: StudentDashboardProps) {
   const { user } = useAuth();
+  const { toast } = useToast();
   const {
     upcomingBookings,
     settings,
@@ -36,23 +35,28 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
 
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [cancelReason, setCancelReason] = useState('');
-  const [cancelError, setCancelError] = useState<string | null>(null);
-  const [cancelSuccess, setCancelSuccess] = useState<string | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
 
   const nextBooking = upcomingBookings[0] || null;
 
   const handleCancel = async (bookingId: string) => {
-    setCancelError(null);
-    setCancelSuccess(null);
     setIsCancelling(true);
+
     try {
       const res = await cancelBooking(bookingId, cancelReason);
-      setCancelSuccess(res.message);
+
+      toast(
+        res.message || 'Reserva cancelada correctamente.',
+        'success'
+      );
+
       setCancellingId(null);
       setCancelReason('');
     } catch (err: any) {
-      setCancelError(err.message || 'No se pudo cancelar la reserva.');
+      toast(
+        err.message || 'No se pudo cancelar la reserva.',
+        'error'
+      );
     } finally {
       setIsCancelling(false);
     }
@@ -93,30 +97,6 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           Reservar nueva clase
         </Button>
       </div>
-
-      {cancelSuccess && (
-        <div className="p-3.5 rounded-lg text-xs sm:text-sm flex items-center justify-between gap-2 transition-all bg-emerald-50 border border-emerald-200 text-emerald-800">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-            <span>{cancelSuccess}</span>
-          </div>
-          <button onClick={() => setCancelSuccess(null)} className="text-slate-400 hover:text-slate-600 p-1">
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
-
-      {cancelError && (
-        <div className="p-3.5 rounded-lg text-xs sm:text-sm flex items-center justify-between gap-2 transition-all bg-rose-50 border border-rose-200 text-rose-800">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
-            <span>{cancelError}</span>
-          </div>
-          <button onClick={() => setCancelError(null)} className="text-slate-400 hover:text-slate-600 p-1">
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
 
       {/* PROMINENT "PRÓXIMA CLASE" CARD */}
       <div className="bg-gradient-to-br from-brand-900 via-slate-900 to-brand-950 text-white rounded-xl p-6 sm:p-8 shadow-xs relative overflow-hidden">

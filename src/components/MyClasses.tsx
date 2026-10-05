@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext.tsx';
+import { useToast } from '../context/ToastContext.tsx';
 import { useStudentBookings } from '../hooks/useStudentBookings.ts';
 import { formatDisplayDate } from '../lib/dateUtils.ts';
 import { Button } from './common/Button.tsx';
@@ -11,11 +12,8 @@ import {
   Clock,
   User,
   Ban,
-  AlertCircle,
-  CheckCircle2,
   CalendarPlus,
   Info,
-  X,
 } from 'lucide-react';
 
 interface MyClassesProps {
@@ -24,6 +22,7 @@ interface MyClassesProps {
 
 export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'upcoming' | 'history'>('upcoming');
   const {
     upcomingBookings,
@@ -38,24 +37,28 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
   const [cancellingBooking, setCancellingBooking] = useState<Booking | null>(null);
   const [cancelReason, setCancelReason] = useState('');
   const [cancelLoading, setCancelLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const displayedList = activeTab === 'upcoming' ? upcomingBookings : historyBookings;
 
   const handleExecuteCancel = async () => {
     if (!cancellingBooking) return;
     setCancelLoading(true);
-    setErrorMessage(null);
-    setSuccessMessage(null);
 
     try {
       const res = await cancelBooking(cancellingBooking.id, cancelReason);
-      setSuccessMessage(res.message);
+
+      toast(
+        res.message || 'Clase cancelada correctamente.',
+        'success'
+      );
+
       setCancellingBooking(null);
       setCancelReason('');
     } catch (err: any) {
-      setErrorMessage(err.message || 'Error al cancelar la clase.');
+      toast(
+        err.message || 'Error al cancelar la clase.',
+        'error'
+      );
     } finally {
       setCancelLoading(false);
     }
@@ -93,30 +96,6 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
           Reservar clase
         </Button>
       </div>
-
-      {successMessage && (
-        <div className="p-3.5 rounded-lg text-xs sm:text-sm flex items-center justify-between gap-2 transition-all bg-emerald-50 border border-emerald-200 text-emerald-800">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-            <span>{successMessage}</span>
-          </div>
-          <button onClick={() => setSuccessMessage(null)} className="text-slate-400 hover:text-slate-600 p-1">
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
-
-      {errorMessage && (
-        <div className="p-3.5 rounded-lg text-xs sm:text-sm flex items-center justify-between gap-2 transition-all bg-rose-50 border border-rose-200 text-rose-800">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
-            <span>{errorMessage}</span>
-          </div>
-          <button onClick={() => setErrorMessage(null)} className="text-slate-400 hover:text-slate-600 p-1">
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
 
       {/* Tabs */}
       <div className="flex border-b border-slate-200 gap-6">

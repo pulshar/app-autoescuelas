@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext.tsx';
+import { useToast } from '../context/ToastContext.tsx';
 import { api } from '../lib/api.ts';
 import type { Teacher, TimeSlot, AppSettings } from '../types.ts';
 import {
@@ -23,7 +24,7 @@ interface BookingWizardProps {
 
 export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProps) {
   const { user } = useAuth();
-
+  const { toast } = useToast();
   // Wizard state: 1 (Teacher), 2 (Date), 3 (Slot), 4 (Confirm)
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
 
@@ -157,16 +158,24 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
     setBookingError(null);
 
     try {
-      await api.createBooking({
+      const res = await api.createBooking({
         teacher_id: selectedSlot.teacher_id,
         date: selectedDate,
         start_time: selectedSlot.start_time,
         notes: notes.trim() || undefined,
       });
 
+      toast(
+        res.message || 'Reserva creada correctamente.',
+        'success'
+      );
+
       onSuccess();
     } catch (err: any) {
-      setBookingError(err.message || 'No se pudo completar la reserva. El horario pudo haber sido ocupado recientemente.');
+      setBookingError(
+        err.message ||
+        'No se pudo completar la reserva. El horario pudo haber sido ocupado recientemente.'
+      );
     } finally {
       setBookingLoading(false);
     }

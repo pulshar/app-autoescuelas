@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext.tsx';
+import { ToastProvider } from './context/ToastContext.tsx';
+import ToastContainer from './components/ToastContainer.tsx';
 import Navbar from './components/Navbar.tsx';
 import BottomNav from './components/BottomNav.tsx';
 import AuthModal from './components/AuthModal.tsx';
@@ -378,8 +380,11 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+      <ToastContainer />
+    </ToastProvider>
   );
 }

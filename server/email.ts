@@ -536,8 +536,8 @@ export async function sendBookingCreatedEmails(params: BookingEmailNotificationP
   const match = date.match(/^(\d{4})-(\d{2})-(\d{2})/);
   const displayDate = match ? `${match[3]}/${match[2]}/${match[1]}` : date;
   const baseUrl = (appUrl || process.env.APP_URL || '').replace(/\/$/, '');
-  const loginUrlStudent = baseUrl ? `${baseUrl}?login=true&email=${encodeURIComponent(studentEmail)}` : '#';
-  const loginUrlTeacher = baseUrl ? `${baseUrl}?login=true&email=${encodeURIComponent(teacherEmail)}` : '#';
+  const loginUrlStudent = baseUrl ? `${baseUrl}?login=true&email=${encodeURIComponent(studentEmail || '')}` : '#';
+  const loginUrlTeacher = baseUrl ? `${baseUrl}?login=true&email=${encodeURIComponent(teacherEmail || '')}` : '#';
 
   let studentResult: EmailResult | undefined;
   let teacherResult: EmailResult | undefined;
@@ -760,8 +760,8 @@ export async function sendBookingCancelledEmails(params: BookingEmailNotificatio
   const match = date.match(/^(\d{4})-(\d{2})-(\d{2})/);
   const displayDate = match ? `${match[3]}/${match[2]}/${match[1]}` : date;
   const baseUrl = (appUrl || process.env.APP_URL || '').replace(/\/$/, '');
-  const loginUrlStudent = baseUrl ? `${baseUrl}?login=true&email=${encodeURIComponent(studentEmail)}` : '#';
-  const loginUrlTeacher = baseUrl ? `${baseUrl}?login=true&email=${encodeURIComponent(teacherEmail)}` : '#';
+  const loginUrlStudent = baseUrl ? `${baseUrl}?login=true&email=${encodeURIComponent(studentEmail || '')}` : '#';
+  const loginUrlTeacher = baseUrl ? `${baseUrl}?login=true&email=${encodeURIComponent(teacherEmail || '')}` : '#';
 
   let studentResult: EmailResult | undefined;
   let teacherResult: EmailResult | undefined;

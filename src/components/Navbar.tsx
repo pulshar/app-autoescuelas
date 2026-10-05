@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext.tsx';
+import { useToast } from '../context/ToastContext.tsx';
 import { api } from '../lib/api.ts';
 import { replaceDateInText } from '../lib/dateUtils.ts';
 import type { NotificationItem } from '../types.ts';
@@ -27,6 +28,7 @@ interface NavbarProps {
 
 export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName }: NavbarProps) {
   const { user, role, logout } = useAuth();
+  const { toast } = useToast();
   const [currentSchoolName, setCurrentSchoolName] = useState<string>(schoolName || 'AutoescuelaPro');
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -130,11 +132,25 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
   };
 
   const handleClearAll = async () => {
+    const previousNotifications = notifications;
+
+    // UI inmediata
+    setNotifications([]);
+
     try {
-      await api.clearAllNotifications();
-      setNotifications(prev => prev.filter(n => !n.read));
-    } catch (err) {
-      console.error('Error al borrar todas las notificaciones:', err);
+      const res = await api.clearAllNotifications();
+
+      toast(
+        res.message || 'Notificaciones eliminadas correctamente.',
+        'success'
+      );
+    } catch (err: any) {
+      setNotifications(previousNotifications);
+
+      toast(
+        err.message || 'No se pudieron eliminar las notificaciones.',
+        'error'
+      );
     }
   };
 

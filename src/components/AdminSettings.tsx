@@ -30,6 +30,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { Button } from './common/Button.tsx';
+import { useToast } from '../context/ToastContext.tsx';
 
 const DEFAULT_TITLE_TEMPLATE = 'Recordatorio: Clase práctica - {fecha} a las {hora}';
 const DEFAULT_MESSAGE_TEMPLATE =
@@ -93,7 +94,7 @@ export default function AdminSettings() {
   const [saving, setSaving] = useState(false);
   const [testingReminder, setTestingReminder] = useState(false);
   const [processingReminders, setProcessingReminders] = useState(false);
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
+  const { toast } = useToast();
 
   // Reminders Log
   const [remindersLog, setRemindersLog] = useState<ReminderLogItem[]>([]);
@@ -118,7 +119,7 @@ export default function AdminSettings() {
       setTimezone(s.timezone || 'Europe/Madrid');
     } catch (err: any) {
       console.error('Error fetching settings:', err);
-      setFeedback({ type: 'error', message: 'Error al cargar la configuración: ' + err.message });
+      toast('Error al cargar la configuración: ' + err.message, 'error');
     } finally {
       setLoading(false);
     }
@@ -157,7 +158,6 @@ export default function AdminSettings() {
   const handleSave = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setSaving(true);
-    setFeedback(null);
 
     try {
       const res = await api.updateSettings({
@@ -175,10 +175,7 @@ export default function AdminSettings() {
         timezone,
       });
 
-      setFeedback({
-        type: 'success',
-        message: res.message || 'Configuración guardada correctamente.',
-      });
+      toast(res.message || 'Configuración guardada correctamente.', 'success');
       // Notify other components like Navbar about the new school name
       window.dispatchEvent(
         new CustomEvent('app-settings-updated', {
@@ -187,10 +184,7 @@ export default function AdminSettings() {
       );
       fetchLogs();
     } catch (err: any) {
-      setFeedback({
-        type: 'error',
-        message: err.message || 'Error al guardar la configuración.',
-      });
+      toast(err.message || 'Error al guardar la configuración.', 'error');
     } finally {
       setSaving(false);
     }
@@ -238,10 +232,7 @@ export default function AdminSettings() {
     setReminderTitleTemplate(DEFAULT_TITLE_TEMPLATE);
     setReminderMessageTemplate(DEFAULT_MESSAGE_TEMPLATE);
     setReminderLocationText(DEFAULT_LOCATION_TEXT);
-    setFeedback({
-      type: 'info',
-      message: 'Se han restaurado los textos y plantillas por defecto. Recuerda pulsar "Guardar Todo".',
-    });
+    toast('Se han restaurado los textos y plantillas por defecto. Recuerda pulsar "Guardar Todo".', 'info');
   };
 
   useEffect(() => {
@@ -276,23 +267,16 @@ export default function AdminSettings() {
   const handleSendTest = async () => {
     try {
       setTestingReminder(true);
-      setFeedback(null);
       const res = await api.testReminderNotification({
         title_template: reminderTitleTemplate,
         message_template: reminderMessageTemplate,
         location_text: reminderLocationText,
         include_location: reminderIncludeLocation,
       });
-      setFeedback({
-        type: 'success',
-        message: res.message || 'Notificación de prueba enviada con éxito.',
-      });
+      toast(res.message || 'Notificación de prueba enviada con éxito.', 'success');
       fetchLogs();
     } catch (err: any) {
-      setFeedback({
-        type: 'error',
-        message: 'Error al enviar notificación de prueba: ' + (err.message || 'desconocido'),
-      });
+      toast('Error al enviar notificación de prueba: ' + (err.message || 'desconocido'), 'error');
     } finally {
       setTestingReminder(false);
     }
@@ -301,18 +285,11 @@ export default function AdminSettings() {
   const handleProcessRemindersNow = async () => {
     try {
       setProcessingReminders(true);
-      setFeedback(null);
       const res = await api.processAutomaticReminders();
-      setFeedback({
-        type: res.sent > 0 ? 'success' : 'info',
-        message: res.message,
-      });
+      toast(res.message, res.sent > 0 ? 'success' : 'info');
       fetchLogs();
     } catch (err: any) {
-      setFeedback({
-        type: 'error',
-        message: 'Error al ejecutar la revisión: ' + (err.message || 'desconocido'),
-      });
+      toast('Error al ejecutar la revisión: ' + (err.message || 'desconocido'), 'error');
     } finally {
       setProcessingReminders(false);
     }
@@ -419,32 +396,6 @@ export default function AdminSettings() {
           </button>
         </div>
       </div>
-
-      {/* Global Feedback Banner */}
-      {feedback && (
-        <div
-          className={`p-4 rounded-lg text-xs sm:text-sm flex items-start justify-between gap-3 border ${feedback.type === 'success'
-            ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-            : feedback.type === 'error'
-              ? 'bg-rose-50 border-rose-200 text-rose-800'
-              : 'bg-sky-50 border-sky-200 text-sky-800'
-            }`}
-        >
-          <div className="flex items-center gap-2.5">
-            {feedback.type === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />}
-            {feedback.type === 'error' && <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />}
-            {feedback.type === 'info' && <Info className="w-5 h-5 text-sky-600 shrink-0" />}
-            <span className="font-medium leading-relaxed">{feedback.message}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setFeedback(null)}
-            className="text-slate-400 hover:text-slate-600 text-xs font-bold shrink-0 ml-2"
-          >
-            ✕
-          </button>
-        </div>
-      )}
 
       {loading ? (
         <div className="py-16 text-center text-slate-400 text-sm animate-pulse bg-white rounded-xl border border-slate-200">
