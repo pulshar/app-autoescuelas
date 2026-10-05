@@ -256,7 +256,7 @@ export default function AdminDashboard({
         ) : (
           <div className="divide-y divide-slate-100">
             {todayBookings.map(b => (
-              <div key={b.id} className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div key={b.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-lg bg-brand-50 text-brand-700 flex flex-col items-center justify-center font-bold text-xs shrink-0">
                     <span className="text-[10px] font-mono text-slate-500">HORA</span>

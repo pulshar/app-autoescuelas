@@ -413,7 +413,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                             <p className="text-xs text-slate-500 truncate">{user.email}</p>
                           </div>
                           {role === 'admin' ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-200">
                               <ShieldCheck className="w-3 h-3" /> Admin
                             </span>
                           ) : role === 'student' ? (
