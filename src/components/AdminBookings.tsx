@@ -767,55 +767,6 @@ export default function AdminBookings({
             </select>
           </div>
 
-          {/* Status filter */}
-          <div>
-            <select
-              value={filterStatus}
-              onChange={e =>
-                setFilterStatus(e.target.value)
-              }
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 bg-white"
-            >
-              <option value="">
-                Todos los estados
-              </option>
-
-              {activeTab === 'pending_review' ? (
-                <>
-                  <option value="Pendiente de revisión">
-                    Pendiente de revisión
-                  </option>
-                </>
-              ) : activeTab === 'upcoming' ? (
-                <option value="Reservada">
-                  Reservada
-                </option>
-              ) : (
-                <>
-                  <option value="Completada">
-                    Completada
-                  </option>
-
-                  <option value="No presentado">
-                    No presentado
-                  </option>
-
-                  <option value="Cancelada por alumno">
-                    Cancelada por alumno
-                  </option>
-
-                  <option value="Cancelada por administrador">
-                    Cancelada por administrador
-                  </option>
-
-                  <option value="Cancelada por bloqueo">
-                    Cancelada por bloqueo
-                  </option>
-                </>
-              )}
-            </select>
-          </div>
-
           {/* Date filter */}
           <div>
             <input
@@ -827,6 +778,42 @@ export default function AdminBookings({
               className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 bg-white"
             />
           </div>
+          {/* Status filter */}
+          {activeTab === 'history' && (
+            <div>
+              <select
+                value={filterStatus}
+                onChange={e =>
+                  setFilterStatus(e.target.value)
+                }
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 bg-white"
+              >
+                <option value="">
+                  Todos los estados
+                </option>
+
+                <option value="Completada">
+                  Completada
+                </option>
+
+                <option value="No presentado">
+                  No presentado
+                </option>
+
+                <option value="Cancelada por alumno">
+                  Cancelada por alumno
+                </option>
+
+                <option value="Cancelada por administrador">
+                  Cancelada por administrador
+                </option>
+
+                <option value="Cancelada por bloqueo">
+                  Cancelada por bloqueo
+                </option>
+              </select>
+            </div>
+          )}
         </div>
 
         {hasActiveFilters && (
@@ -1056,7 +1043,7 @@ export default function AdminBookings({
                   <div
                     key={b.id}
                     className={`p-4 sm:p-5 transition-colors flex flex-col lg:flex-row lg:items-center justify-between gap-4 ${isSelected
-                      && 'bg-emerald-50/30'
+                      && 'bg-brand-50/80'
                       }`}
                   >
                     {/* Info block */}
