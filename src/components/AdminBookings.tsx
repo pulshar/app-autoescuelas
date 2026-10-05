@@ -8,8 +8,6 @@ import {
   Clock,
   User as UserIcon,
   Search,
-  CheckCircle2,
-  AlertCircle,
   CalendarPlus,
   Ban,
   Phone,
@@ -328,7 +326,6 @@ export default function AdminBookings({ onOpenManualModal, refreshTrigger }: Adm
               {activeTab === 'pending_review' ? (
                 <>
                   <option value="Pendiente de revisión">Pendiente de revisión</option>
-                  <option value="Reservada">Reservada (Pasada)</option>
                 </>
               ) : activeTab === 'upcoming' ? (
                 <option value="Reservada">Reservada</option>
@@ -338,6 +335,7 @@ export default function AdminBookings({ onOpenManualModal, refreshTrigger }: Adm
                   <option value="No presentado">No presentado</option>
                   <option value="Cancelada por alumno">Cancelada por alumno</option>
                   <option value="Cancelada por administrador">Cancelada por administrador</option>
+                  <option value="Cancelada por bloqueo">Cancelada por bloqueo</option>
                 </>
               )}
             </select>
