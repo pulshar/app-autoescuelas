@@ -45,7 +45,7 @@ export const Modal: React.FC<ModalProps> = ({
       data-testid={testId}
     >
       <div
-        className={`bg-white rounded-2xl w-full ${maxWidthStyles} shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-200`}
+        className={`bg-white rounded-xl w-full ${maxWidthStyles} shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-200`}
         onClick={(e) => e.stopPropagation()}
       >
         {title && (

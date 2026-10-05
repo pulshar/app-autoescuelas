@@ -197,7 +197,7 @@ export default function AuthModal({
           {/* Special State: Forgot password email confirmation card */}
           {mode === 'forgot' && forgotEmailSent ? (
             <div className="space-y-4">
-              <div className="p-4 rounded-2xl bg-brand-50/70 border border-brand-100 text-center space-y-3">
+              <div className="p-4 rounded-xl bg-brand-50/70 border border-brand-100 text-center space-y-3">
                 <div className="w-12 h-12 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center mx-auto">
                   <Mail className="w-6 h-6" />
                 </div>

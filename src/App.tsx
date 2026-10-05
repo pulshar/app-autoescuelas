@@ -125,7 +125,7 @@ function AppContent() {
           /* Unauthenticated Landing & Quick Access */
           <div className="space-y-12 py-6">
             {/* Hero Card */}
-            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-brand-900 via-slate-900 to-brand-950 text-white p-8 sm:p-12 shadow-2xl">
+            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-brand-900 via-slate-900 to-brand-950 text-white p-8 sm:p-12 shadow-xs">
               <div className="absolute top-0 right-0 -mr-16 -mt-16 w-96 h-96 bg-brand-500/15 rounded-full blur-3xl pointer-events-none" />
 
               <div className="relative z-10 max-w-2xl">

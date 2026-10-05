@@ -371,7 +371,7 @@ export default function AdminBlocks({ initialOpenCreate, onResetInitialOpenCreat
               </div>
               {/* Conflict warning if existing bookings coincide */}
               {conflicts.length > 0 && (
-                <div className="p-3.5 rounded-2xl bg-amber-50 mt-6 border border-amber-200 text-xs text-amber-950 space-y-2 animate-in fade-in duration-150">
+                <div className="p-3.5 rounded-xl bg-amber-50 mt-6 border border-amber-200 text-xs text-amber-950 space-y-2 animate-in fade-in duration-150">
                   <div className="flex items-center gap-1.5 font-bold text-amber-900">
                     <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
                     <span>Se cancelarán {conflicts.length} clase(s) en conflicto:</span>

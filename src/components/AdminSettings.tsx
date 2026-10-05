@@ -1098,7 +1098,7 @@ export default function AdminSettings() {
         /* ================================================================= */
         <div className="space-y-6">
           {/* Identidad y Nombre de la Autoescuela */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
+          <div className="bg-white rounded-xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
                 Nombre comercial de la autoescuela
@@ -1128,7 +1128,7 @@ export default function AdminSettings() {
             </div>
 
             {/* Live brand preview badge */}
-            <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl flex items-center gap-3">
+            <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white shrink-0">
                 <Car className="w-4 h-4" />
               </div>
