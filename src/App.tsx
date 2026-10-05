@@ -143,7 +143,7 @@ function AppContent() {
                 <div className="flex flex-wrap items-center gap-3.5 mt-8">
                   <button
                     onClick={() => handleOpenAuth('register')}
-                    className="px-6 py-3.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white font-semibold text-sm sm:text-base transition-all flex items-center gap-2"
+                    className="btn-w-100 px-6 py-3.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white font-semibold text-sm sm:text-base transition-all flex items-center gap-2"
                   >
                     <span>Empezar ahora</span>
                     <ArrowRight className="w-4 h-4" />
@@ -151,7 +151,7 @@ function AppContent() {
 
                   <button
                     onClick={() => handleOpenAuth('login')}
-                    className="px-6 py-3.5 rounded-lg bg-white/10 hover:bg-white/15 text-white font-semibold text-sm sm:text-base border border-white/20 backdrop-blur-xs transition-colors"
+                    className="btn-w-100 px-6 py-3.5 rounded-lg bg-white/10 hover:bg-white/15 text-white font-semibold text-sm sm:text-base border border-white/20 backdrop-blur-xs transition-colors"
                   >
                     Iniciar sesión
                   </button>

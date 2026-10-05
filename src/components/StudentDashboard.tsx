@@ -291,17 +291,17 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
         ) : (
           <div className="divide-y divide-slate-100">
             {upcomingBookings.slice(0, 4).map((booking: Booking) => (
-              <div key={booking.id} className="py-3.5 flex items-center justify-between gap-4">
+              <div key={booking.id} className="py-3.5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-bold text-xs shrink-0">
+                  <div className="hidden sm:flex w-10 h-10 rounded-lg bg-brand-50 text-brand-700 items-center justify-center font-bold text-xs shrink-0">
                     <Calendar className="w-5 h-5 text-brand-600" />
                   </div>
                   <div>
-                    <h5 className="font-semibold text-xs sm:text-sm text-slate-900">
+                    <h5 className="font-semibold text-sm text-slate-900">
                       {formatDate(booking.date)}
                     </h5>
                     <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
-                      <span className="font-medium text-slate-700">
+                      <span className="font-medium text-slate-700 whitespace-nowrap">
                         {booking.start_time} - {booking.end_time}
                       </span>
                       <span>•</span>

@@ -232,8 +232,8 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
                 : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                 }`}
             >
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold">
+              <div className="flex gap-3">
+                <div className="w-12 h-12 shrink-0 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold">
                   <Sparkles className="w-6 h-6" />
                 </div>
                 <div>
@@ -544,7 +544,7 @@ export default function BookingWizard({ onSuccess, onCancel }: BookingWizardProp
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2">
               <Button
                 variant="ghost"
                 size="modal"

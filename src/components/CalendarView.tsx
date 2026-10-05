@@ -297,8 +297,8 @@ export default function CalendarView({ onNavigateToBook }: CalendarViewProps) {
                   key={b.id}
                   className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 hover:border-slate-300 transition-colors"
                 >
-                  <div className="flex items-center justify-between text-xs mb-1.5">
-                    <span className="font-bold text-slate-900 flex items-center gap-1">
+                  <div className="flex flex-wrap gap-2 items-center justify-between text-xs mb-1.5">
+                    <span className="font-bold text-slate-900 flex items-center gap-1 whitespace-nowrap">
                       <Clock className="w-3.5 h-3.5 text-brand-600" /> {b.start_time} - {b.end_time}
                     </span>
                     <StatusBadge status={b.status} />

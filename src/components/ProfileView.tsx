@@ -195,7 +195,7 @@ export default function ProfileView() {
 
       {/* Password Security Card */}
       <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-center gap-4 justify-between">
           <div>
             <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
               <KeyRound className="w-5 h-5 text-brand-600" /> Seguridad de la cuenta
@@ -249,7 +249,7 @@ export default function ProfileView() {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-2">
+            <div className="flex-col sm:flex-row flex items-center justify-end gap-3 pt-2">
               <Button
                 variant="ghost"
                 size="modal"

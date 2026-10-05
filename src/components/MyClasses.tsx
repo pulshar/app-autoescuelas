@@ -186,26 +186,27 @@ export default function MyClasses({ onNavigateToBook }: MyClassesProps) {
                 className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between"
               >
                 <div>
-                  <div className="flex items-start justify-between gap-2 mb-3">
+                  <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-12 h-12 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center font-bold text-xs shrink-0">
+                      <div className="hidden sm:flex w-12 h-12 rounded-xl bg-brand-50 text-brand-700 items-center justify-center font-bold text-xs shrink-0">
                         <Calendar className="w-5 h-5 text-brand-600" />
                       </div>
-                      <div>
-                        <h4 className="font-bold text-sm text-slate-900">
-                          {formatDate(booking.date)}
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-bold text-sm sm:text-base text-slate-900 truncate"> {formatDate(booking.date)}
                         </h4>
-                        <div className="flex items-center gap-1.5 text-xs text-slate-600 mt-1">
-                          <Clock className="w-3.5 h-3.5 text-brand-600" />
-                          <span className="font-semibold text-slate-800">
+                        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs sm:text-sm text-slate-600 mt-1">
+                          <Clock className="w-3.5 h-3.5 text-brand-600 shrink-0" />
+                          <span className="font-semibold text-slate-800 whitespace-nowrap">
                             {booking.start_time} - {booking.end_time}
                           </span>
-                          <span>({booking.duration_minutes} min)</span>
+                          <span className="text-slate-500 whitespace-nowrap">
+                            ({booking.duration_minutes} min)
+                          </span>
                         </div>
                       </div>
                     </div>
 
-                    <div>
+                    <div className='text-center'>
                       <StatusBadge status={booking.status} />
                     </div>
                   </div>

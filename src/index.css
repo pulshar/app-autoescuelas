@@ -5,6 +5,7 @@
   --font-headings: 'Plus Jakarta Sans', system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
+  --breakpoint-sm: 540px;
   --container-7xl: 1440px;
 
   --color-brand-50: #eefbf9;
@@ -45,4 +46,41 @@
   input[type="checkbox"] {
     accent-color: var(--color-brand-600);
   }
+}
+
+@layer utilities {
+  @media (max-width: 539px) {
+    .btn-w-100 {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Custom scrollbar for sleek modern appearance */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.7);
 }

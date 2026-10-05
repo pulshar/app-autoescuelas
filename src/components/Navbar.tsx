@@ -159,7 +159,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                     currentSchoolName
                   )}
                 </span>
-                {role === 'admin' ? (
+                {/* {role === 'admin' ? (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
                     <ShieldCheck className="w-3 h-3" /> Admin
                   </span>
@@ -167,7 +167,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                   <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-200">
                     Alumno
                   </span>
-                ) : null}
+                ) : null} */}
               </div>
               <p className="text-[11px] text-slate-500 hidden sm:block">Gestión y reserva online de clases</p>
             </div>
@@ -312,7 +312,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
 
                   {/* Notifications Popover */}
                   {showNotifications && (
-                    <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-lg shadow-xl border border-slate-200 py-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="absolute -right-12 sm:right-0 mt-3 w-80 sm:w-96 bg-white rounded-lg shadow-xl border border-slate-200 py-3 z-50 animate-in fade-in zoom-in-95 duration-150">
                       <div className="flex items-center justify-between px-4 pb-3 border-b border-slate-200">
                         <h4 className="font-semibold text-slate-900 text-sm">Notificaciones</h4>
                         <div className="flex items-center gap-1">
@@ -406,19 +406,32 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
 
                   {/* Profile Menu */}
                   {showProfileMenu && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl overflow-hidden border border-slate-200 z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="absolute right-0 mt-2.5 w-82 bg-white rounded-lg shadow-xl overflow-hidden border border-slate-200 z-50 animate-in fade-in zoom-in-95 duration-150">
                       <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-200">
-                        <p className="text-xs font-semibold text-slate-900 truncate">{user.name}</p>
-                        <p className="text-[11px] text-slate-500 truncate">{user.email}</p>
+                        <div className="flex items-start justify-between gap-2">
+                          <div><p className="text-sm font-semibold text-slate-900 truncate">{user.name}</p>
+                            <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                          </div>
+                          {role === 'admin' ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                              <ShieldCheck className="w-3 h-3" /> Admin
+                            </span>
+                          ) : role === 'student' ? (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-200">
+                              Alumno
+                            </span>
+                          ) : null}
+                        </div>
+
                       </div>
                       <button
                         onClick={() => {
                           onSelectTab('profile');
                           setShowProfileMenu(false);
                         }}
-                        className="w-full text-left px-5 py-3.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2"
+                        className="w-full text-left px-5 py-3.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2"
                       >
-                        <UserIcon className="w-4 h-4 text-slate-400" /> Mi Perfil
+                        <UserIcon className="w-4 h-4 text-slate-400" /> Mi perfil
                       </button>
                       {role === 'admin' && (
                         <><button
@@ -426,16 +439,16 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                             onSelectTab('audit');
                             setShowProfileMenu(false);
                           }}
-                          className="w-full text-left px-5 py-3.5 border-t border-slate-200 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2"
+                          className="w-full text-left px-5 py-3.5 border-t border-slate-200 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2"
                         >
-                          <CheckCheck className="w-4 h-4 text-slate-400" /> Registro de Auditoría
+                          <CheckCheck className="w-4 h-4 text-slate-400" /> Registro de auditoría
                         </button>
                           <button
                             onClick={() => {
                               onSelectTab('settings')
                               setShowProfileMenu(false);
                             }}
-                            className="w-full text-left px-5 py-3.5 border-t border-slate-200 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2"
+                            className="w-full text-left px-5 py-3.5 border-t border-slate-200 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2"
                           >
                             <Settings className="w-4 h-4 text-slate-400" /> Configuración
                           </button>
@@ -446,7 +459,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                           logout();
                           setShowProfileMenu(false);
                         }}
-                        className="w-full text-left border-t border-slate-200 px-5 py-3.5 text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2 font-medium"
+                        className="w-full text-left border-t border-slate-200 px-5 py-3.5 text-sm text-rose-600 hover:bg-rose-50 flex items-center gap-2 font-medium"
                       >
                         <LogOut className="w-4 h-4 text-rose-500" /> Cerrar sesión
                       </button>
@@ -455,7 +468,7 @@ export default function Navbar({ currentTab, onSelectTab, onOpenAuth, schoolName
                 </div>
               </>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="hidden sm:flex items-center gap-2">
                 <Button
                   onClick={onOpenAuth}
                   leftIcon={<LogIn className="w-4 h-4" />}
