@@ -14,6 +14,7 @@ import {
   AlertTriangle,
   ShieldCheck,
   ArrowUpRight,
+  Lock,
 } from 'lucide-react';
 import { Button } from './common/Button.tsx';
 import { StatusBadge } from './common/StatusBadge.tsx';
@@ -222,6 +223,19 @@ export default function AdminDashboard({
           </div>
           <span className="text-[11px] text-slate-500 mt-1 block">Clases anuladas</span>
         </div>
+
+        {/* Metric 8 */}
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+          <div className="flex items-center justify-between text-slate-600 mb-2">
+            <span className="font-mono text-slate-500">Bloqueos Activos</span>
+            <Lock className={`${stats?.active_blocks > 0 ? 'text-rose-600' : 'text-slate-500'} w-5 h-5`} />
+          </div>
+          <div className="text-2xl sm:text-3xl font-bold text-slate-900">
+            {loading ? '...' : stats?.active_blocks || 0}
+          </div>
+          <span className="text-[11px] text-slate-500 mt-1 block">{stats?.active_blocks === 0 ? 'Sin bloqueos vigentes' : 'Disponibilidad reducida'}</span>
+        </div>
+
       </div>
 
       {/* TODAY'S TIMETABLE */}

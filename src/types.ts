@@ -152,6 +152,7 @@ export interface TimeSlot {
 export interface DashboardStats {
   today_classes: number;
   pending_reviews?: number;
+  active_blocks?: number;
   upcoming_classes: number;
   total_bookings: number;
   active_teachers: number;

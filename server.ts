@@ -2218,7 +2218,9 @@ async function startServer() {
       await autoCompletePassedBookings();
       const settings = await getAppSettings();
       const tz = settings.timezone || 'Europe/Madrid';
-      const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: tz });
+      const nowObj = new Date();
+      const todayStr = nowObj.toLocaleDateString('en-CA', { timeZone: tz });
+      const currentTime = nowObj.toLocaleTimeString('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false });
 
       const todayClasses = (await db.prepare(`
         SELECT COUNT(*) as count FROM bookings
@@ -2235,6 +2237,11 @@ async function startServer() {
         WHERE status = 'Pendiente de revisión'
       `).get()) as any;
 
+      const activeBlocks = (await db.prepare(`
+        SELECT COUNT(*) as count FROM schedule_blocks
+        WHERE date > ? OR (date = ? AND (is_full_day = 1 OR end_time IS NULL OR end_time > ?))
+      `).get(todayStr, todayStr, currentTime)) as any;
+
 
       const totalBookings = (await db.prepare('SELECT COUNT(*) as count FROM bookings').get()) as any;
       const activeTeachers = (await db.prepare('SELECT COUNT(*) as count FROM teachers WHERE is_active = 1').get()) as any;
@@ -2250,6 +2257,7 @@ async function startServer() {
           today_classes: Number(todayClasses?.count || 0),
           upcoming_classes: Number(upcomingClasses?.count || 0),
           pending_reviews: Number(pendingReviews?.count || 0),
+          active_blocks: Number(activeBlocks?.count || 0),
           total_bookings: Number(totalBookings?.count || 0),
           active_teachers: Number(activeTeachers?.count || 0),
           registered_students: Number(registeredStudents?.count || 0),
